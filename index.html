@@ -286,12 +286,43 @@
             <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
           </div>
           
+          <div style="background: #f0f9ff; padding: 15px; border: 1px solid #3b82f6; border-radius: 8px;">
+            <h3 style="margin-bottom: 15px; font-size: 16px;">📊 System Overview</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
+                <div style="font-size: 24px; font-weight: bold; color: #10b981;" id="totalMembers">0</div>
+                <div style="font-size: 12px; color: #666;">Total Members</div>
+              </div>
+              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
+                <div style="font-size: 24px; font-weight: bold; color: #3b82f6;" id="totalMeetings">0</div>
+                <div style="font-size: 12px; color: #666;">Total Meetings</div>
+              </div>
+              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
+                <div style="font-size: 24px; font-weight: bold; color: #8b5cf6;" id="totalBeneficiaries">0</div>
+                <div style="font-size: 12px; color: #666;">Beneficiaries</div>
+              </div>
+              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
+                <div style="font-size: 24px; font-weight: bold; color: #f59e0b;" id="totalPayouts">0</div>
+                <div style="font-size: 12px; color: #666;">Payouts</div>
+              </div>
+            </div>
+            <div style="margin-top: 15px; padding: 10px; background: white; border-radius: 5px;">
+              <div style="font-size: 13px; color: #666;">
+                <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+              </div>
+            </div>
+          </div>
+          
           <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📊 Storage Info</h3>
+            <h3 style="margin-bottom: 10px; font-size: 16px;">� Detailed Storage Info</h3>
             <p style="color: #666; font-size: 13px;"><strong>Members:</strong> <span id="storageMembers">0</span></p>
             <p style="color: #666; font-size: 13px;"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
             <p style="color: #666; font-size: 13px;"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
-            <p style="color: #666; font-size: 13px; margin-bottom: 0;"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+            <p style="color: #666; font-size: 13px;"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+            <p style="color: #666; font-size: 13px;"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+            <p style="color: #666; font-size: 13px; margin-bottom: 0;"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
           </div>
         </div>
       </div>
@@ -487,17 +518,46 @@
     // Save all data to localStorage
     function saveDataToStorage() {
       try {
+        // Get attendance data
+        const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
+        
+        // Create comprehensive data structure
         const data = {
+          // Core member data
           members,
           beneficiaries,
           payouts,
           penalties,
+          
+          // Attendance and meeting data
+          attendance: attendanceData,
+          
+          // System data
           memberIdCounter,
-          lastSaved: new Date().toISOString()
+          
+          // Metadata
+          lastSaved: new Date().toISOString(),
+          version: '2.0',
+          systemInfo: {
+            totalMembers: members.length,
+            activeMembers: members.filter(m => m.status === 'Active').length,
+            suspendedMembers: members.filter(m => m.status === 'Suspended').length,
+            totalBeneficiaries: beneficiaries.length,
+            totalPayouts: payouts.length,
+            totalPenalties: penalties.length,
+            totalMeetings: Object.keys(attendanceData).length
+          }
         };
+        
         const encrypted = encryptData(data);
         localStorage.setItem(STORAGE_KEY, encrypted);
+        
+        // Also save a backup with timestamp
+        const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
+        localStorage.setItem(backupKey, encrypted);
+        
         console.log('✓ Data saved to secure storage at', data.lastSaved);
+        console.log('✓ System Info:', data.systemInfo);
         return true;
       } catch (e) {
         console.error('Failed to save data:', e);
@@ -506,19 +566,29 @@
       }
     }
     
-    // Load data from localStorage
+    // Load data from localStorage with comprehensive structure
     function loadDataFromStorage() {
       try {
         const encrypted = localStorage.getItem(STORAGE_KEY);
         if (encrypted) {
           const data = decryptData(encrypted);
           if (data) {
+            // Load core data
             members = data.members || [];
             beneficiaries = data.beneficiaries || [];
             payouts = data.payouts || [];
             penalties = data.penalties || [];
             memberIdCounter = data.memberIdCounter || 4;
+            
+            // Load attendance data if available
+            if (data.attendance) {
+              localStorage.setItem('attendance', JSON.stringify(data.attendance));
+            }
+            
             console.log('✓ Data loaded from storage. Last saved:', data.lastSaved);
+            if (data.systemInfo) {
+              console.log('✓ System Statistics:', data.systemInfo);
+            }
             return true;
           }
         }
@@ -530,29 +600,49 @@
       }
     }
     
-    // Export data to JSON file
+    // Export comprehensive data to JSON file
     function exportData() {
       try {
+        // Get attendance data
+        const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
+        
         const data = {
+          // Core data
           members,
           beneficiaries,
           payouts,
           penalties,
           memberIdCounter,
+          
+          // Attendance and meeting data
+          attendance: attendanceData,
+          
+          // Export metadata
           exportDate: new Date().toISOString(),
-          version: '1.0'
+          version: '2.0',
+          systemInfo: {
+            totalMembers: members.length,
+            activeMembers: members.filter(m => m.status === 'Active').length,
+            suspendedMembers: members.filter(m => m.status === 'Suspended').length,
+            totalBeneficiaries: beneficiaries.length,
+            totalPayouts: payouts.length,
+            totalPenalties: penalties.length,
+            totalMeetings: Object.keys(attendanceData).length,
+            exportedBy: 'Sbahle Burial Portal v2.0'
+          }
         };
+        
         const jsonStr = JSON.stringify(data, null, 2);
         const blob = new Blob([jsonStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `sbahle_backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `sbahle_complete_backup_${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showAlert('adminAlert', '✓ Data exported successfully!', 'success');
+        showAlert('adminAlert', '✓ Complete data exported successfully!', 'success');
       } catch (e) {
         console.error('Export error:', e);
         showAlert('adminAlert', '⚠ Failed to export data', 'error');
@@ -560,24 +650,41 @@
     }
     
     // Import data from JSON file
+    // Import comprehensive data from JSON file
     function importData(file) {
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
           const data = JSON.parse(e.target.result);
-          if (confirm('This will replace all current data. Are you sure?')) {
+          if (confirm('This will replace all current data including attendance records. Are you sure?')) {
+            // Import core data
             members = data.members || [];
             beneficiaries = data.beneficiaries || [];
             payouts = data.payouts || [];
             penalties = data.penalties || [];
             memberIdCounter = data.memberIdCounter || 4;
+            
+            // Import attendance data if available
+            if (data.attendance) {
+              localStorage.setItem('attendance', JSON.stringify(data.attendance));
+            }
+            
+            // Save all imported data
             saveDataToStorage();
             updateAdmin();
-            showAlert('adminAlert', '✓ Data imported successfully!', 'success');
+            
+            // Show success message with statistics
+            let message = '✓ Data imported successfully!';
+            if (data.systemInfo) {
+              message += `\n📊 Imported: ${data.systemInfo.totalMembers} members, ${data.systemInfo.totalMeetings} meetings`;
+            }
+            showAlert('adminAlert', message, 'success');
+            
+            console.log('✓ Import completed:', data.systemInfo || 'Basic data structure');
           }
         } catch (err) {
           console.error('Import error:', err);
-          showAlert('adminAlert', '⚠ Invalid data file', 'error');
+          showAlert('adminAlert', '⚠ Invalid data file format', 'error');
         }
       };
       reader.readAsText(file);
@@ -849,10 +956,54 @@
     }
     
     function updateStorageInfo() {
+      // Get attendance data
+      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
+      const activeMembers = members.filter(m => m.status === 'Active');
+      
+      // Update overview cards
+      document.getElementById('totalMembers').textContent = members.length;
+      document.getElementById('totalMeetings').textContent = Object.keys(attendanceData).length;
+      document.getElementById('totalBeneficiaries').textContent = beneficiaries.length;
+      document.getElementById('totalPayouts').textContent = payouts.length;
+      
+      // Update detailed storage info
       document.getElementById('storageMembers').textContent = members.length;
       document.getElementById('storageBeneficiaries').textContent = beneficiaries.length;
       document.getElementById('storagePayouts').textContent = payouts.length;
       document.getElementById('storagePenalties').textContent = penalties.length;
+      document.getElementById('storageAttendance').textContent = Object.keys(attendanceData).length;
+      document.getElementById('storageActiveMembers').textContent = activeMembers.length;
+      
+      // Update metadata
+      const encrypted = localStorage.getItem(STORAGE_KEY);
+      if (encrypted) {
+        try {
+          const data = decryptData(encrypted);
+          if (data && data.lastSaved) {
+            document.getElementById('lastSavedTime').textContent = new Date(data.lastSaved).toLocaleString();
+          }
+          if (data && data.version) {
+            document.getElementById('dataVersion').textContent = data.version;
+          }
+        } catch (e) {
+          console.log('Could not read metadata');
+        }
+      }
+      
+      // Calculate storage size
+      try {
+        const totalStorage = JSON.stringify({
+          members,
+          beneficiaries,
+          payouts,
+          penalties,
+          attendance: attendanceData
+        }).length;
+        const sizeKB = (totalStorage / 1024).toFixed(2);
+        document.getElementById('storageSize').textContent = `${sizeKB} KB`;
+      } catch (e) {
+        document.getElementById('storageSize').textContent = 'Error calculating';
+      }
     }
 
     function memberTab(t, e) {
@@ -1581,6 +1732,7 @@
       }
 
       localStorage.setItem('attendance', JSON.stringify(attendance));
+      saveDataToStorage(); // Save comprehensive data backup
       showAttendanceList();
       
       // Show confirmation alert
@@ -1621,6 +1773,7 @@
       attendance[date].description = document.getElementById('meetingDesc').value;
 
       localStorage.setItem('attendance', JSON.stringify(attendance));
+      saveDataToStorage(); // Save comprehensive backup
       showAlert('adminAlert', '✓ Meeting details updated', 'success');
     }
 
