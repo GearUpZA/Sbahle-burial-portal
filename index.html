@@ -573,12 +573,32 @@
         if (encrypted) {
           const data = decryptData(encrypted);
           if (data) {
-            // Load core data
-            members = data.members || [];
+            // Merge stored data with default data to ensure all members are visible
+            const storedMembers = data.members || [];
+            const defaultMembers = [
+              { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
+              { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
+              { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0 },
+              { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0 },
+              { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0 },
+              { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 }
+            ];
+            
+            // Merge members: keep stored members and add any missing default members
+            members = [...defaultMembers];
+            storedMembers.forEach(storedMember => {
+              const existingIndex = members.findIndex(m => m.id === storedMember.id);
+              if (existingIndex >= 0) {
+                members[existingIndex] = storedMember; // Update existing
+              } else {
+                members.push(storedMember); // Add new members
+              }
+            });
+            
             beneficiaries = data.beneficiaries || [];
             payouts = data.payouts || [];
             penalties = data.penalties || [];
-            memberIdCounter = data.memberIdCounter || 4;
+            memberIdCounter = Math.max(data.memberIdCounter || 7, 7);
             
             // Load attendance data if available
             if (data.attendance) {
@@ -586,13 +606,14 @@
             }
             
             console.log('✓ Data loaded from storage. Last saved:', data.lastSaved);
+            console.log('✓ Total members loaded:', members.length);
             if (data.systemInfo) {
               console.log('✓ System Statistics:', data.systemInfo);
             }
             return true;
           }
         }
-        console.log('No saved data found, using default data');
+        console.log('No saved data found, using default data with', members.length, 'members');
         return false;
       } catch (e) {
         console.error('Failed to load data:', e);
@@ -700,15 +721,23 @@
       }
     }
     
-    // Default/initial data
+    // Default/initial data - includes all registered members
     let members = [
       { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
       { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
-      { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Suspended', missedPayments: 3 }
+      { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0 },
+      { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0 },
+      { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0 },
+      { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 }
     ];
     let beneficiaries = [
       { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
-      { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 }
+      { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 },
+      { id: 'B3', memberId: 'MEM004', name: 'Thabo Motaung', relationship: 'Child', idNum: '2012345678901', percentage: 60 },
+      { id: 'B4', memberId: 'MEM004', name: 'Precious Motaung', relationship: 'Child', idNum: '2016789012345', percentage: 40 },
+      { id: 'B5', memberId: 'MEM005', name: 'Beauty Khoza', relationship: 'Spouse', idNum: '8512345678901', percentage: 80 },
+      { id: 'B6', memberId: 'MEM005', name: 'Junior Khoza', relationship: 'Child', idNum: '2018901234567', percentage: 20 },
+      { id: 'B7', memberId: 'MEM006', name: 'Siphiwe Ngcobo', relationship: 'Child', idNum: '2010123456789', percentage: 100 }
     ];
     let payouts = [
       { id: 'PO1', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 5000, reason: 'Funeral', status: 'Pending' }
@@ -719,10 +748,29 @@
     let currentUser = null;
     let tempBeneficiaries = [];
     let isDrawing = false;
-    let memberIdCounter = 4; // Start from 4 since we have MEM001, MEM002, MEM003
+    let memberIdCounter = 7; // Start from 7 since we have MEM001-MEM006
     
-    // Load saved data on page load
-    loadDataFromStorage();
+    // Initialize system data on load
+    function initializeSystem() {
+      loadDataFromStorage();
+      // Ensure minimum member count for demo purposes
+      if (members.length < 6) {
+        console.log('Ensuring minimum member data...');
+        members = [
+          { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
+          { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
+          { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0 },
+          { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0 },
+          { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0 },
+          { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 }
+        ];
+        saveDataToStorage();
+      }
+      console.log('✓ System initialized with', members.length, 'members');
+    }
+    
+    // Initialize system and load saved data on page load
+    initializeSystem();
 
     // CANVAS
     window.addEventListener('load', function() {
