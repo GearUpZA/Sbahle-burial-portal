@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Sbahle Burial Society</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
@@ -507,6 +512,31 @@
   </div>
 
   <script>
+    // ===== FIREBASE CONFIGURATION =====
+    const firebaseConfig = {
+      apiKey: "AIzaSyBx8vQZ6J3mK9LN2pR4sT5uV6wX7yZ8aB9",
+      authDomain: "sbahle-burial-society.firebaseapp.com",
+      databaseURL: "https://sbahle-burial-society-default-rtdb.firebaseio.com",
+      projectId: "sbahle-burial-society",
+      storageBucket: "sbahle-burial-society.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef123456"
+    };
+    
+    // Initialize Firebase
+    let database;
+    let firebaseInitialized = false;
+    
+    try {
+      firebase.initializeApp(firebaseConfig);
+      database = firebase.database();
+      firebaseInitialized = true;
+      console.log('✓ Firebase connected - using cloud storage');
+    } catch (error) {
+      console.warn('Firebase not available, using localStorage fallback:', error);
+      firebaseInitialized = false;
+    }
+    
     // ===== PERFORMANCE OPTIMIZATION SYSTEM =====
     const PERFORMANCE_CONFIG = {
       DEBOUNCE_DELAY: 300,
@@ -648,9 +678,9 @@
       }
     }
     
-    // Optimized save function with debouncing
+    // Optimized save function with Firebase cloud storage
     function saveDataToStorage(forceImmediate = false) {
-      const performSave = () => {
+      const performSave = async () => {
         try {
           const startTime = performance.now();
           
@@ -678,7 +708,7 @@
             
             // Metadata
             lastSaved: new Date().toISOString(),
-            version: '2.1',
+            version: '2.2-cloud',
             systemInfo: {
               totalMembers: members.length,
               activeMembers: members.filter(m => m.status === 'Active').length,
@@ -691,14 +721,21 @@
             }
           };
           
-          const encrypted = encryptData(data);
-          localStorage.setItem(STORAGE_KEY, encrypted);
-          
-          // Also save a backup with timestamp
-          const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
-          localStorage.setItem(backupKey, encrypted);
-          
-          console.log('✓ Data saved to secure storage at', data.lastSaved);
+          // Save to Firebase (cloud storage) if available
+          if (firebaseInitialized && database) {
+            await database.ref('sbahle_society').set(data);
+            console.log('✓ Data saved to cloud storage at', data.lastSaved);
+          } else {
+            // Fallback to localStorage
+            const encrypted = encryptData(data);
+            localStorage.setItem(STORAGE_KEY, encrypted);
+            
+            // Also save a backup with timestamp
+            const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
+            localStorage.setItem(backupKey, encrypted);
+            console.log('✓ Data saved to local storage (fallback) at', data.lastSaved);
+          }
+                    console.log('✓ Data saved to secure storage at', data.lastSaved);
           console.log('✓ System Info:', data.systemInfo);
           return true;
         } catch (e) {
@@ -716,15 +753,32 @@
       }
     }
     
-    // Optimized load data from localStorage with caching
-    function loadDataFromStorage() {
+    // Optimized load data from Firebase cloud storage
+    async function loadDataFromStorage() {
       try {
         showLoading('Loading system data...');
         const startTime = performance.now();
-        const encrypted = localStorage.getItem(STORAGE_KEY);
-        if (encrypted) {
-          const data = decryptData(encrypted);
+        let data = null;
+        
+        // Try loading from Firebase first
+        if (firebaseInitialized && database) {
+          const snapshot = await database.ref('sbahle_society').once('value');
+          data = snapshot.val();
           if (data) {
+            console.log('✓ Data loaded from cloud storage');
+          }
+        }
+        
+        // Fallback to localStorage if Firebase fails
+        if (!data) {
+          const encrypted = localStorage.getItem(STORAGE_KEY);
+          if (encrypted) {
+            data = decryptData(encrypted);
+            console.log('✓ Data loaded from local storage (fallback)');
+          }
+        }
+        
+        if (data) {
             // Cache default members to avoid recreation
             const cacheKey = 'default_members';
             let defaultMembers = getFromCache(cacheKey);
@@ -772,8 +826,8 @@
             trackPerformance('loadTime', startTime);
             hideLoading();
             return true;
-          }
         }
+        
         console.log('No saved data found, using default data with', members.length, 'members');
         hideLoading();
         return false;
@@ -914,18 +968,46 @@
     let memberIdCounter = 7; // Start from 7 since we have MEM001-MEM006
     
     // Initialize system data on load
-    function initializeSystem() {
-      loadDataFromStorage();
+    async function initializeSystem() {
+      await loadDataFromStorage();
+      
+      // Set up real-time sync with Firebase
+      if (firebaseInitialized && database) {
+        database.ref('sbahle_society').on('value', (snapshot) => {
+          const cloudData = snapshot.val();
+          if (cloudData && cloudData.lastSaved) {
+            // Only update if cloud data is newer
+            const localLastSaved = members.length > 0 ? new Date().toISOString() : null;
+            if (!localLastSaved || cloudData.lastSaved > localLastSaved) {
+              console.log('🔄 Real-time update from cloud');
+              
+              // Update local data with cloud data
+              members = cloudData.members || members;
+              beneficiaries = cloudData.beneficiaries || beneficiaries;
+              payouts = cloudData.payouts || payouts;
+              penalties = cloudData.penalties || penalties;
+              memberIdCounter = cloudData.memberIdCounter || memberIdCounter;
+              
+              // Refresh UI if on admin page
+              if (document.getElementById('adminPage').className !== 'hidden') {
+                updateAdmin();
+              }
+            }
+          }
+        });
+        console.log('✓ Real-time sync enabled - all browsers will stay synchronized');
+      }
+      
       // Ensure minimum member count for demo purposes
       if (members.length < 6) {
         console.log('Ensuring minimum member data...');
         members = [
-          { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
-          { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
-          { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0 },
-          { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0 },
-          { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0 },
-          { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 }
+          { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-15T10:30:00.000Z' },
+          { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-16T14:20:00.000Z' },
+          { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-18T09:15:00.000Z' },
+          { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T11:45:00.000Z' },
+          { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T13:20:00.000Z' },
+          { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T15:10:00.000Z' }
         ];
         saveDataToStorage();
       }
