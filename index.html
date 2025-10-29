@@ -128,7 +128,7 @@
         <h2>Members</h2>
         <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
         <table>
-          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Registered</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
           <tbody id="memTable"></tbody>
         </table>
       </div>
@@ -730,12 +730,12 @@
             let defaultMembers = getFromCache(cacheKey);
             if (!defaultMembers) {
               defaultMembers = [
-                { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
-                { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
-                { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0 },
-                { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0 },
-                { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0 },
-                { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 }
+                { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-15T10:30:00.000Z' },
+                { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-16T14:20:00.000Z' },
+                { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-18T09:15:00.000Z' },
+                { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T11:45:00.000Z' },
+                { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T13:20:00.000Z' },
+                { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T15:10:00.000Z' }
               ];
               setCache(cacheKey, defaultMembers);
             }
@@ -1113,7 +1113,8 @@
         phone, 
         idNum, 
         status: 'Active', 
-        missedPayments: 0 
+        missedPayments: 0,
+        registeredAt: new Date().toISOString()
       });
       saveDataToStorage(false); // Auto-save with debouncing
       
@@ -1281,7 +1282,8 @@
         
         members.forEach(m => {
           const row = document.createElement('tr');
-          row.innerHTML = `<td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
+          const regDate = m.registeredAt ? new Date(m.registeredAt).toLocaleDateString('en-ZA', {year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A';
+          row.innerHTML = `<td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td>${regDate}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
             <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
             ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
             <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
