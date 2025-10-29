@@ -53,7 +53,12 @@
     .file-input { margin-bottom: 10px; }
     .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #667eea; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; }
     .file-label:hover { background: #cbd5e0; }
-    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } }
+    .loading-indicator { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; display: none; }
+    .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .performance-monitor { position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 8px; border-radius: 5px; font-size: 11px; max-width: 200px; z-index: 1000; display: none; }
+    .performance-monitor.show { display: block; }
+    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } .performance-monitor { bottom: 60px; } }
   </style>
 </head>
 <body>
@@ -481,6 +486,18 @@
     </div>
   </div>
 
+  <!-- LOADING INDICATOR -->
+  <div id="loadingIndicator" class="loading-indicator">
+    <div class="spinner"></div>
+    <div>Processing...</div>
+  </div>
+
+  <!-- PERFORMANCE MONITOR -->
+  <div id="performanceMonitor" class="performance-monitor">
+    <div>⚡ Performance</div>
+    <div id="perfMetrics"></div>
+  </div>
+
   <!-- MODAL -->
   <div id="modal" class="modal">
     <div class="modal-content">
@@ -490,6 +507,122 @@
   </div>
 
   <script>
+    // ===== PERFORMANCE OPTIMIZATION SYSTEM =====
+    const PERFORMANCE_CONFIG = {
+      DEBOUNCE_DELAY: 300,
+      CACHE_EXPIRY: 60000, // 1 minute
+      BATCH_SIZE: 50,
+      ENABLE_CACHING: true
+    };
+    
+    // Performance cache for frequently accessed data
+    const performanceCache = new Map();
+    let saveTimeout = null;
+    let lastSaveTime = 0;
+    
+    // Fast deep clone function (more efficient than JSON parse/stringify)
+    function fastClone(obj) {
+      if (obj === null || typeof obj !== 'object') return obj;
+      if (obj instanceof Date) return new Date(obj.getTime());
+      if (obj instanceof Array) return obj.map(item => fastClone(item));
+      if (typeof obj === 'object') {
+        const copy = {};
+        Object.keys(obj).forEach(key => {
+          copy[key] = fastClone(obj[key]);
+        });
+        return copy;
+      }
+    }
+    
+    // Debounced save function to prevent excessive localStorage writes
+    function debouncedSave(callback, delay = PERFORMANCE_CONFIG.DEBOUNCE_DELAY) {
+      if (saveTimeout) clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        callback();
+        lastSaveTime = Date.now();
+      }, delay);
+    }
+    
+    // Cache management functions
+    function getCacheKey(type, params = '') {
+      return `${type}_${JSON.stringify(params)}_${Date.now()}`;
+    }
+    
+    function getFromCache(key) {
+      if (!PERFORMANCE_CONFIG.ENABLE_CACHING) return null;
+      const cached = performanceCache.get(key);
+      if (cached && Date.now() - cached.timestamp < PERFORMANCE_CONFIG.CACHE_EXPIRY) {
+        return cached.data;
+      }
+      performanceCache.delete(key);
+      return null;
+    }
+    
+    // Performance monitoring functions
+    let performanceMetrics = {
+      loadTime: 0,
+      saveTime: 0,
+      renderTime: 0,
+      cacheHits: 0,
+      cacheMisses: 0
+    };
+    
+    function showLoading(message = 'Processing...') {
+      const indicator = document.getElementById('loadingIndicator');
+      const text = indicator.querySelector('div:last-child');
+      text.textContent = message;
+      indicator.style.display = 'block';
+    }
+    
+    function hideLoading() {
+      document.getElementById('loadingIndicator').style.display = 'none';
+    }
+    
+    function updatePerformanceMonitor() {
+      const monitor = document.getElementById('performanceMonitor');
+      const metrics = document.getElementById('perfMetrics');
+      
+      const cacheTotal = performanceMetrics.cacheHits + performanceMetrics.cacheMisses;
+      const hitRate = cacheTotal > 0 ? (performanceMetrics.cacheHits / cacheTotal * 100).toFixed(1) : 0;
+      
+      metrics.innerHTML = `
+        Load: ${performanceMetrics.loadTime}ms<br>
+        Save: ${performanceMetrics.saveTime}ms<br>
+        Render: ${performanceMetrics.renderTime}ms<br>
+        Cache: ${hitRate}% hits<br>
+        Memory: ${performanceCache.size} items
+      `;
+      
+      monitor.classList.add('show');
+      
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
+        monitor.classList.remove('show');
+      }, 3000);
+    }
+    
+    function trackPerformance(operation, startTime) {
+      const duration = performance.now() - startTime;
+      performanceMetrics[operation] = duration.toFixed(2);
+      updatePerformanceMonitor();
+      console.log(`⚡ ${operation} completed in ${duration.toFixed(2)}ms`);
+    }
+    
+    function setCache(key, data) {
+      if (!PERFORMANCE_CONFIG.ENABLE_CACHING) return;
+      performanceCache.set(key, {
+        data: data,
+        timestamp: Date.now()
+      });
+      
+      // Clean up old cache entries
+      if (performanceCache.size > 100) {
+        const oldEntries = Array.from(performanceCache.entries())
+          .filter(([k, v]) => Date.now() - v.timestamp > PERFORMANCE_CONFIG.CACHE_EXPIRY);
+        oldEntries.forEach(([k]) => performanceCache.delete(k));
+      }
+    }
+    
     // ===== DATA STORAGE SYSTEM =====
     const STORAGE_KEY = 'sbahle_burial_society_data';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' }; // In production, hash this!
@@ -515,108 +648,138 @@
       }
     }
     
-    // Save all data to localStorage
-    function saveDataToStorage() {
-      try {
-        // Get attendance data
-        const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
-        
-        // Create comprehensive data structure
-        const data = {
-          // Core member data
-          members,
-          beneficiaries,
-          payouts,
-          penalties,
+    // Optimized save function with debouncing
+    function saveDataToStorage(forceImmediate = false) {
+      const performSave = () => {
+        try {
+          const startTime = performance.now();
           
-          // Attendance and meeting data
-          attendance: attendanceData,
-          
-          // System data
-          memberIdCounter,
-          
-          // Metadata
-          lastSaved: new Date().toISOString(),
-          version: '2.0',
-          systemInfo: {
-            totalMembers: members.length,
-            activeMembers: members.filter(m => m.status === 'Active').length,
-            suspendedMembers: members.filter(m => m.status === 'Suspended').length,
-            totalBeneficiaries: beneficiaries.length,
-            totalPayouts: payouts.length,
-            totalPenalties: penalties.length,
-            totalMeetings: Object.keys(attendanceData).length
+          // Get attendance data (cached to avoid repeated localStorage access)
+          const cacheKey = 'attendance_data';
+          let attendanceData = getFromCache(cacheKey);
+          if (!attendanceData) {
+            attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
+            setCache(cacheKey, attendanceData);
           }
-        };
-        
-        const encrypted = encryptData(data);
-        localStorage.setItem(STORAGE_KEY, encrypted);
-        
-        // Also save a backup with timestamp
-        const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
-        localStorage.setItem(backupKey, encrypted);
-        
-        console.log('✓ Data saved to secure storage at', data.lastSaved);
-        console.log('✓ System Info:', data.systemInfo);
-        return true;
-      } catch (e) {
-        console.error('Failed to save data:', e);
-        showAlert('adminAlert', '⚠ Failed to save data', 'error');
-        return false;
+          
+          // Create comprehensive data structure
+          const data = {
+            // Core member data
+            members,
+            beneficiaries,
+            payouts,
+            penalties,
+            
+            // Attendance and meeting data
+            attendance: attendanceData,
+            
+            // System data
+            memberIdCounter,
+            
+            // Metadata
+            lastSaved: new Date().toISOString(),
+            version: '2.1',
+            systemInfo: {
+              totalMembers: members.length,
+              activeMembers: members.filter(m => m.status === 'Active').length,
+              suspendedMembers: members.filter(m => m.status === 'Suspended').length,
+              totalBeneficiaries: beneficiaries.length,
+              totalPayouts: payouts.length,
+              totalPenalties: penalties.length,
+              totalMeetings: Object.keys(attendanceData).length,
+              lastSaveTime: performance.now() - startTime
+            }
+          };
+          
+          const encrypted = encryptData(data);
+          localStorage.setItem(STORAGE_KEY, encrypted);
+          
+          // Also save a backup with timestamp
+          const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
+          localStorage.setItem(backupKey, encrypted);
+          
+          console.log('✓ Data saved to secure storage at', data.lastSaved);
+          console.log('✓ System Info:', data.systemInfo);
+          return true;
+        } catch (e) {
+          console.error('Failed to save data:', e);
+          showAlert('adminAlert', '⚠ Failed to save data', 'error');
+          return false;
+        }
+      };
+      
+      // Use debounced save unless immediate save is requested
+      if (forceImmediate || Date.now() - lastSaveTime > 5000) {
+        performSave();
+      } else {
+        debouncedSave(performSave);
       }
     }
     
-    // Load data from localStorage with comprehensive structure
+    // Optimized load data from localStorage with caching
     function loadDataFromStorage() {
       try {
+        showLoading('Loading system data...');
+        const startTime = performance.now();
         const encrypted = localStorage.getItem(STORAGE_KEY);
         if (encrypted) {
           const data = decryptData(encrypted);
           if (data) {
-            // Merge stored data with default data to ensure all members are visible
-            const storedMembers = data.members || [];
-            const defaultMembers = [
-              { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
-              { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
-              { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0 },
-              { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0 },
-              { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0 },
-              { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 }
-            ];
+            // Cache default members to avoid recreation
+            const cacheKey = 'default_members';
+            let defaultMembers = getFromCache(cacheKey);
+            if (!defaultMembers) {
+              defaultMembers = [
+                { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
+                { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
+                { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0 },
+                { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0 },
+                { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0 },
+                { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 }
+              ];
+              setCache(cacheKey, defaultMembers);
+            }
             
-            // Merge members: keep stored members and add any missing default members
-            members = [...defaultMembers];
+            // Optimized member merging using Map for O(1) lookups
+            const storedMembers = data.members || [];
+            const memberMap = new Map(defaultMembers.map(m => [m.id, m]));
+            
+            // Update existing members and add new ones
             storedMembers.forEach(storedMember => {
-              const existingIndex = members.findIndex(m => m.id === storedMember.id);
-              if (existingIndex >= 0) {
-                members[existingIndex] = storedMember; // Update existing
-              } else {
-                members.push(storedMember); // Add new members
-              }
+              memberMap.set(storedMember.id, storedMember);
             });
+            
+            members = Array.from(memberMap.values());
             
             beneficiaries = data.beneficiaries || [];
             payouts = data.payouts || [];
             penalties = data.penalties || [];
             memberIdCounter = Math.max(data.memberIdCounter || 7, 7);
             
-            // Load attendance data if available
+            // Cache attendance data
             if (data.attendance) {
+              setCache('attendance_data', data.attendance);
               localStorage.setItem('attendance', JSON.stringify(data.attendance));
             }
             
-            console.log('✓ Data loaded from storage. Last saved:', data.lastSaved);
+            const loadTime = performance.now() - startTime;
+            console.log('✓ Data loaded from storage in', loadTime.toFixed(2), 'ms. Last saved:', data.lastSaved);
             console.log('✓ Total members loaded:', members.length);
             if (data.systemInfo) {
               console.log('✓ System Statistics:', data.systemInfo);
             }
+            
+            trackPerformance('loadTime', startTime);
+            hideLoading();
             return true;
           }
         }
         console.log('No saved data found, using default data with', members.length, 'members');
+        hideLoading();
         return false;
       } catch (e) {
         console.error('Failed to load data:', e);
+        hideLoading();
         return false;
       }
     }
@@ -900,8 +1063,8 @@
       
       // Successful login
       currentUser = m;
-      // Load beneficiaries for this member from the main beneficiaries array
-      tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === m.id)));
+      // Load beneficiaries for this member from the main beneficiaries array - using fast clone
+      tempBeneficiaries = beneficiaries.filter(b => b.memberId === m.id).map(b => fastClone(b));
       console.log('Member logged in:', m.id);
       console.log('Filtered beneficiaries:', tempBeneficiaries);
       show('memberPage');
@@ -952,7 +1115,7 @@
         status: 'Active', 
         missedPayments: 0 
       });
-      saveDataToStorage(); // Auto-save
+      saveDataToStorage(false); // Auto-save with debouncing
       
       // Clear form
       document.getElementById('regName').value = '';
@@ -1064,8 +1227,8 @@
       document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
       if (t === 'beneficiaries') {
-        // Refresh tempBeneficiaries from the main beneficiaries array
-        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
+        // Refresh tempBeneficiaries from the main beneficiaries array - using fast clone
+        tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
         console.log('Beneficiaries tab clicked, count:', tempBeneficiaries.length);
         console.log('Beneficiaries data:', tempBeneficiaries);
         // Wait for the tab to be visible before rendering
@@ -1100,33 +1263,65 @@
       const badge = document.getElementById('memStatus');
       badge.textContent = currentUser.status;
       badge.className = `badge badge-${currentUser.status === 'Active' ? 'active' : 'suspended'}`;
-      // Make sure tempBeneficiaries is loaded from the main beneficiaries array
+      // Make sure tempBeneficiaries is loaded from the main beneficiaries array - using fast clone
       if (!tempBeneficiaries || tempBeneficiaries.length === 0) {
-        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
+        tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
         console.log('updateMember: loaded', tempBeneficiaries.length, 'beneficiaries');
       }
     }
 
+    // Optimized table rendering with DOM fragment for better performance
     function displayMem() {
-      let html = '';
-      members.forEach(m => {
-        html += `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
-          <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
-          ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
-          <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
-        </td></tr>`;
-      });
-      document.getElementById('memTable').innerHTML = html;
+      const startTime = performance.now();
+      const cacheKey = `members_table_${members.length}_${Date.now()}`;
+      let cached = getFromCache(cacheKey);
+      
+      if (!cached) {
+        const fragment = document.createDocumentFragment();
+        
+        members.forEach(m => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
+            <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
+            ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
+            <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
+          </td>`;
+          fragment.appendChild(row);
+        });
+        
+        const tableElement = document.getElementById('memTable');
+        // Clear and append in one operation
+        tableElement.innerHTML = '';
+        tableElement.appendChild(fragment);
+        
+        setCache(cacheKey, true); // Cache the rendering state
+        trackPerformance('renderTime', startTime);
+      }
     }
 
     function displayPayouts() {
-      let html = '';
-      payouts.forEach(p => {
-        html += `<tr><td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
-          ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
-        </td></tr>`;
-      });
-      document.getElementById('payTable').innerHTML = html;
+      const startTime = performance.now();
+      const cacheKey = `payouts_table_${payouts.length}_${Date.now()}`;
+      let cached = getFromCache(cacheKey);
+      
+      if (!cached) {
+        const fragment = document.createDocumentFragment();
+        
+        payouts.forEach(p => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
+            ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
+          </td>`;
+          fragment.appendChild(row);
+        });
+        
+        const tableElement = document.getElementById('payTable');
+        tableElement.innerHTML = '';
+        tableElement.appendChild(fragment);
+        
+        setCache(cacheKey, true);
+        trackPerformance('renderTime', startTime);
+      }
     }
 
     function displayPenalties() {
