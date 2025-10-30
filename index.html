@@ -1859,56 +1859,53 @@
       ).join('');
       
       const html = `
-        <div class="modal-content">
-          <span class="close" onclick="closeModal('payoutModal')">&times;</span>
-          <h2>Create Payout for ${member.name}</h2>
-          <p style="color: #666; margin-bottom: 15px;">Select up to 2 beneficiaries to receive the payout</p>
-          
-          <div class="form-group">
-            <label>Payout Amount (R)</label>
-            <input type="number" id="payoutAmount" min="0" placeholder="e.g., 5000">
-          </div>
-          
-          <div class="form-group">
-            <label>Reason</label>
-            <select id="payoutReason">
-              <option>Funeral</option>
-              <option>Emergency</option>
-              <option>Medical</option>
-              <option>Other</option>
-            </select>
-          </div>
-          
-          <h3 style="margin-top: 20px; font-size: 16px;">Recipient 1</h3>
-          <div class="form-group">
-            <label>Select Beneficiary</label>
-            <select id="recipient1">
-              <option value="">-- Select Beneficiary --</option>
-              ${benOptions}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="text" id="recipient1Phone" placeholder="e.g., 0721234567">
-          </div>
-          
-          <h3 style="margin-top: 20px; font-size: 16px;">Recipient 2 (Optional)</h3>
-          <div class="form-group">
-            <label>Select Beneficiary</label>
-            <select id="recipient2">
-              <option value="">-- Select Beneficiary --</option>
-              ${benOptions}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="text" id="recipient2Phone" placeholder="e.g., 0731234567">
-          </div>
-          
-          <button class="btn btn-primary" onclick="submitBeneficiaryPayout('${memberId}', '${member.name}')">Create Payout</button>
+        <h2>Create Payout for ${member.name}</h2>
+        <p style="color: #666; margin-bottom: 15px;">Select up to 2 beneficiaries to receive the payout</p>
+        
+        <div class="form-group">
+          <label>Payout Amount (R)</label>
+          <input type="number" id="payoutAmount" min="0" placeholder="e.g., 5000">
         </div>
+        
+        <div class="form-group">
+          <label>Reason</label>
+          <select id="payoutReason">
+            <option>Funeral</option>
+            <option>Emergency</option>
+            <option>Medical</option>
+            <option>Other</option>
+          </select>
+        </div>
+        
+        <h3 style="margin-top: 20px; font-size: 16px;">Recipient 1</h3>
+        <div class="form-group">
+          <label>Select Beneficiary</label>
+          <select id="recipient1">
+            <option value="">-- Select Beneficiary --</option>
+            ${benOptions}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="recipient1Phone" placeholder="e.g., 0721234567">
+        </div>
+        
+        <h3 style="margin-top: 20px; font-size: 16px;">Recipient 2 (Optional)</h3>
+        <div class="form-group">
+          <label>Select Beneficiary</label>
+          <select id="recipient2">
+            <option value="">-- Select Beneficiary --</option>
+            ${benOptions}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="recipient2Phone" placeholder="e.g., 0731234567">
+        </div>
+        
+        <button class="btn btn-primary" onclick="submitBeneficiaryPayout('${memberId}', '${member.name}')">Create Payout</button>
       `;
-      showModal('payoutModal', html);
+      openModal(html);
     }
 
     async function submitBeneficiaryPayout(memberId, memberName) {
@@ -1963,7 +1960,7 @@
       
       payouts.push(newPayout);
       await saveDataToStorage(true);
-      closeModal('payoutModal');
+      closeModal();
       showAlert('adminAlert', '✓ Payout created successfully!', 'success');
       displayPayouts();
     }
@@ -2748,23 +2745,20 @@
       if (!member) return;
       
       const html = `
-        <div class="modal-content">
-          <span class="close" onclick="closeModal('roleModal')">&times;</span>
-          <h2>Assign Role for ${member.name}</h2>
-          <div class="form-group">
-            <label>Select Role</label>
-            <select id="memberRole">
-              <option value="Member" ${(member.role || 'Member') === 'Member' ? 'selected' : ''}>Member</option>
-              <option value="Admin" ${member.role === 'Admin' ? 'selected' : ''}>Admin</option>
-              <option value="Chairperson" ${member.role === 'Chairperson' ? 'selected' : ''}>Chairperson</option>
-              <option value="Secretary General" ${member.role === 'Secretary General' ? 'selected' : ''}>Secretary General</option>
-              <option value="Treasurer" ${member.role === 'Treasurer' ? 'selected' : ''}>Treasurer</option>
-            </select>
-          </div>
-          <button class="btn btn-primary" onclick="saveRole('${memberId}')">Save Role</button>
+        <h2>Assign Role for ${member.name}</h2>
+        <div class="form-group">
+          <label>Select Role</label>
+          <select id="memberRole">
+            <option value="Member" ${(member.role || 'Member') === 'Member' ? 'selected' : ''}>Member</option>
+            <option value="Admin" ${member.role === 'Admin' ? 'selected' : ''}>Admin</option>
+            <option value="Chairperson" ${member.role === 'Chairperson' ? 'selected' : ''}>Chairperson</option>
+            <option value="Secretary General" ${member.role === 'Secretary General' ? 'selected' : ''}>Secretary General</option>
+            <option value="Treasurer" ${member.role === 'Treasurer' ? 'selected' : ''}>Treasurer</option>
+          </select>
         </div>
+        <button class="btn btn-primary" onclick="saveRole('${memberId}')">Save Role</button>
       `;
-      showModal('roleModal', html);
+      openModal(html);
     }
 
     async function saveRole(memberId) {
@@ -2774,7 +2768,7 @@
       
       member.role = role;
       await saveDataToStorage(true);
-      closeModal('roleModal');
+      closeModal();
       showAlert('adminAlert', `✓ Role updated to ${role}`, 'success');
       displayMem();
     }
