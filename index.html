@@ -2848,16 +2848,13 @@
     // ===== PAYMENT PROOF FUNCTIONS =====
     function uploadPaymentProofModal() {
       const html = `
-        <div class="modal-content">
-          <span class="close" onclick="closeModal('proofModal')">&times;</span>
-          <h2>Upload Payment Proof</h2>
-          <div class="form-group"><label>Amount (R)</label><input type="number" id="proofAmount" min="0" placeholder="e.g., 150"></div>
-          <div class="form-group"><label>Description</label><input type="text" id="proofDescription" placeholder="e.g., Monthly contribution - October"></div>
-          <div class="form-group"><label>Upload File</label><input type="file" id="proofFile" accept=".pdf,.jpg,.jpeg,.png"></div>
-          <button class="btn btn-primary" onclick="savePaymentProof()">Upload Proof</button>
-        </div>
+        <h2>Upload Payment Proof</h2>
+        <div class="form-group"><label>Amount (R)</label><input type="number" id="proofAmount" min="0" placeholder="e.g., 150"></div>
+        <div class="form-group"><label>Description</label><input type="text" id="proofDescription" placeholder="e.g., Monthly contribution - October"></div>
+        <div class="form-group"><label>Upload File</label><input type="file" id="proofFile" accept=".pdf,.jpg,.jpeg,.png"></div>
+        <button class="btn btn-primary" onclick="savePaymentProof()">Upload Proof</button>
       `;
-      showModal('proofModal', html);
+      openModal(html);
     }
 
     async function savePaymentProof() {
@@ -2888,7 +2885,7 @@
       
       paymentProofs.push(newProof);
       await saveDataToStorage(true);
-      closeModal('proofModal');
+      closeModal();
       showAlert('memberAlert', '✓ Payment proof uploaded successfully!', 'success');
       displayMemberPaymentProofs();
     }
@@ -2897,21 +2894,33 @@
       const table = document.getElementById('memberPaymentProofsTable');
       if (!table) return;
       
-      const memberProofs = paymentProofs.filter(p => p.memberId === currentUser.id);
+      const memberProofs = paymentProofs
+        .filter(p => p.memberId === currentUser.id)
+        .sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)); // Sort by date, newest first
       
       if (memberProofs.length === 0) {
         table.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #666;">No payment proofs uploaded yet.</td></tr>';
         return;
       }
       
-      table.innerHTML = memberProofs.map(proof => `
+      table.innerHTML = memberProofs.map(proof => {
+        const uploadDate = new Date(proof.uploadDate);
+        const formattedDate = uploadDate.toLocaleDateString('en-ZA', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        return `
         <tr>
-          <td>${new Date(proof.uploadDate).toLocaleDateString()}</td>
-          <td>R${proof.amount}</td>
+          <td>${formattedDate}</td>
+          <td>R${proof.amount.toFixed(2)}</td>
           <td>${proof.description}</td>
           <td><span class="badge badge-${proof.status === 'Approved' ? 'approved' : 'pending'}">${proof.status}</span></td>
         </tr>
-      `).join('');
+      `}).join('');
     }
 
     // Update updateMember function to show payment proofs
