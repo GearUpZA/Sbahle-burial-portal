@@ -456,6 +456,17 @@
             <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
           </tbody>
         </table>
+        
+        <!-- Payout Collectors Section -->
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e2e8f0;">
+          <h2 style="margin-bottom: 10px;">Payout Collectors</h2>
+          <p style="color: #666; margin-bottom: 15px;">Assign up to 2 people who can collect payouts on your behalf.</p>
+          <button class="btn btn-primary" onclick="managePayoutCollectorsModal()">👥 Manage Payout Collectors</button>
+          
+          <div id="payoutCollectorsDisplay" style="margin-top: 20px;">
+            <!-- Collectors will be displayed here -->
+          </div>
+        </div>
       </div>
 
       <div id="memberMinutesTab" class="hidden">
@@ -746,6 +757,7 @@
             attendance: attendanceData,
             meetingMinutes,
             paymentProofs,
+            payoutCollectors,
             
             // System data
             memberIdCounter,
@@ -877,6 +889,7 @@
             penalties = data.penalties || [];
             meetingMinutes = data.meetingMinutes || [];
             paymentProofs = data.paymentProofs || [];
+            payoutCollectors = data.payoutCollectors || [];
             memberIdCounter = data.memberIdCounter || 7;
             minutesIdCounter = data.minutesIdCounter || 1;
             proofIdCounter = data.proofIdCounter || 1;
@@ -944,6 +957,7 @@
               penalties = cloudData.penalties || [];
               meetingMinutes = cloudData.meetingMinutes || [];
               paymentProofs = cloudData.paymentProofs || [];
+              payoutCollectors = cloudData.payoutCollectors || [];
               memberIdCounter = cloudData.memberIdCounter || 1;
               minutesIdCounter = cloudData.minutesIdCounter || 1;
               proofIdCounter = cloudData.proofIdCounter || 1;
@@ -955,6 +969,8 @@
                 payouts,
                 penalties,
                 meetingMinutes,
+                paymentProofs,
+                payoutCollectors,
                 paymentProofs,
                 memberIdCounter,
                 minutesIdCounter,
@@ -1126,6 +1142,7 @@
     ];
     let meetingMinutes = []; // Store meeting minutes
     let paymentProofs = []; // Store payment proof uploads
+    let payoutCollectors = []; // Store payout collectors: { memberId, collectors: [{name, phone}, {name, phone}] }
     let currentUser = null;
     let tempBeneficiaries = [];
     let isDrawing = false;
@@ -3038,7 +3055,159 @@
       if (profRole && currentUser) {
         profRole.value = currentUser.role || 'Member';
       }
+      
+      // Update payout collectors display
+      displayPayoutCollectors();
     };
+
+    // ===== PAYOUT COLLECTORS FUNCTIONS =====
+    function managePayoutCollectorsModal() {
+      if (!currentUser) {
+        alert('⚠ Please log in first');
+        return;
+      }
+      
+      // Get current collectors for this member
+      const memberCollectors = payoutCollectors.find(pc => pc.memberId === currentUser.id);
+      const collector1 = memberCollectors?.collectors?.[0] || { name: '', phone: '' };
+      const collector2 = memberCollectors?.collectors?.[1] || { name: '', phone: '' };
+      
+      const html = `
+        <h2>Manage Payout Collectors</h2>
+        <p style="color: #666; margin-bottom: 20px;">Assign up to 2 people who can collect payouts on your behalf. These details will be used when processing payouts.</p>
+        
+        <h3 style="margin-top: 20px; font-size: 16px; border-top: 1px solid #ddd; padding-top: 15px;">Collector 1</h3>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="collector1Name" value="${collector1.name}" placeholder="e.g., John Doe">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="collector1Phone" value="${collector1.phone}" placeholder="e.g., 0721234567">
+        </div>
+        
+        <h3 style="margin-top: 20px; font-size: 16px; border-top: 1px solid #ddd; padding-top: 15px;">Collector 2 (Optional)</h3>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="collector2Name" value="${collector2.name}" placeholder="e.g., Jane Smith">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="collector2Phone" value="${collector2.phone}" placeholder="e.g., 0731234567">
+        </div>
+        
+        <div style="margin-top: 20px;">
+          <button class="btn btn-primary" onclick="savePayoutCollectors()">Save Collectors</button>
+          ${memberCollectors ? '<button class="btn btn-danger" onclick="clearPayoutCollectors()" style="margin-left: 10px;">Clear All</button>' : ''}
+        </div>
+      `;
+      openModal(html);
+    }
+
+    async function savePayoutCollectors() {
+      const collector1Name = document.getElementById('collector1Name').value.trim();
+      const collector1Phone = document.getElementById('collector1Phone').value.trim();
+      const collector2Name = document.getElementById('collector2Name').value.trim();
+      const collector2Phone = document.getElementById('collector2Phone').value.trim();
+      
+      // Validate at least collector 1 has both name and phone OR both are empty (to clear)
+      if ((collector1Name && !collector1Phone) || (!collector1Name && collector1Phone)) {
+        alert('⚠ Collector 1: Please provide both name and phone number, or leave both empty');
+        return;
+      }
+      
+      // Validate collector 2 if any field is filled
+      if ((collector2Name && !collector2Phone) || (!collector2Name && collector2Phone)) {
+        alert('⚠ Collector 2: Please provide both name and phone number, or leave both empty');
+        return;
+      }
+      
+      // Build collectors array
+      const collectors = [];
+      if (collector1Name && collector1Phone) {
+        collectors.push({ name: collector1Name, phone: collector1Phone });
+      }
+      if (collector2Name && collector2Phone) {
+        collectors.push({ name: collector2Name, phone: collector2Phone });
+      }
+      
+      try {
+        // Find existing record for this member
+        const existingIndex = payoutCollectors.findIndex(pc => pc.memberId === currentUser.id);
+        
+        if (collectors.length === 0) {
+          // Remove collectors if none specified
+          if (existingIndex !== -1) {
+            payoutCollectors.splice(existingIndex, 1);
+          }
+        } else {
+          // Update or add collectors
+          if (existingIndex !== -1) {
+            payoutCollectors[existingIndex].collectors = collectors;
+          } else {
+            payoutCollectors.push({
+              memberId: currentUser.id,
+              memberName: currentUser.name,
+              collectors: collectors
+            });
+          }
+        }
+        
+        await saveDataToStorage(true);
+        closeModal();
+        showAlert('memberAlert', '✓ Payout collectors saved successfully!', 'success');
+        displayPayoutCollectors();
+        console.log('Payout collectors saved for member:', currentUser.id);
+      } catch (error) {
+        console.error('Error saving payout collectors:', error);
+        alert('⚠ Error saving payout collectors. Please try again.');
+      }
+    }
+
+    async function clearPayoutCollectors() {
+      if (!confirm('⚠️ Are you sure you want to remove all payout collectors?')) {
+        return;
+      }
+      
+      const existingIndex = payoutCollectors.findIndex(pc => pc.memberId === currentUser.id);
+      if (existingIndex !== -1) {
+        payoutCollectors.splice(existingIndex, 1);
+        await saveDataToStorage(true);
+        closeModal();
+        showAlert('memberAlert', '✓ Payout collectors cleared', 'success');
+        displayPayoutCollectors();
+      }
+    }
+
+    function displayPayoutCollectors() {
+      const display = document.getElementById('payoutCollectorsDisplay');
+      if (!display || !currentUser) return;
+      
+      const memberCollectors = payoutCollectors.find(pc => pc.memberId === currentUser.id);
+      
+      if (!memberCollectors || memberCollectors.collectors.length === 0) {
+        display.innerHTML = `
+          <div style="background: #f7fafc; padding: 20px; border-radius: 8px; border: 1px dashed #cbd5e0; text-align: center;">
+            <p style="color: #718096; margin: 0;">No payout collectors assigned yet.</p>
+            <p style="color: #a0aec0; font-size: 13px; margin-top: 5px;">Click "Manage Payout Collectors" to add collectors.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const collectorsHtml = memberCollectors.collectors.map((collector, index) => `
+        <div style="background: #f0fff4; padding: 15px; border-radius: 8px; border-left: 4px solid #48bb78; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; margin-bottom: 5px;">
+            <span style="font-size: 20px; margin-right: 10px;">👤</span>
+            <strong style="color: #2d3748;">Collector ${index + 1}</strong>
+          </div>
+          <p style="margin: 5px 0; color: #4a5568;"><strong>Name:</strong> ${collector.name}</p>
+          <p style="margin: 5px 0; color: #4a5568;"><strong>Phone:</strong> ${collector.phone}</p>
+        </div>
+      `).join('');
+      
+      display.innerHTML = collectorsHtml;
+    }
 
   </script>
 </body>
