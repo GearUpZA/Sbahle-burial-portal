@@ -2115,8 +2115,44 @@
     function reqPayoutModal() {
       openModal(`
         <h2>Request Payout</h2>
-        <div class="form-group"><label>Amount (R)</label><input type="number" id="payoutAmt" min="100"></div>
-        <div class="form-group"><label>Reason</label><input type="text" id="payoutReason"></div>
+        <p style="color: #666; margin-bottom: 15px;">Specify who can claim this payout (up to 2 people)</p>
+        
+        <div class="form-group">
+          <label>Amount (R)</label>
+          <input type="number" id="payoutAmt" min="100" placeholder="e.g., 5000">
+        </div>
+        
+        <div class="form-group">
+          <label>Reason</label>
+          <select id="payoutReason">
+            <option value="">-- Select Reason --</option>
+            <option>Funeral</option>
+            <option>Emergency</option>
+            <option>Medical</option>
+            <option>Other</option>
+          </select>
+        </div>
+        
+        <h3 style="margin-top: 20px; font-size: 16px; border-top: 1px solid #ddd; padding-top: 15px;">Recipient 1 (Required)</h3>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="recipient1Name" placeholder="e.g., John Doe">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="recipient1Phone" placeholder="e.g., 0721234567">
+        </div>
+        
+        <h3 style="margin-top: 20px; font-size: 16px; border-top: 1px solid #ddd; padding-top: 15px;">Recipient 2 (Optional)</h3>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="recipient2Name" placeholder="e.g., Jane Smith">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="recipient2Phone" placeholder="e.g., 0731234567">
+        </div>
+        
         <button class="btn btn-success" onclick="submitPayout()">Submit Request</button>
       `);
     }
@@ -2124,17 +2160,52 @@
     function submitPayout() {
       const amt = document.getElementById('payoutAmt').value;
       const reason = document.getElementById('payoutReason').value;
-      if (!amt || !reason) { alert('Fill all'); return; }
+      const recipient1Name = document.getElementById('recipient1Name').value.trim();
+      const recipient1Phone = document.getElementById('recipient1Phone').value.trim();
+      const recipient2Name = document.getElementById('recipient2Name').value.trim();
+      const recipient2Phone = document.getElementById('recipient2Phone').value.trim();
+      
+      if (!amt || !reason) { 
+        alert('⚠ Please fill in amount and reason'); 
+        return; 
+      }
+      
+      if (!recipient1Name || !recipient1Phone) { 
+        alert('⚠ Please provide Recipient 1 name and phone number'); 
+        return; 
+      }
+      
+      if (recipient2Name && !recipient2Phone) {
+        alert('⚠ Please provide phone number for Recipient 2');
+        return;
+      }
+      
+      if (recipient2Phone && !recipient2Name) {
+        alert('⚠ Please provide name for Recipient 2');
+        return;
+      }
+      
+      // Build recipients array
+      let recipients = [
+        { name: recipient1Name, phone: recipient1Phone }
+      ];
+      
+      if (recipient2Name && recipient2Phone) {
+        recipients.push({ name: recipient2Name, phone: recipient2Phone });
+      }
+      
       payouts.push({
         id: 'PO' + Date.now(),
         memberId: currentUser.id,
         memberName: currentUser.name,
         amount: parseInt(amt),
         reason: reason,
+        recipients: recipients,
         status: 'Pending',
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString()
       });
-      saveDataToStorage(); // Auto-save
+      saveDataToStorage(true); // Auto-save with cloud sync
       closeModal();
       displayMemPayouts();
       showAlert('memberAlert', '✓ Payout requested! Awaiting admin approval', 'success');
