@@ -510,11 +510,10 @@
   <script>
     // ===== CLOUD STORAGE CONFIGURATION =====
     // Using JSONBin.io free service for cross-browser data sync
-    // ⚠️ TEMPORARILY DISABLED - API key verification needed
     const CLOUD_STORAGE = {
-      enabled: false, // Set to true after verifying bin ownership
-      binId: '6903280ed0ea881f40c6c636', // Your JSONBin storage
-      apiKey: '$2a$10$YKmKl2l3Vu6VCflBbGjnCOVI.prbVneI5C4tpdhCMhajM8N3vNnMS', // Your API key
+      enabled: true, // ✅ ENABLED - Cloud sync active!
+      binId: '69032dadd0ea881f40c6cfd5', // Your JSONBin storage
+      apiKey: '$2a$10$LUKvn7ZMDSlDEbqAM45V7ub0iXv2sLBAIH9bqLD7IvyGNJvwFWAne', // Your API key
       endpoint: 'https://api.jsonbin.io/v3/b',
       syncInterval: 5000 // Check for updates every 5 seconds
     };
@@ -528,7 +527,7 @@
       try {
         const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
           headers: {
-            'X-Master-Key': CLOUD_STORAGE.apiKey
+            'X-Access-Key': CLOUD_STORAGE.apiKey
           }
         });
         cloudStorageAvailable = response.ok;
@@ -735,7 +734,7 @@
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
-                  'X-Master-Key': CLOUD_STORAGE.apiKey
+                  'X-Access-Key': CLOUD_STORAGE.apiKey
                 },
                 body: JSON.stringify(data)
               });
@@ -804,7 +803,7 @@
           try {
             const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
               headers: {
-                'X-Master-Key': CLOUD_STORAGE.apiKey
+                'X-Access-Key': CLOUD_STORAGE.apiKey
               }
             });
             
@@ -871,7 +870,7 @@
       try {
         const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
           headers: {
-            'X-Master-Key': CLOUD_STORAGE.apiKey
+            'X-Access-Key': CLOUD_STORAGE.apiKey
           }
         });
         
