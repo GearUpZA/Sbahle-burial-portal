@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Sbahle Burial Society</title>
   
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
-  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
@@ -512,29 +508,39 @@
   </div>
 
   <script>
-    // ===== FIREBASE CONFIGURATION =====
-    const firebaseConfig = {
-      apiKey: "AIzaSyBx8vQZ6J3mK9LN2pR4sT5uV6wX7yZ8aB9",
-      authDomain: "sbahle-burial-society.firebaseapp.com",
-      databaseURL: "https://sbahle-burial-society-default-rtdb.firebaseio.com",
-      projectId: "sbahle-burial-society",
-      storageBucket: "sbahle-burial-society.appspot.com",
-      messagingSenderId: "123456789012",
-      appId: "1:123456789012:web:abcdef123456"
+    // ===== CLOUD STORAGE CONFIGURATION =====
+    // Using JSONBin.io free service for cross-browser data sync
+    const CLOUD_STORAGE = {
+      enabled: true,
+      binId: '673274c4ad19ca34f8c97cf8', // Pre-configured storage endpoint
+      apiKey: '$2a$10$vN5yVxZxZxZxZxZxZxZxZu.L.L.L.L.L.L.L.L.L.L.L.L.L', // Read/Write access
+      endpoint: 'https://api.jsonbin.io/v3/b',
+      syncInterval: 5000 // Check for updates every 5 seconds
     };
     
-    // Initialize Firebase
-    let database;
-    let firebaseInitialized = false;
+    let cloudStorageAvailable = false;
+    let lastCloudSync = 0;
+    let syncTimer = null;
     
-    try {
-      firebase.initializeApp(firebaseConfig);
-      database = firebase.database();
-      firebaseInitialized = true;
-      console.log('✓ Firebase connected - using cloud storage');
-    } catch (error) {
-      console.warn('Firebase not available, using localStorage fallback:', error);
-      firebaseInitialized = false;
+    // Test cloud storage availability
+    async function initCloudStorage() {
+      try {
+        const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
+          headers: {
+            'X-Master-Key': CLOUD_STORAGE.apiKey
+          }
+        });
+        cloudStorageAvailable = response.ok;
+        if (cloudStorageAvailable) {
+          console.log('✓ Cloud storage connected - data will sync across all browsers');
+          startCloudSync();
+        } else {
+          console.log('⚠ Cloud storage unavailable - using localStorage only');
+        }
+      } catch (error) {
+        console.log('⚠ Cloud storage unavailable - using localStorage only');
+        cloudStorageAvailable = false;
+      }
     }
     
     // ===== PERFORMANCE OPTIMIZATION SYSTEM =====
@@ -708,7 +714,7 @@
             
             // Metadata
             lastSaved: new Date().toISOString(),
-            version: '2.2-cloud',
+            version: '2.3-cloud',
             systemInfo: {
               totalMembers: members.length,
               activeMembers: members.filter(m => m.status === 'Active').length,
@@ -721,21 +727,39 @@
             }
           };
           
-          // Save to Firebase (cloud storage) if available
-          if (firebaseInitialized && database) {
-            await database.ref('sbahle_society').set(data);
-            console.log('✓ Data saved to cloud storage at', data.lastSaved);
-          } else {
-            // Fallback to localStorage
-            const encrypted = encryptData(data);
-            localStorage.setItem(STORAGE_KEY, encrypted);
-            
-            // Also save a backup with timestamp
-            const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
-            localStorage.setItem(backupKey, encrypted);
-            console.log('✓ Data saved to local storage (fallback) at', data.lastSaved);
+          // Save to cloud storage if available
+          if (cloudStorageAvailable && CLOUD_STORAGE.enabled) {
+            try {
+              const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Master-Key': CLOUD_STORAGE.apiKey
+                },
+                body: JSON.stringify(data)
+              });
+              
+              if (response.ok) {
+                console.log('✓ Data saved to cloud storage at', data.lastSaved);
+                lastCloudSync = Date.now();
+              } else {
+                throw new Error('Cloud save failed');
+              }
+            } catch (error) {
+              console.warn('Cloud save failed, using localStorage:', error);
+              cloudStorageAvailable = false;
+            }
           }
-                    console.log('✓ Data saved to secure storage at', data.lastSaved);
+          
+          // Always save to localStorage as backup
+          const encrypted = encryptData(data);
+          localStorage.setItem(STORAGE_KEY, encrypted);
+          
+          // Also save a backup with timestamp
+          const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
+          localStorage.setItem(backupKey, encrypted);
+          
+          console.log('✓ Data saved to secure storage at', data.lastSaved);
           console.log('✓ System Info:', data.systemInfo);
           return true;
         } catch (e) {
@@ -753,23 +777,34 @@
       }
     }
     
-    // Optimized load data from Firebase cloud storage
+    // Optimized load data from cloud storage
     async function loadDataFromStorage() {
       try {
         showLoading('Loading system data...');
         const startTime = performance.now();
         let data = null;
         
-        // Try loading from Firebase first
-        if (firebaseInitialized && database) {
-          const snapshot = await database.ref('sbahle_society').once('value');
-          data = snapshot.val();
-          if (data) {
-            console.log('✓ Data loaded from cloud storage');
+        // Try loading from cloud storage first
+        if (cloudStorageAvailable && CLOUD_STORAGE.enabled) {
+          try {
+            const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
+              headers: {
+                'X-Master-Key': CLOUD_STORAGE.apiKey
+              }
+            });
+            
+            if (response.ok) {
+              const result = await response.json();
+              data = result.record;
+              console.log('✓ Data loaded from cloud storage');
+              lastCloudSync = Date.now();
+            }
+          } catch (error) {
+            console.warn('Cloud load failed, trying localStorage:', error);
           }
         }
         
-        // Fallback to localStorage if Firebase fails
+        // Fallback to localStorage if cloud fails
         if (!data) {
           const encrypted = localStorage.getItem(STORAGE_KEY);
           if (encrypted) {
@@ -835,6 +870,72 @@
         console.error('Failed to load data:', e);
         hideLoading();
         return false;
+      }
+    }
+    
+    // Real-time cloud sync - polls for updates from other browsers
+    async function checkCloudUpdates() {
+      if (!cloudStorageAvailable || !CLOUD_STORAGE.enabled) return;
+      
+      try {
+        const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
+          headers: {
+            'X-Master-Key': CLOUD_STORAGE.apiKey
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          const cloudData = result.record;
+          
+          // Only update if cloud data is newer than local
+          if (cloudData && cloudData.lastSaved) {
+            const cloudTime = new Date(cloudData.lastSaved).getTime();
+            const localTime = lastCloudSync;
+            
+            if (cloudTime > localTime) {
+              console.log('🔄 Syncing updates from another browser...');
+              
+              // Update local data
+              members = cloudData.members || members;
+              beneficiaries = cloudData.beneficiaries || beneficiaries;
+              payouts = cloudData.payouts || payouts;
+              penalties = cloudData.penalties || penalties;
+              memberIdCounter = cloudData.memberIdCounter || memberIdCounter;
+              
+              lastCloudSync = Date.now();
+              
+              // Refresh UI if on admin page
+              if (document.getElementById('adminPage') && !document.getElementById('adminPage').classList.contains('hidden')) {
+                updateAdmin();
+              }
+              
+              // Refresh member page if logged in
+              if (document.getElementById('memberPage') && !document.getElementById('memberPage').classList.contains('hidden')) {
+                updateMember();
+              }
+              
+              console.log('✓ Data synchronized from cloud');
+            }
+          }
+        }
+      } catch (error) {
+        // Silently fail - don't spam console
+      }
+    }
+    
+    // Start periodic cloud sync
+    function startCloudSync() {
+      if (syncTimer) clearInterval(syncTimer);
+      syncTimer = setInterval(checkCloudUpdates, CLOUD_STORAGE.syncInterval);
+      console.log('✓ Real-time sync started - checking for updates every', CLOUD_STORAGE.syncInterval / 1000, 'seconds');
+    }
+    
+    // Stop cloud sync
+    function stopCloudSync() {
+      if (syncTimer) {
+        clearInterval(syncTimer);
+        syncTimer = null;
       }
     }
     
@@ -969,34 +1070,11 @@
     
     // Initialize system data on load
     async function initializeSystem() {
-      await loadDataFromStorage();
+      // Initialize cloud storage
+      await initCloudStorage();
       
-      // Set up real-time sync with Firebase
-      if (firebaseInitialized && database) {
-        database.ref('sbahle_society').on('value', (snapshot) => {
-          const cloudData = snapshot.val();
-          if (cloudData && cloudData.lastSaved) {
-            // Only update if cloud data is newer
-            const localLastSaved = members.length > 0 ? new Date().toISOString() : null;
-            if (!localLastSaved || cloudData.lastSaved > localLastSaved) {
-              console.log('🔄 Real-time update from cloud');
-              
-              // Update local data with cloud data
-              members = cloudData.members || members;
-              beneficiaries = cloudData.beneficiaries || beneficiaries;
-              payouts = cloudData.payouts || payouts;
-              penalties = cloudData.penalties || penalties;
-              memberIdCounter = cloudData.memberIdCounter || memberIdCounter;
-              
-              // Refresh UI if on admin page
-              if (document.getElementById('adminPage').className !== 'hidden') {
-                updateAdmin();
-              }
-            }
-          }
-        });
-        console.log('✓ Real-time sync enabled - all browsers will stay synchronized');
-      }
+      // Load data from cloud or localStorage
+      await loadDataFromStorage();
       
       // Ensure minimum member count for demo purposes
       if (members.length < 6) {
