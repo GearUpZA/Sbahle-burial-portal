@@ -113,6 +113,7 @@
         <button class="tab" onclick="adminTab('attendance', event)">Attendance</button>
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
+        <button class="tab" onclick="adminTab('minutes', event)">Meeting Minutes</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
       </div>
       <div id="adminAlert"></div>
@@ -129,7 +130,7 @@
         <h2>Members</h2>
         <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
         <table>
-          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Registered</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Registered</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
           <tbody id="memTable"></tbody>
         </table>
       </div>
@@ -259,6 +260,15 @@
         </div>
       </div>
 
+      <div id="minutesTab" class="hidden">
+        <h2>Meeting Minutes</h2>
+        <button class="btn btn-success" onclick="addMinutesModal()">+ Add Meeting Minutes</button>
+        <table>
+          <thead><tr><th>Date</th><th>Subject</th><th>Posted By</th><th>Actions</th></tr></thead>
+          <tbody id="minutesTable"></tbody>
+        </table>
+      </div>
+
       <div id="dataTab" class="hidden">
         <h2>Data Management</h2>
         <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
@@ -345,6 +355,8 @@
         <button class="tab" onclick="memberTab('signature', event)">Signature</button>
         <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
         <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
+        <button class="tab" onclick="memberTab('minutes', event)">Meeting Minutes</button>
+        <button class="tab" onclick="memberTab('payments', event)">Payment Proofs</button>
         <button class="tab" onclick="memberTab('documents', event)">Documents</button>
       </div>
       <div id="memberAlert"></div>
@@ -362,6 +374,10 @@
         <div class="form-group">
           <label>Phone</label>
           <input type="text" id="profPhone" disabled>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <input type="text" id="profRole" disabled>
         </div>
         <button class="btn btn-warning" onclick="editProf()">Edit Profile</button>
         <button class="btn btn-success hidden" id="saveProf" onclick="saveProf()">Save</button>
@@ -438,6 +454,24 @@
             <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div id="memberMinutesTab" class="hidden">
+        <h2>Meeting Minutes</h2>
+        <div id="memberMinutesContent" style="max-height: 600px; overflow-y: auto;">
+          <!-- Minutes will be loaded here -->
+        </div>
+      </div>
+
+      <div id="memberPaymentsTab" class="hidden">
+        <h2>My Payment Proofs</h2>
+        <button class="btn btn-success" onclick="uploadPaymentProofModal()">+ Upload Payment Proof</button>
+        <div style="margin-top: 15px;">
+          <table>
+            <thead><tr><th>Upload Date</th><th>Amount</th><th>Description</th><th>Status</th></tr></thead>
+            <tbody id="memberPaymentProofsTable"></tbody>
+          </table>
+        </div>
       </div>
 
       <div id="documentsTab" class="hidden">
@@ -708,13 +742,17 @@
             
             // Attendance and meeting data
             attendance: attendanceData,
+            meetingMinutes,
+            paymentProofs,
             
             // System data
             memberIdCounter,
+            minutesIdCounter,
+            proofIdCounter,
             
             // Metadata
             lastSaved: new Date().toISOString(),
-            version: '2.3-cloud',
+            version: '2.4-extended',
             systemInfo: {
               totalMembers: members.length,
               activeMembers: members.filter(m => m.status === 'Active').length,
@@ -723,6 +761,8 @@
               totalPayouts: payouts.length,
               totalPenalties: penalties.length,
               totalMeetings: Object.keys(attendanceData).length,
+              totalMinutes: meetingMinutes.length,
+              totalProofs: paymentProofs.length,
               lastSaveTime: performance.now() - startTime
             }
           };
@@ -833,7 +873,11 @@
             beneficiaries = data.beneficiaries || [];
             payouts = data.payouts || [];
             penalties = data.penalties || [];
+            meetingMinutes = data.meetingMinutes || [];
+            paymentProofs = data.paymentProofs || [];
             memberIdCounter = data.memberIdCounter || 7;
+            minutesIdCounter = data.minutesIdCounter || 1;
+            proofIdCounter = data.proofIdCounter || 1;
             
             // Cache attendance data
             if (data.attendance) {
@@ -896,13 +940,23 @@
               beneficiaries = cloudData.beneficiaries || [];
               payouts = cloudData.payouts || [];
               penalties = cloudData.penalties || [];
+              meetingMinutes = cloudData.meetingMinutes || [];
+              paymentProofs = cloudData.paymentProofs || [];
               memberIdCounter = cloudData.memberIdCounter || 1;
+              minutesIdCounter = cloudData.minutesIdCounter || 1;
+              proofIdCounter = cloudData.proofIdCounter || 1;
               
               // Update both localStorage backup and sync time
               localStorage.setItem(STORAGE_KEY, encryptData({
                 members,
                 beneficiaries,
                 payouts,
+                penalties,
+                meetingMinutes,
+                paymentProofs,
+                memberIdCounter,
+                minutesIdCounter,
+                proofIdCounter,
                 penalties,
                 memberIdCounter,
                 lastSaved: cloudData.lastSaved
@@ -1068,10 +1122,14 @@
     let penalties = [
       { id: 'PEN1', memberId: 'MEM002', memberName: 'Nomsa Dlamini', amount: 30, date: '2025-03-10', status: 'Pending' }
     ];
+    let meetingMinutes = []; // Store meeting minutes
+    let paymentProofs = []; // Store payment proof uploads
     let currentUser = null;
     let tempBeneficiaries = [];
     let isDrawing = false;
     let memberIdCounter = 7; // Start from 7 since we have MEM001-MEM006
+    let minutesIdCounter = 1;
+    let proofIdCounter = 1;
     
     // Initialize system data on load
     async function initializeSystem() {
@@ -1304,6 +1362,7 @@
       document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
       document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
+      document.getElementById('minutesTab').classList.toggle('hidden', t !== 'minutes');
       document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
       document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
@@ -1311,6 +1370,7 @@
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
       if (t === 'payouts') displayPayouts();
       if (t === 'penalties') displayPenalties();
+      if (t === 'minutes') displayMeetingMinutes();
       if (t === 'attendance') { 
         // Set today's date if not already set
         const dateInput = document.getElementById('meetingDate');
@@ -1378,11 +1438,15 @@
       document.getElementById('profileTab').classList.toggle('hidden', t !== 'profile');
       document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
       document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
+      document.getElementById('memberMinutesTab').classList.toggle('hidden', t !== 'minutes');
+      document.getElementById('memberPaymentsTab').classList.toggle('hidden', t !== 'payments');
       document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
       document.getElementById('signatureTab').classList.toggle('hidden', t !== 'signature');
       document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
+      if (t === 'minutes') displayMemberMinutes();
+      if (t === 'payments') displayMemberPaymentProofs();
       if (t === 'beneficiaries') {
         // Refresh tempBeneficiaries from the main beneficiaries array - using fast clone
         tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
@@ -1417,6 +1481,7 @@
       document.getElementById('profName').value = currentUser.name;
       document.getElementById('profEmail').value = currentUser.email;
       document.getElementById('profPhone').value = currentUser.phone;
+      document.getElementById('profRole').value = currentUser.role || 'Member';
       const badge = document.getElementById('memStatus');
       badge.textContent = currentUser.status;
       badge.className = `badge badge-${currentUser.status === 'Active' ? 'active' : 'suspended'}`;
@@ -1439,8 +1504,10 @@
         members.forEach(m => {
           const row = document.createElement('tr');
           const regDate = m.registeredAt ? new Date(m.registeredAt).toLocaleDateString('en-ZA', {year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A';
-          row.innerHTML = `<td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td>${regDate}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
+          const role = m.role || 'Member';
+          row.innerHTML = `<td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-pending">${role}</span></td><td>${regDate}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
             <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
+            <button class="btn btn-warning btn-sm" onclick="editMemberRole('${m.id}')">Role</button>
             ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
             <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
           </td>`;
@@ -2414,6 +2481,228 @@
         setupSignatureCanvas();
       }
     });
+
+    // ===== MEETING MINUTES FUNCTIONS =====
+    function addMinutesModal() {
+      const html = `
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('minutesModal')">&times;</span>
+          <h2>Add Meeting Minutes</h2>
+          <div class="form-group"><label>Meeting Date</label><input type="date" id="minutesDate" value="${new Date().toISOString().split('T')[0]}"></div>
+          <div class="form-group"><label>Subject</label><input type="text" id="minutesSubject" placeholder="e.g., Monthly General Meeting"></div>
+          <div class="form-group"><label>Minutes</label><textarea id="minutesContent" rows="10" placeholder="Enter meeting minutes here..."></textarea></div>
+          <button class="btn btn-primary" onclick="saveMinutes()">Save Minutes</button>
+        </div>
+      `;
+      showModal('minutesModal', html);
+    }
+
+    async function saveMinutes() {
+      const date = document.getElementById('minutesDate').value;
+      const subject = document.getElementById('minutesSubject').value;
+      const content = document.getElementById('minutesContent').value;
+      
+      if (!date || !subject || !content) {
+        alert('⚠ Please fill all fields');
+        return;
+      }
+      
+      const newMinutes = {
+        id: 'MIN' + String(minutesIdCounter++).padStart(3, '0'),
+        date,
+        subject,
+        content,
+        postedBy: 'Admin',
+        postedAt: new Date().toISOString()
+      };
+      
+      meetingMinutes.push(newMinutes);
+      await saveDataToStorage(true);
+      closeModal('minutesModal');
+      showAlert('adminAlert', '✓ Meeting minutes saved successfully!', 'success');
+      displayMeetingMinutes();
+    }
+
+    function displayMeetingMinutes() {
+      const table = document.getElementById('minutesTable');
+      if (!table) return;
+      
+      table.innerHTML = meetingMinutes.map(min => `
+        <tr>
+          <td>${new Date(min.date).toLocaleDateString()}</td>
+          <td>${min.subject}</td>
+          <td>${min.postedBy}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="viewMinutes('${min.id}')">View</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteMinutes('${min.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function viewMinutes(id) {
+      const minutes = meetingMinutes.find(m => m.id === id);
+      if (!minutes) return;
+      
+      const html = `
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('viewMinutesModal')">&times;</span>
+          <h2>${minutes.subject}</h2>
+          <p><strong>Date:</strong> ${new Date(minutes.date).toLocaleDateString()}</p>
+          <p><strong>Posted By:</strong> ${minutes.postedBy}</p>
+          <hr>
+          <div style="white-space: pre-wrap;">${minutes.content}</div>
+        </div>
+      `;
+      showModal('viewMinutesModal', html);
+    }
+
+    async function deleteMinutes(id) {
+      if (!confirm('Delete these meeting minutes?')) return;
+      meetingMinutes = meetingMinutes.filter(m => m.id !== id);
+      await saveDataToStorage(true);
+      showAlert('adminAlert', '✓ Minutes deleted', 'success');
+      displayMeetingMinutes();
+    }
+
+    function displayMemberMinutes() {
+      const container = document.getElementById('memberMinutesContent');
+      if (!container) return;
+      
+      if (meetingMinutes.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; padding: 30px;">No meeting minutes available yet.</p>';
+        return;
+      }
+      
+      container.innerHTML = meetingMinutes.map(min => `
+        <div style="background: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
+          <h3 style="margin: 0 0 10px 0; color: #333;">${min.subject}</h3>
+          <p style="color: #666; font-size: 13px; margin-bottom: 10px;">
+            <strong>Date:</strong> ${new Date(min.date).toLocaleDateString()} | 
+            <strong>Posted:</strong> ${new Date(min.postedAt).toLocaleDateString()}
+          </p>
+          <div style="white-space: pre-wrap; color: #444;">${min.content}</div>
+        </div>
+      `).join('');
+    }
+
+    // ===== MEMBER ROLES FUNCTIONS =====
+    function editMemberRole(memberId) {
+      const member = members.find(m => m.id === memberId);
+      if (!member) return;
+      
+      const html = `
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('roleModal')">&times;</span>
+          <h2>Assign Role for ${member.name}</h2>
+          <div class="form-group">
+            <label>Select Role</label>
+            <select id="memberRole">
+              <option value="Member" ${(member.role || 'Member') === 'Member' ? 'selected' : ''}>Member</option>
+              <option value="Admin" ${member.role === 'Admin' ? 'selected' : ''}>Admin</option>
+              <option value="Chairperson" ${member.role === 'Chairperson' ? 'selected' : ''}>Chairperson</option>
+              <option value="Secretary General" ${member.role === 'Secretary General' ? 'selected' : ''}>Secretary General</option>
+              <option value="Treasurer" ${member.role === 'Treasurer' ? 'selected' : ''}>Treasurer</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="saveRole('${memberId}')">Save Role</button>
+        </div>
+      `;
+      showModal('roleModal', html);
+    }
+
+    async function saveRole(memberId) {
+      const role = document.getElementById('memberRole').value;
+      const member = members.find(m => m.id === memberId);
+      if (!member) return;
+      
+      member.role = role;
+      await saveDataToStorage(true);
+      closeModal('roleModal');
+      showAlert('adminAlert', `✓ Role updated to ${role}`, 'success');
+      displayMem();
+    }
+
+    // ===== PAYMENT PROOF FUNCTIONS =====
+    function uploadPaymentProofModal() {
+      const html = `
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('proofModal')">&times;</span>
+          <h2>Upload Payment Proof</h2>
+          <div class="form-group"><label>Amount (R)</label><input type="number" id="proofAmount" min="0" placeholder="e.g., 150"></div>
+          <div class="form-group"><label>Description</label><input type="text" id="proofDescription" placeholder="e.g., Monthly contribution - October"></div>
+          <div class="form-group"><label>Upload File</label><input type="file" id="proofFile" accept=".pdf,.jpg,.jpeg,.png"></div>
+          <button class="btn btn-primary" onclick="savePaymentProof()">Upload Proof</button>
+        </div>
+      `;
+      showModal('proofModal', html);
+    }
+
+    async function savePaymentProof() {
+      const amount = document.getElementById('proofAmount').value;
+      const description = document.getElementById('proofDescription').value;
+      const fileInput = document.getElementById('proofFile');
+      
+      if (!amount || !description) {
+        alert('⚠ Please fill all fields');
+        return;
+      }
+      
+      let fileName = 'No file';
+      if (fileInput.files.length > 0) {
+        fileName = fileInput.files[0].name;
+      }
+      
+      const newProof = {
+        id: 'PROOF' + String(proofIdCounter++).padStart(3, '0'),
+        memberId: currentUser.id,
+        memberName: currentUser.name,
+        amount: parseFloat(amount),
+        description,
+        fileName,
+        uploadDate: new Date().toISOString(),
+        status: 'Pending'
+      };
+      
+      paymentProofs.push(newProof);
+      await saveDataToStorage(true);
+      closeModal('proofModal');
+      showAlert('memberAlert', '✓ Payment proof uploaded successfully!', 'success');
+      displayMemberPaymentProofs();
+    }
+
+    function displayMemberPaymentProofs() {
+      const table = document.getElementById('memberPaymentProofsTable');
+      if (!table) return;
+      
+      const memberProofs = paymentProofs.filter(p => p.memberId === currentUser.id);
+      
+      if (memberProofs.length === 0) {
+        table.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #666;">No payment proofs uploaded yet.</td></tr>';
+        return;
+      }
+      
+      table.innerHTML = memberProofs.map(proof => `
+        <tr>
+          <td>${new Date(proof.uploadDate).toLocaleDateString()}</td>
+          <td>R${proof.amount}</td>
+          <td>${proof.description}</td>
+          <td><span class="badge badge-${proof.status === 'Approved' ? 'approved' : 'pending'}">${proof.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    // Update updateMember function to show payment proofs
+    const originalUpdateMember = updateMember;
+    updateMember = function() {
+      if (originalUpdateMember) originalUpdateMember();
+      
+      // Update member role display if exists
+      const profRole = document.getElementById('profRole');
+      if (profRole && currentUser) {
+        profRole.value = currentUser.role || 'Member';
+      }
+    };
 
   </script>
 </body>
