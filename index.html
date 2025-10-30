@@ -470,7 +470,7 @@
         <button class="btn btn-success" onclick="uploadPaymentProofModal()">+ Upload Payment Proof</button>
         <div style="margin-top: 15px;">
           <table>
-            <thead><tr><th>Upload Date</th><th>Amount</th><th>Description</th><th>Attachment</th><th>Status</th></tr></thead>
+            <thead><tr><th>Upload Date</th><th>Amount</th><th>Description</th><th>Attachment</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="memberPaymentProofsTable"></tbody>
           </table>
         </div>
@@ -2928,7 +2928,7 @@
         .sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)); // Sort by date, newest first
       
       if (memberProofs.length === 0) {
-        table.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; color: #666;">No payment proofs uploaded yet.</td></tr>';
+        table.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px; color: #666;">No payment proofs uploaded yet.</td></tr>';
         return;
       }
       
@@ -2970,6 +2970,14 @@
           statusBadge = `<span class="badge badge-pending">${proof.status}</span>`;
         }
         
+        // Only show delete button if status is not Approved
+        let actionButton = '';
+        if (proof.status !== 'Approved') {
+          actionButton = `<button class="btn btn-danger btn-sm" onclick="deletePaymentProof('${proof.id}')">Delete</button>`;
+        } else {
+          actionButton = '<span style="color: #999; font-size: 12px;">-</span>';
+        }
+        
         return `
         <tr>
           <td>${formattedDate}</td>
@@ -2977,8 +2985,47 @@
           <td>${proof.description}</td>
           <td style="text-align: center;">${fileDisplay}</td>
           <td>${statusBadge}</td>
+          <td style="text-align: center;">${actionButton}</td>
         </tr>
       `}).join('');
+    }
+
+    async function deletePaymentProof(proofId) {
+      if (!confirm('⚠️ Are you sure you want to delete this payment proof? This action cannot be undone.')) {
+        return;
+      }
+      
+      const proofIndex = paymentProofs.findIndex(p => p.id === proofId);
+      
+      if (proofIndex === -1) {
+        alert('⚠ Payment proof not found');
+        return;
+      }
+      
+      const proof = paymentProofs[proofIndex];
+      
+      // Check if user owns this proof
+      if (proof.memberId !== currentUser.id) {
+        alert('⚠ You can only delete your own payment proofs');
+        return;
+      }
+      
+      // Check if proof is already approved
+      if (proof.status === 'Approved') {
+        alert('⚠ Cannot delete approved payment proofs. Please contact admin.');
+        return;
+      }
+      
+      try {
+        paymentProofs.splice(proofIndex, 1);
+        await saveDataToStorage(true);
+        showAlert('memberAlert', '✓ Payment proof deleted successfully', 'success');
+        displayMemberPaymentProofs();
+        console.log('Payment proof deleted:', proofId);
+      } catch (error) {
+        console.error('Error deleting payment proof:', error);
+        alert('⚠ Error deleting payment proof. Please try again.');
+      }
     }
 
     // Update updateMember function to show payment proofs
