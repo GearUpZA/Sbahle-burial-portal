@@ -510,10 +510,11 @@
   <script>
     // ===== CLOUD STORAGE CONFIGURATION =====
     // Using JSONBin.io free service for cross-browser data sync
+    // IMPORTANT: Replace with your own bin ID and API key from jsonbin.io
     const CLOUD_STORAGE = {
-      enabled: true,
-      binId: '673274c4ad19ca34f8c97cf8', // Pre-configured storage endpoint
-      apiKey: '$2a$10$vN5yVxZxZxZxZxZxZxZxZu.L.L.L.L.L.L.L.L.L.L.L.L.L', // Read/Write access
+      enabled: false, // DISABLED until you set up your own JSONBin account
+      binId: 'YOUR_BIN_ID_HERE', // Get from jsonbin.io
+      apiKey: 'YOUR_API_KEY_HERE', // Get from jsonbin.io
       endpoint: 'https://api.jsonbin.io/v3/b',
       syncInterval: 5000 // Check for updates every 5 seconds
     };
@@ -684,8 +685,8 @@
       }
     }
     
-    // Optimized save function with Firebase cloud storage
-    function saveDataToStorage(forceImmediate = false) {
+    // Optimized save function with cloud storage
+    async function saveDataToStorage(forceImmediate = false) {
       const performSave = async () => {
         try {
           const startTime = performance.now();
@@ -778,9 +779,16 @@
       
       // Use debounced save unless immediate save is requested
       if (forceImmediate || Date.now() - lastSaveTime > 5000) {
-        performSave();
+        lastSaveTime = Date.now();
+        return await performSave();
       } else {
-        debouncedSave(performSave);
+        return new Promise((resolve) => {
+          debouncedSave(async () => {
+            lastSaveTime = Date.now();
+            const result = await performSave();
+            resolve(result);
+          });
+        });
       }
     }
     
