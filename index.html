@@ -814,36 +814,12 @@
         }
         
         if (data) {
-            // Cache default members to avoid recreation
-            const cacheKey = 'default_members';
-            let defaultMembers = getFromCache(cacheKey);
-            if (!defaultMembers) {
-              defaultMembers = [
-                { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-15T10:30:00.000Z' },
-                { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-16T14:20:00.000Z' },
-                { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-18T09:15:00.000Z' },
-                { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T11:45:00.000Z' },
-                { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T13:20:00.000Z' },
-                { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T15:10:00.000Z' }
-              ];
-              setCache(cacheKey, defaultMembers);
-            }
-            
-            // Optimized member merging using Map for O(1) lookups
-            const storedMembers = data.members || [];
-            const memberMap = new Map(defaultMembers.map(m => [m.id, m]));
-            
-            // Update existing members and add new ones
-            storedMembers.forEach(storedMember => {
-              memberMap.set(storedMember.id, storedMember);
-            });
-            
-            members = Array.from(memberMap.values());
-            
+            // Use cloud/stored data directly - NO merging with defaults
+            members = data.members || [];
             beneficiaries = data.beneficiaries || [];
             payouts = data.payouts || [];
             penalties = data.penalties || [];
-            memberIdCounter = Math.max(data.memberIdCounter || 7, 7);
+            memberIdCounter = data.memberIdCounter || 7;
             
             // Cache attendance data
             if (data.attendance) {
@@ -1076,19 +1052,6 @@
       // Load data from cloud or localStorage
       await loadDataFromStorage();
       
-      // Ensure minimum member count for demo purposes
-      if (members.length < 6) {
-        console.log('Ensuring minimum member data...');
-        members = [
-          { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-15T10:30:00.000Z' },
-          { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-16T14:20:00.000Z' },
-          { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-18T09:15:00.000Z' },
-          { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T11:45:00.000Z' },
-          { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T13:20:00.000Z' },
-          { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0, registeredAt: '2025-10-28T15:10:00.000Z' }
-        ];
-        saveDataToStorage();
-      }
       console.log('✓ System initialized with', members.length, 'members');
     }
     
