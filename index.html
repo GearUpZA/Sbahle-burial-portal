@@ -144,13 +144,14 @@
           </select>
         </div>
         <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
+        <button class="btn btn-primary" id="payoutBenBtn" style="display:none;" onclick="createPayoutModal()">💰 Create Payout</button>
         <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
       </div>
 
       <div id="payoutsTab" class="hidden">
         <h2>Payouts</h2>
         <table>
-          <thead><tr><th>Member</th><th>Amount</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Member</th><th>Amount</th><th>Reason</th><th>Recipients</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="payTable"></tbody>
         </table>
       </div>
@@ -514,7 +515,7 @@
         <h2>Request Payout</h2>
         <button class="btn btn-success" onclick="reqPayoutModal()">+ Request Payout</button>
         <table>
-          <thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Status</th></tr></thead>
+          <thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Recipients</th><th>Status</th></tr></thead>
           <tbody id="memPayTable"></tbody>
         </table>
       </div>
@@ -1534,7 +1535,19 @@
         
         payouts.forEach(p => {
           const row = document.createElement('tr');
-          row.innerHTML = `<td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
+          
+          // Format recipients display
+          let recipientsDisplay = '';
+          if (p.recipients && p.recipients.length > 0) {
+            recipientsDisplay = p.recipients.map((r, index) => {
+              if (r.name && r.phone) {
+                return `<div><strong>Recipient ${index + 1}:</strong> ${r.name} (${r.phone})</div>`;
+              }
+              return '';
+            }).filter(r => r !== '').join('');
+          }
+          
+          row.innerHTML = `<td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.reason}</td><td>${recipientsDisplay || '-'}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
             ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
           </td>`;
           fragment.appendChild(row);
@@ -1567,7 +1580,8 @@
 
     function loadBeneficiaries() {
       const id = document.getElementById('memSelectBen').value;
-      document.getElementById('addBenBtn').style.display = id ? 'block' : 'none';
+      document.getElementById('addBenBtn').style.display = id ? 'inline-block' : 'none';
+      document.getElementById('payoutBenBtn').style.display = id ? 'inline-block' : 'none';
       const bens = beneficiaries.filter(b => b.memberId === id);
       let html = '';
       if (bens.length > 0) {
@@ -1647,9 +1661,19 @@
     function displayMemPayouts() {
       let html = '';
       payouts.filter(p => p.memberId === currentUser.id).forEach(p => {
-        html += `<tr><td>${p.date || 'N/A'}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td></tr>`;
+        // Format recipients display
+        let recipientsDisplay = '-';
+        if (p.recipients && p.recipients.length > 0) {
+          recipientsDisplay = p.recipients.map((r, index) => {
+            if (r.name && r.phone) {
+              return `<div style="font-size:0.85em;"><strong>R${index + 1}:</strong> ${r.name} (${r.phone})</div>`;
+            }
+            return '';
+          }).filter(r => r !== '').join('');
+        }
+        html += `<tr><td>${p.date || 'N/A'}</td><td>R ${p.amount}</td><td>${p.reason}</td><td>${recipientsDisplay}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td></tr>`;
       });
-      document.getElementById('memPayTable').innerHTML = html || '<tr><td colspan="4">No payouts</td></tr>';
+      document.getElementById('memPayTable').innerHTML = html || '<tr><td colspan="5">No payouts</td></tr>';
     }
 
     // MODALS
@@ -1810,6 +1834,138 @@
         displayPayouts();
         showAlert('adminAlert', '✓ Payout rejected!', 'success');
       }
+    }
+
+    // Create payout from beneficiaries tab
+    function createPayoutModal() {
+      const memberId = document.getElementById('memSelectBen').value;
+      if (!memberId) {
+        alert('⚠ Please select a member first');
+        return;
+      }
+      
+      const member = members.find(m => m.id === memberId);
+      if (!member) return;
+      
+      const memberBeneficiaries = beneficiaries.filter(b => b.memberId === memberId);
+      
+      if (memberBeneficiaries.length === 0) {
+        alert('⚠ This member has no beneficiaries. Please add beneficiaries first.');
+        return;
+      }
+      
+      const benOptions = memberBeneficiaries.map(b => 
+        `<option value="${b.id}">${b.name} (${b.relationship})</option>`
+      ).join('');
+      
+      const html = `
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('payoutModal')">&times;</span>
+          <h2>Create Payout for ${member.name}</h2>
+          <p style="color: #666; margin-bottom: 15px;">Select up to 2 beneficiaries to receive the payout</p>
+          
+          <div class="form-group">
+            <label>Payout Amount (R)</label>
+            <input type="number" id="payoutAmount" min="0" placeholder="e.g., 5000">
+          </div>
+          
+          <div class="form-group">
+            <label>Reason</label>
+            <select id="payoutReason">
+              <option>Funeral</option>
+              <option>Emergency</option>
+              <option>Medical</option>
+              <option>Other</option>
+            </select>
+          </div>
+          
+          <h3 style="margin-top: 20px; font-size: 16px;">Recipient 1</h3>
+          <div class="form-group">
+            <label>Select Beneficiary</label>
+            <select id="recipient1">
+              <option value="">-- Select Beneficiary --</option>
+              ${benOptions}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="recipient1Phone" placeholder="e.g., 0721234567">
+          </div>
+          
+          <h3 style="margin-top: 20px; font-size: 16px;">Recipient 2 (Optional)</h3>
+          <div class="form-group">
+            <label>Select Beneficiary</label>
+            <select id="recipient2">
+              <option value="">-- Select Beneficiary --</option>
+              ${benOptions}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="recipient2Phone" placeholder="e.g., 0731234567">
+          </div>
+          
+          <button class="btn btn-primary" onclick="submitBeneficiaryPayout('${memberId}', '${member.name}')">Create Payout</button>
+        </div>
+      `;
+      showModal('payoutModal', html);
+    }
+
+    async function submitBeneficiaryPayout(memberId, memberName) {
+      const amount = document.getElementById('payoutAmount').value;
+      const reason = document.getElementById('payoutReason').value;
+      const recipient1Id = document.getElementById('recipient1').value;
+      const recipient1Phone = document.getElementById('recipient1Phone').value;
+      const recipient2Id = document.getElementById('recipient2').value;
+      const recipient2Phone = document.getElementById('recipient2Phone').value;
+      
+      if (!amount || parseFloat(amount) <= 0) {
+        alert('⚠ Please enter a valid amount');
+        return;
+      }
+      
+      if (!recipient1Id || !recipient1Phone) {
+        alert('⚠ Please select Recipient 1 and provide their phone number');
+        return;
+      }
+      
+      if (recipient2Id && !recipient2Phone) {
+        alert('⚠ Please provide phone number for Recipient 2');
+        return;
+      }
+      
+      if (recipient1Id === recipient2Id && recipient2Id) {
+        alert('⚠ Please select different beneficiaries for Recipient 1 and 2');
+        return;
+      }
+      
+      const recipient1 = beneficiaries.find(b => b.id === recipient1Id);
+      const recipient2 = recipient2Id ? beneficiaries.find(b => b.id === recipient2Id) : null;
+      
+      let recipients = [
+        { name: recipient1.name, phone: recipient1Phone }
+      ];
+      
+      if (recipient2) {
+        recipients.push({ name: recipient2.name, phone: recipient2Phone });
+      }
+      
+      const newPayout = {
+        id: 'PO' + Date.now(),
+        memberId: memberId,
+        memberName: memberName,
+        amount: parseFloat(amount),
+        reason: reason,
+        recipients: recipients,
+        status: 'Pending',
+        createdAt: new Date().toISOString()
+      };
+      
+      payouts.push(newPayout);
+      await saveDataToStorage(true);
+      closeModal('payoutModal');
+      showAlert('adminAlert', '✓ Payout created successfully!', 'success');
+      displayPayouts();
     }
 
     function payPen(id) {
