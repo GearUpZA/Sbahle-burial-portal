@@ -356,6 +356,7 @@
         <button class="tab" onclick="memberTab('signature', event)">Signature</button>
         <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
         <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
+        <button class="tab" onclick="memberTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="memberTab('minutes', event)">Meeting Minutes</button>
         <button class="tab" onclick="memberTab('payments', event)">Payment Proofs</button>
         <button class="tab" onclick="memberTab('documents', event)">Documents</button>
@@ -753,7 +754,7 @@
             
             // Metadata
             lastSaved: new Date().toISOString(),
-            version: '2.4-extended',
+            version: '2.5-payouts',
             systemInfo: {
               totalMembers: members.length,
               activeMembers: members.filter(m => m.status === 'Active').length,
