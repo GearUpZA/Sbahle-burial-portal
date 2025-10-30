@@ -740,15 +740,22 @@
               });
               
               if (response.ok) {
-                console.log('✓ Data saved to cloud storage at', data.lastSaved);
+                console.log('✅ CLOUD SAVE SUCCESS:', {
+                  time: data.lastSaved,
+                  members: data.members.length,
+                  totalData: JSON.stringify(data).length + ' bytes'
+                });
                 lastCloudSync = Date.now();
               } else {
-                throw new Error('Cloud save failed');
+                const errorText = await response.text();
+                throw new Error(`Cloud save failed: ${response.status} - ${errorText}`);
               }
             } catch (error) {
-              console.warn('Cloud save failed, using localStorage:', error);
+              console.error('❌ CLOUD SAVE FAILED:', error);
               cloudStorageAvailable = false;
             }
+          } else {
+            console.warn('⚠️ Cloud storage not available, saving locally only');
           }
           
           // Always save to localStorage as backup
@@ -864,20 +871,35 @@
           const result = await response.json();
           const cloudData = result.record;
           
-          // Only update if cloud data is newer than local
+          // Only update if cloud data exists and is newer than local
           if (cloudData && cloudData.lastSaved) {
             const cloudTime = new Date(cloudData.lastSaved).getTime();
             const localTime = lastCloudSync;
             
             if (cloudTime > localTime) {
-              console.log('🔄 Syncing updates from another browser...');
+              console.log('🔄 Syncing updates from cloud...', {
+                cloudMembers: cloudData.members?.length || 0,
+                localMembers: members.length,
+                cloudTime: new Date(cloudData.lastSaved).toLocaleString(),
+                localTime: new Date(localTime).toLocaleString()
+              });
               
-              // Update local data
-              members = cloudData.members || members;
-              beneficiaries = cloudData.beneficiaries || beneficiaries;
-              payouts = cloudData.payouts || payouts;
-              penalties = cloudData.penalties || penalties;
-              memberIdCounter = cloudData.memberIdCounter || memberIdCounter;
+              // ALWAYS use cloud data as authoritative source
+              members = cloudData.members || [];
+              beneficiaries = cloudData.beneficiaries || [];
+              payouts = cloudData.payouts || [];
+              penalties = cloudData.penalties || [];
+              memberIdCounter = cloudData.memberIdCounter || 1;
+              
+              // Update both localStorage backup and sync time
+              localStorage.setItem(STORAGE_KEY, encryptData({
+                members,
+                beneficiaries,
+                payouts,
+                penalties,
+                memberIdCounter,
+                lastSaved: cloudData.lastSaved
+              }));
               
               lastCloudSync = Date.now();
               
@@ -891,12 +913,12 @@
                 updateMember();
               }
               
-              console.log('✓ Data synchronized from cloud');
+              console.log('✓ Data synchronized:', members.length, 'members loaded');
             }
           }
         }
       } catch (error) {
-        // Silently fail - don't spam console
+        console.error('Cloud sync error:', error);
       }
     }
     
@@ -1194,7 +1216,7 @@
       updateMember();
     }
 
-    function registerMember() {
+    async function registerMember() {
       const name = document.getElementById('regName').value;
       const email = document.getElementById('regEmail').value;
       const password = document.getElementById('regPassword').value;
@@ -1239,7 +1261,11 @@
         missedPayments: 0,
         registeredAt: new Date().toISOString()
       });
-      saveDataToStorage(false); // Auto-save with debouncing
+      
+      // Force immediate save to cloud (no debouncing for registration)
+      console.log('📝 Saving new member registration:', newId, name);
+      await saveDataToStorage(true);
+      console.log('✅ New member saved to cloud');
       
       // Clear form
       document.getElementById('regName').value = '';
