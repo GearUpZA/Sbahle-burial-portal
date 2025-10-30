@@ -470,7 +470,7 @@
         <button class="btn btn-success" onclick="uploadPaymentProofModal()">+ Upload Payment Proof</button>
         <div style="margin-top: 15px;">
           <table>
-            <thead><tr><th>Upload Date</th><th>Amount</th><th>Description</th><th>Status</th></tr></thead>
+            <thead><tr><th>Upload Date</th><th>Amount</th><th>Description</th><th>Attachment</th><th>Status</th></tr></thead>
             <tbody id="memberPaymentProofsTable"></tbody>
           </table>
         </div>
@@ -2928,7 +2928,7 @@
         .sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)); // Sort by date, newest first
       
       if (memberProofs.length === 0) {
-        table.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #666;">No payment proofs uploaded yet.</td></tr>';
+        table.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; color: #666;">No payment proofs uploaded yet.</td></tr>';
         return;
       }
       
@@ -2942,12 +2942,41 @@
           minute: '2-digit'
         });
         
+        // Determine file icon based on file name
+        let fileIcon = '';
+        let fileDisplay = '';
+        
+        if (proof.fileName && proof.fileName !== 'No file attached' && proof.fileName !== 'No file') {
+          const fileName = proof.fileName.toLowerCase();
+          if (fileName.endsWith('.pdf')) {
+            fileIcon = '📄';
+          } else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')) {
+            fileIcon = '🖼️';
+          } else {
+            fileIcon = '📎';
+          }
+          fileDisplay = `<span style="font-size: 24px; cursor: pointer;" title="${proof.fileName}">${fileIcon}</span><br><small style="color: #666; font-size: 11px;">${proof.fileName}</small>`;
+        } else {
+          fileDisplay = '<span style="color: #999; font-size: 12px;">No file</span>';
+        }
+        
+        // Status display - show "Successfully Loaded" for uploaded proofs
+        let statusBadge = '';
+        if (proof.status === 'Approved') {
+          statusBadge = '<span class="badge badge-approved">Approved</span>';
+        } else if (proof.status === 'Pending') {
+          statusBadge = '<span class="badge" style="background: #48bb78; color: white;">Successfully Loaded</span>';
+        } else {
+          statusBadge = `<span class="badge badge-pending">${proof.status}</span>`;
+        }
+        
         return `
         <tr>
           <td>${formattedDate}</td>
           <td>R${proof.amount.toFixed(2)}</td>
           <td>${proof.description}</td>
-          <td><span class="badge badge-${proof.status === 'Approved' ? 'approved' : 'pending'}">${proof.status}</span></td>
+          <td style="text-align: center;">${fileDisplay}</td>
+          <td>${statusBadge}</td>
         </tr>
       `}).join('');
     }
