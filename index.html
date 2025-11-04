@@ -2727,16 +2727,22 @@
     // ===== MEETING MINUTES FUNCTIONS =====
     function addMinutesModal() {
       const html = `
-        <div class="modal-content">
-          <span class="close" onclick="closeModal('minutesModal')">&times;</span>
-          <h2>Add Meeting Minutes</h2>
-          <div class="form-group"><label>Meeting Date</label><input type="date" id="minutesDate" value="${new Date().toISOString().split('T')[0]}"></div>
-          <div class="form-group"><label>Subject</label><input type="text" id="minutesSubject" placeholder="e.g., Monthly General Meeting"></div>
-          <div class="form-group"><label>Minutes</label><textarea id="minutesContent" rows="10" placeholder="Enter meeting minutes here..."></textarea></div>
-          <button class="btn btn-primary" onclick="saveMinutes()">Save Minutes</button>
+        <h2>Add Meeting Minutes</h2>
+        <div class="form-group">
+          <label>Meeting Date</label>
+          <input type="date" id="minutesDate" value="${new Date().toISOString().split('T')[0]}">
         </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <input type="text" id="minutesSubject" placeholder="e.g., Monthly General Meeting">
+        </div>
+        <div class="form-group">
+          <label>Minutes</label>
+          <textarea id="minutesContent" rows="10" placeholder="Enter meeting minutes here..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveMinutes()">Save Minutes</button>
       `;
-      showModal('minutesModal', html);
+      openModal(html);
     }
 
     async function saveMinutes() {
@@ -2760,7 +2766,7 @@
       
       meetingMinutes.push(newMinutes);
       await saveDataToStorage(true);
-      closeModal('minutesModal');
+      closeModal();
       showAlert('adminAlert', '✓ Meeting minutes saved successfully!', 'success');
       displayMeetingMinutes();
     }
@@ -2787,16 +2793,13 @@
       if (!minutes) return;
       
       const html = `
-        <div class="modal-content">
-          <span class="close" onclick="closeModal('viewMinutesModal')">&times;</span>
-          <h2>${minutes.subject}</h2>
-          <p><strong>Date:</strong> ${new Date(minutes.date).toLocaleDateString()}</p>
-          <p><strong>Posted By:</strong> ${minutes.postedBy}</p>
-          <hr>
-          <div style="white-space: pre-wrap;">${minutes.content}</div>
-        </div>
+        <h2>${minutes.subject}</h2>
+        <p><strong>Date:</strong> ${new Date(minutes.date).toLocaleDateString()}</p>
+        <p><strong>Posted By:</strong> ${minutes.postedBy}</p>
+        <hr>
+        <div style="white-space: pre-wrap;">${minutes.content}</div>
       `;
-      showModal('viewMinutesModal', html);
+      openModal(html);
     }
 
     async function deleteMinutes(id) {
