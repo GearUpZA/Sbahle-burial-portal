@@ -354,7 +354,12 @@
     <div id="memberPage" class="card hidden">
       <div class="header">
         <h1>Member Dashboard</h1>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <div id="memberCloudSyncStatus" style="font-size: 13px; padding: 5px 10px; border-radius: 5px; background: #e2e8f0;">
+            <span id="memberSyncIndicator">🔄</span> <span id="memberSyncText">Syncing...</span>
+          </div>
+          <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
       </div>
       <div class="tabs">
         <button class="tab active" onclick="memberTab('profile', event)">Profile</button>
@@ -611,52 +616,65 @@
     let saveTimeout = null;
     let lastSaveTime = 0;
     
-    // Update sync status indicator
+    // Update sync status indicator (for both admin and member dashboards)
     function updateSyncStatus(status) {
+      // Admin dashboard sync indicator
       const indicator = document.getElementById('syncIndicator');
       const text = document.getElementById('syncText');
       const container = document.getElementById('cloudSyncStatus');
       
-      if (!indicator || !text || !container) return;
+      // Member dashboard sync indicator
+      const memberIndicator = document.getElementById('memberSyncIndicator');
+      const memberText = document.getElementById('memberSyncText');
+      const memberContainer = document.getElementById('memberCloudSyncStatus');
       
-      switch(status) {
-        case 'syncing':
-          indicator.textContent = '🔄';
-          text.textContent = 'Syncing...';
-          container.style.background = '#fef3c7';
-          container.style.color = '#92400e';
-          break;
-        case 'synced':
-          indicator.textContent = '✅';
-          text.textContent = 'Synced';
-          container.style.background = '#d1fae5';
-          container.style.color = '#065f46';
-          // Reset to normal after 2 seconds
-          setTimeout(() => {
-            indicator.textContent = '☁️';
-            text.textContent = 'Cloud Connected';
-            container.style.background = '#e0f2fe';
-            container.style.color = '#075985';
-          }, 2000);
-          break;
-        case 'error':
-          indicator.textContent = '⚠️';
-          text.textContent = 'Sync Error';
-          container.style.background = '#fee2e2';
-          container.style.color = '#991b1b';
-          break;
-        case 'offline':
-          indicator.textContent = '📴';
-          text.textContent = 'Offline';
-          container.style.background = '#f3f4f6';
-          container.style.color = '#6b7280';
-          break;
-        default:
-          indicator.textContent = '☁️';
-          text.textContent = 'Cloud Connected';
-          container.style.background = '#e0f2fe';
-          container.style.color = '#075985';
-      }
+      // Update both admin and member indicators
+      const updateIndicator = (ind, txt, cont) => {
+        if (!ind || !txt || !cont) return;
+        
+        switch(status) {
+          case 'syncing':
+            ind.textContent = '🔄';
+            txt.textContent = 'Syncing...';
+            cont.style.background = '#fef3c7';
+            cont.style.color = '#92400e';
+            break;
+          case 'synced':
+            ind.textContent = '✅';
+            txt.textContent = 'Synced';
+            cont.style.background = '#d1fae5';
+            cont.style.color = '#065f46';
+            // Reset to normal after 2 seconds
+            setTimeout(() => {
+              ind.textContent = '☁️';
+              txt.textContent = 'Cloud Connected';
+              cont.style.background = '#e0f2fe';
+              cont.style.color = '#075985';
+            }, 2000);
+            break;
+          case 'error':
+            ind.textContent = '⚠️';
+            txt.textContent = 'Sync Error';
+            cont.style.background = '#fee2e2';
+            cont.style.color = '#991b1b';
+            break;
+          case 'offline':
+            ind.textContent = '📴';
+            txt.textContent = 'Offline';
+            cont.style.background = '#f3f4f6';
+            cont.style.color = '#6b7280';
+            break;
+          default:
+            ind.textContent = '☁️';
+            txt.textContent = 'Cloud Connected';
+            cont.style.background = '#e0f2fe';
+            cont.style.color = '#075985';
+        }
+      };
+      
+      // Update both dashboards
+      updateIndicator(indicator, text, container);
+      updateIndicator(memberIndicator, memberText, memberContainer);
     }
     
     // Fast deep clone function (more efficient than JSON parse/stringify)
@@ -1048,14 +1066,19 @@
               // Refresh UI if on admin page
               if (document.getElementById('adminPage') && !document.getElementById('adminPage').classList.contains('hidden')) {
                 updateAdmin();
+                console.log('✓ Admin dashboard refreshed with cloud data');
               }
               
               // Refresh member page if logged in
               if (document.getElementById('memberPage') && !document.getElementById('memberPage').classList.contains('hidden')) {
                 updateMember();
+                console.log('✓ Member dashboard refreshed with cloud data');
               }
               
-              console.log('✓ Data synchronized:', members.length, 'members loaded');
+              // Show brief sync notification
+              updateSyncStatus('synced');
+              
+              console.log('✓ Data synchronized across all devices:', members.length, 'members loaded');
             }
           }
         }
@@ -1068,7 +1091,9 @@
     function startCloudSync() {
       if (syncTimer) clearInterval(syncTimer);
       syncTimer = setInterval(checkCloudUpdates, CLOUD_STORAGE.syncInterval);
-      console.log('✓ Real-time sync started - checking for updates every', CLOUD_STORAGE.syncInterval / 1000, 'seconds');
+      console.log('✅ REAL-TIME CLOUD SYNC ACTIVE');
+      console.log('📡 Syncing every', CLOUD_STORAGE.syncInterval / 1000, 'seconds across ALL browsers and devices');
+      console.log('👥 All members and admin will see updates within', CLOUD_STORAGE.syncInterval / 1000, 'seconds');
     }
     
     // Stop cloud sync
