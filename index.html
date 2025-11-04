@@ -104,7 +104,12 @@
     <div id="adminPage" class="card hidden">
       <div class="header">
         <h1>Admin Dashboard</h1>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <div id="cloudSyncStatus" style="font-size: 13px; padding: 5px 10px; border-radius: 5px; background: #e2e8f0;">
+            <span id="syncIndicator">🔄</span> <span id="syncText">Syncing...</span>
+          </div>
+          <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
       </div>
       <div class="tabs">
         <button class="tab active" onclick="adminTab('overview', event)">Overview</button>
@@ -562,7 +567,7 @@
       binId: '69032dadd0ea881f40c6cfd5', // Your JSONBin storage
       apiKey: '$2a$10$LUKvn7ZMDSlDEbqAM45V7ub0iXv2sLBAIH9bqLD7IvyGNJvwFWAne', // Your API key
       endpoint: 'https://api.jsonbin.io/v3/b',
-      syncInterval: 5000 // Check for updates every 5 seconds
+      syncInterval: 3000 // Check for updates every 3 seconds (faster sync)
     };
     
     let cloudStorageAvailable = false;
@@ -580,13 +585,16 @@
         cloudStorageAvailable = response.ok;
         if (cloudStorageAvailable) {
           console.log('✓ Cloud storage connected - data will sync across all browsers');
+          updateSyncStatus('default');
           startCloudSync();
         } else {
           console.log('⚠ Cloud storage unavailable - using localStorage only');
+          updateSyncStatus('offline');
         }
       } catch (error) {
         console.log('⚠ Cloud storage unavailable - using localStorage only');
         cloudStorageAvailable = false;
+        updateSyncStatus('offline');
       }
     }
     
@@ -602,6 +610,54 @@
     const performanceCache = new Map();
     let saveTimeout = null;
     let lastSaveTime = 0;
+    
+    // Update sync status indicator
+    function updateSyncStatus(status) {
+      const indicator = document.getElementById('syncIndicator');
+      const text = document.getElementById('syncText');
+      const container = document.getElementById('cloudSyncStatus');
+      
+      if (!indicator || !text || !container) return;
+      
+      switch(status) {
+        case 'syncing':
+          indicator.textContent = '🔄';
+          text.textContent = 'Syncing...';
+          container.style.background = '#fef3c7';
+          container.style.color = '#92400e';
+          break;
+        case 'synced':
+          indicator.textContent = '✅';
+          text.textContent = 'Synced';
+          container.style.background = '#d1fae5';
+          container.style.color = '#065f46';
+          // Reset to normal after 2 seconds
+          setTimeout(() => {
+            indicator.textContent = '☁️';
+            text.textContent = 'Cloud Connected';
+            container.style.background = '#e0f2fe';
+            container.style.color = '#075985';
+          }, 2000);
+          break;
+        case 'error':
+          indicator.textContent = '⚠️';
+          text.textContent = 'Sync Error';
+          container.style.background = '#fee2e2';
+          container.style.color = '#991b1b';
+          break;
+        case 'offline':
+          indicator.textContent = '📴';
+          text.textContent = 'Offline';
+          container.style.background = '#f3f4f6';
+          container.style.color = '#6b7280';
+          break;
+        default:
+          indicator.textContent = '☁️';
+          text.textContent = 'Cloud Connected';
+          container.style.background = '#e0f2fe';
+          container.style.color = '#075985';
+      }
+    }
     
     // Fast deep clone function (more efficient than JSON parse/stringify)
     function fastClone(obj) {
@@ -735,6 +791,9 @@
     async function saveDataToStorage(forceImmediate = false) {
       const performSave = async () => {
         try {
+          // Update sync indicator
+          updateSyncStatus('syncing');
+          
           const startTime = performance.now();
           
           // Get attendance data (cached to avoid repeated localStorage access)
@@ -800,16 +859,20 @@
                   totalData: JSON.stringify(data).length + ' bytes'
                 });
                 lastCloudSync = Date.now();
+                updateSyncStatus('synced');
               } else {
                 const errorText = await response.text();
+                updateSyncStatus('error');
                 throw new Error(`Cloud save failed: ${response.status} - ${errorText}`);
               }
             } catch (error) {
               console.error('❌ CLOUD SAVE FAILED:', error);
               cloudStorageAvailable = false;
+              updateSyncStatus('error');
             }
           } else {
             console.warn('⚠️ Cloud storage not available, saving locally only');
+            updateSyncStatus('offline');
           }
           
           // Always save to localStorage as backup
