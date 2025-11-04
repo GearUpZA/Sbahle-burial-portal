@@ -1597,6 +1597,11 @@
         tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
         console.log('updateMember: loaded', tempBeneficiaries.length, 'beneficiaries');
       }
+      // Update member minutes display if the tab is active
+      if (document.getElementById('memberMinutesTab') && !document.getElementById('memberMinutesTab').classList.contains('hidden')) {
+        displayMemberMinutes();
+        console.log('✓ Member minutes refreshed:', meetingMinutes.length, 'minutes available');
+      }
     }
 
     // Optimized table rendering with DOM fragment for better performance
@@ -2866,8 +2871,12 @@
       meetingMinutes.push(newMinutes);
       await saveDataToStorage(true);
       closeModal();
-      showAlert('adminAlert', '✓ Meeting minutes saved successfully!', 'success');
+      showAlert('adminAlert', '✓ Meeting minutes saved and synced to all members!', 'success');
       displayMeetingMinutes();
+      
+      // Also update member minutes display if any member is viewing
+      displayMemberMinutes();
+      console.log('✓ Meeting minutes published:', newMinutes.subject, '- Available to all members');
     }
 
     function displayMeetingMinutes() {
