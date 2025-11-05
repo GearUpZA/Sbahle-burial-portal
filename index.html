@@ -874,7 +874,9 @@
                 console.log('✅ CLOUD SAVE SUCCESS:', {
                   time: data.lastSaved,
                   members: data.members.length,
-                  totalData: JSON.stringify(data).length + ' bytes'
+                  meetingMinutes: data.meetingMinutes.length,
+                  signatures: data.members.filter(m => m.signature).length + ' members with signatures',
+                  totalDataSize: JSON.stringify(data).length + ' bytes'
                 });
                 lastCloudSync = Date.now();
                 updateSyncStatus('synced');
@@ -982,8 +984,17 @@
             }
             
             const loadTime = performance.now() - startTime;
-            console.log('✓ Data loaded from storage in', loadTime.toFixed(2), 'ms. Last saved:', data.lastSaved);
-            console.log('✓ Total members loaded:', members.length);
+            console.log('✅ DATA LOAD COMPLETE:', {
+              loadTime: loadTime.toFixed(2) + 'ms',
+              lastSaved: data.lastSaved,
+              members: members.length,
+              meetingMinutes: meetingMinutes.length,
+              signatures: members.filter(m => m.signature).length + ' members with signatures',
+              beneficiaries: beneficiaries.length,
+              payouts: payouts.length,
+              paymentProofs: paymentProofs.length
+            });
+            
             if (data.systemInfo) {
               console.log('✓ System Statistics:', data.systemInfo);
             }
@@ -1024,8 +1035,10 @@
             const localTime = lastCloudSync;
             
             if (cloudTime > localTime) {
-              console.log('🔄 Syncing updates from cloud...', {
+              console.log('🔄 NEW DATA DETECTED - Syncing from cloud...', {
                 cloudMembers: cloudData.members?.length || 0,
+                cloudMinutes: cloudData.meetingMinutes?.length || 0,
+                cloudSignatures: (cloudData.members || []).filter(m => m.signature).length,
                 localMembers: members.length,
                 cloudTime: new Date(cloudData.lastSaved).toLocaleString(),
                 localTime: new Date(localTime).toLocaleString()
@@ -1043,6 +1056,12 @@
               minutesIdCounter = cloudData.minutesIdCounter || 1;
               proofIdCounter = cloudData.proofIdCounter || 1;
               
+              // Sync attendance data if available
+              if (cloudData.attendance) {
+                localStorage.setItem('attendance', JSON.stringify(cloudData.attendance));
+                console.log('✓ Attendance data synced from cloud');
+              }
+              
               // Update both localStorage backup and sync time
               localStorage.setItem(STORAGE_KEY, encryptData({
                 members,
@@ -1052,12 +1071,9 @@
                 meetingMinutes,
                 paymentProofs,
                 payoutCollectors,
-                paymentProofs,
                 memberIdCounter,
                 minutesIdCounter,
                 proofIdCounter,
-                penalties,
-                memberIdCounter,
                 lastSaved: cloudData.lastSaved
               }));
               
@@ -1078,7 +1094,13 @@
               // Show brief sync notification
               updateSyncStatus('synced');
               
-              console.log('✓ Data synchronized across all devices:', members.length, 'members loaded');
+              console.log('✅ SYNC COMPLETE - Data updated across all devices:', {
+                members: members.length,
+                meetingMinutes: meetingMinutes.length,
+                signatures: members.filter(m => m.signature).length + ' members with signatures',
+                beneficiaries: beneficiaries.length,
+                payouts: payouts.length
+              });
             }
           }
         }
@@ -1581,6 +1603,21 @@
       document.getElementById('totalMem').textContent = members.length;
       document.getElementById('activeMem').textContent = members.filter(m => m.status === 'Active').length;
       document.getElementById('suspMem').textContent = members.filter(m => m.status === 'Suspended').length;
+      
+      // Refresh attendance display if the attendance tab is active
+      if (document.getElementById('attendanceTab') && !document.getElementById('attendanceTab').classList.contains('hidden')) {
+        const meetingDate = document.getElementById('meetingDate');
+        if (meetingDate && meetingDate.value) {
+          showAttendanceList();
+          console.log('✓ Attendance list refreshed with latest member signatures');
+        }
+      }
+      
+      // Refresh meeting minutes display if the minutes tab is active
+      if (document.getElementById('minutesTab') && !document.getElementById('minutesTab').classList.contains('hidden')) {
+        displayMeetingMinutes();
+        console.log('✓ Meeting minutes refreshed:', meetingMinutes.length, 'minutes available');
+      }
     }
 
     function updateMember() {
@@ -2402,8 +2439,14 @@
       const member = members.find(m => m.id === currentUser.id);
       if (member) {
         member.signature = signature;
-        saveDataToStorage();
-        showAlert('memberAlert', '✓ Signature saved successfully!', 'success');
+        // Update currentUser signature as well
+        currentUser.signature = signature;
+        
+        // Force immediate cloud sync to ensure signature is saved immediately
+        saveDataToStorage(true);
+        
+        showAlert('memberAlert', '✓ Signature saved and synced to cloud!', 'success');
+        console.log('✓ Signature saved for member:', member.name, '- Syncing to cloud immediately');
         
         // Display current signature
         document.getElementById('currentSignature').style.display = 'block';
