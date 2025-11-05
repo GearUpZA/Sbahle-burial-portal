@@ -879,6 +879,8 @@
             }
           };
           
+          let cloudSaveSuccess = false;
+          
           // Save to cloud storage if available
           if (cloudStorageAvailable && CLOUD_STORAGE.enabled) {
             try {
@@ -901,6 +903,7 @@
                 });
                 lastCloudSync = Date.now();
                 updateSyncStatus('synced');
+                cloudSaveSuccess = true;
               } else {
                 const errorText = await response.text();
                 console.error('❌ CLOUD SAVE ERROR:', {
@@ -924,16 +927,19 @@
                   // Don't disable cloud storage, just log the error
                   console.error('Cloud save failed but will retry on next save');
                 }
+                cloudSaveSuccess = false;
               }
             } catch (error) {
               console.error('❌ CLOUD SAVE NETWORK ERROR:', error.message);
               // Network error - don't disable cloud storage permanently
               updateSyncStatus('error');
               console.warn('⚠️ Network error - data saved locally, will sync when connection restored');
+              cloudSaveSuccess = false;
             }
           } else {
             console.warn('⚠️ Cloud storage not available, saving locally only');
             updateSyncStatus('offline');
+            cloudSaveSuccess = false;
           }
           
           // Always save to localStorage as backup
@@ -946,7 +952,9 @@
           
           console.log('✓ Data saved to secure storage at', data.lastSaved);
           console.log('✓ System Info:', data.systemInfo);
-          return true;
+          
+          // Return cloud save status
+          return cloudSaveSuccess;
         } catch (e) {
           console.error('Failed to save data:', e);
           showAlert('adminAlert', '⚠ Failed to save data', 'error');
@@ -2487,22 +2495,29 @@
         showAlert('memberAlert', '💾 Saving signature to cloud...', 'info');
         
         // Force immediate cloud sync to ensure signature is saved immediately
-        const saveSuccess = await saveDataToStorage(true);
+        const cloudSaveSuccess = await saveDataToStorage(true);
         
-        if (saveSuccess !== false) {
-          showAlert('memberAlert', '✅ Signature saved and synced to cloud!', 'success');
-          console.log('✓ Signature saved for member:', member.name, '- Syncing to cloud immediately');
+        if (cloudSaveSuccess === true) {
+          showAlert('memberAlert', '✅ SIGNATURE SAVED TO CLOUD! You can now see it in attendance register.', 'success');
+          console.log('✅ Signature saved to CLOUD for member:', member.name, member.id);
           
           // Display current signature
           document.getElementById('currentSignature').style.display = 'block';
           document.getElementById('savedSignature').src = signature;
         } else {
-          showAlert('memberAlert', '⚠️ Signature saved locally. Cloud sync will retry automatically.', 'warning');
-          console.log('⚠️ Signature saved locally for:', member.name, '- Cloud sync will retry');
+          // Cloud save failed - show clear error
+          showAlert('memberAlert', '❌ CLOUD SYNC FAILED! Signature saved locally only. Please save again or contact admin.', 'error');
+          console.error('❌ Cloud sync FAILED for:', member.name, member.id);
+          console.error('Signature saved locally but NOT in cloud - will NOT show in attendance');
           
-          // Still display the signature
+          // Still display the signature locally
           document.getElementById('currentSignature').style.display = 'block';
           document.getElementById('savedSignature').src = signature;
+          
+          // Show retry button
+          setTimeout(() => {
+            showAlert('memberAlert', '⚠️ Click "Save Signature" again to retry cloud sync', 'warning');
+          }, 3000);
         }
       }
     }
