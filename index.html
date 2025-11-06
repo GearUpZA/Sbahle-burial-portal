@@ -679,6 +679,8 @@
     const performanceCache = new Map();
     let saveTimeout = null;
     let lastSaveTime = 0;
+    let syncRetryCount = 0;
+    const MAX_SYNC_RETRIES = 3;
     
     // Update sync status indicator (for both admin and member dashboards)
     function updateSyncStatus(status) {
@@ -718,15 +720,26 @@
             break;
           case 'error':
             ind.textContent = '⚠️';
-            txt.textContent = 'Sync Error - Retrying...';
+            txt.textContent = syncRetryCount >= MAX_SYNC_RETRIES ? 'Sync Error - Saved Locally' : 'Sync Error - Retrying...';
             cont.style.background = '#fee2e2';
             cont.style.color = '#991b1b';
-            cont.title = 'Cloud sync failed. Data saved locally and will auto-retry.';
-            // Try to recover after 5 seconds
-            setTimeout(() => {
-              console.log('🔄 Attempting to reconnect to cloud storage...');
-              saveDataToStorage(true);
-            }, 5000);
+            cont.title = 'Cloud sync failed. Data saved locally.';
+            
+            // Only retry if we haven't exceeded max retries
+            if (syncRetryCount < MAX_SYNC_RETRIES) {
+              syncRetryCount++;
+              setTimeout(() => {
+                console.log(`🔄 Retry attempt ${syncRetryCount}/${MAX_SYNC_RETRIES} - Attempting to reconnect to cloud storage...`);
+                saveDataToStorage(true);
+              }, 5000);
+            } else {
+              console.warn('⚠️ Max retry attempts reached. Data is saved locally. Will retry on next user action.');
+              // Reset counter after 30 seconds to allow future retries
+              setTimeout(() => {
+                syncRetryCount = 0;
+                console.log('🔄 Retry counter reset - ready for next sync attempt');
+              }, 30000);
+            }
             break;
           case 'offline':
             ind.textContent = '📴';
@@ -951,6 +964,7 @@
                   totalDataSize: JSON.stringify(data).length + ' bytes'
                 });
                 lastCloudSync = Date.now();
+                syncRetryCount = 0; // Reset retry counter on success
                 updateSyncStatus('synced');
                 cloudSaveSuccess = true;
               } else {
