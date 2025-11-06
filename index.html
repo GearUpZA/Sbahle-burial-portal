@@ -321,23 +321,24 @@
 
       <div id="dataTab" class="hidden">
         <h2>Data Management</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
-          <p style="margin-bottom: 10px;"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
-          <p style="margin-bottom: 0;"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
+        <div style="background: #dcfce7; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #16a34a;">
+          <p style="margin-bottom: 10px;"><strong>� BACKUP & RESTORE SYSTEM</strong></p>
+          <p style="margin-bottom: 5px; font-size: 13px;">✅ Export: Download complete backup including signatures, beneficiaries, payment proofs</p>
+          <p style="margin-bottom: 0; font-size: 13px;">✅ Import: Restore from previous backup file (all data will be replaced)</p>
         </div>
         
         <div style="display: grid; gap: 15px;">
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📥 Export Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Download a backup of all system data as a JSON file.</p>
-            <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px; color: white;">
+            <h3 style="margin-bottom: 10px; font-size: 18px; color: white;">💾 DOWNLOAD COMPLETE BACKUP</h3>
+            <p style="margin-bottom: 15px; font-size: 13px; opacity: 0.9;">Save everything: Members, signatures, beneficiaries, payment proofs, meeting minutes, attendance records</p>
+            <button class="btn" onclick="exportData()" style="background: white; color: #667eea; font-weight: bold; font-size: 14px;">📥 Download Backup Now</button>
           </div>
           
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📤 Import Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Restore data from a previously exported backup file.</p>
-            <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
-            <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+          <div style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 20px; border-radius: 8px; color: white;">
+            <h3 style="margin-bottom: 10px; font-size: 18px; color: white;">📤 RESTORE FROM BACKUP</h3>
+            <p style="margin-bottom: 15px; font-size: 13px; opacity: 0.9;">Upload a previously saved backup file to restore all data</p>
+            <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px; padding: 8px; border-radius: 5px; background: white;">
+            <button class="btn" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])" style="background: white; color: #16a34a; font-weight: bold; font-size: 14px;">📤 Restore Backup</button>
           </div>
           
           <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
@@ -1245,19 +1246,26 @@
         const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
         
         const data = {
-          // Core data
+          // Core member data
           members,
           beneficiaries,
           payouts,
           penalties,
+          meetingMinutes,
+          paymentProofs,
+          payoutCollectors,
+          
+          // Counters
           memberIdCounter,
+          minutesIdCounter,
+          proofIdCounter,
           
           // Attendance and meeting data
           attendance: attendanceData,
           
           // Export metadata
           exportDate: new Date().toISOString(),
-          version: '2.0',
+          version: '2.5-payouts',
           systemInfo: {
             totalMembers: members.length,
             activeMembers: members.filter(m => m.status === 'Active').length,
@@ -1266,63 +1274,122 @@
             totalPayouts: payouts.length,
             totalPenalties: penalties.length,
             totalMeetings: Object.keys(attendanceData).length,
-            exportedBy: 'Sbahle Burial Portal v2.0'
+            totalMinutes: meetingMinutes.length,
+            totalPaymentProofs: paymentProofs.length,
+            totalPayoutCollectors: payoutCollectors.length,
+            membersWithSignatures: members.filter(m => m.signature).length,
+            dataSize: 'Calculating...',
+            exportedBy: 'Sbahle Burial Portal v2.5'
           }
         };
         
         const jsonStr = JSON.stringify(data, null, 2);
-        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const dataSize = (jsonStr.length / 1024).toFixed(2);
+        data.systemInfo.dataSize = `${dataSize} KB`;
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `sbahle_complete_backup_${new Date().toISOString().split('T')[0]}.json`;
+        const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0];
+        a.download = `sbahle_FULL_BACKUP_${timestamp}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showAlert('adminAlert', '✓ Complete data exported successfully!', 'success');
+        
+        showAlert('adminAlert', `✅ Complete backup exported! (${dataSize} KB) - Includes ALL signatures, beneficiaries, payment proofs, and meeting minutes`, 'success');
+        console.log('✅ BACKUP EXPORTED:', {
+          members: members.length,
+          beneficiaries: beneficiaries.length,
+          signatures: members.filter(m => m.signature).length,
+          paymentProofs: paymentProofs.length,
+          meetingMinutes: meetingMinutes.length,
+          size: `${dataSize} KB`
+        });
       } catch (e) {
         console.error('Export error:', e);
-        showAlert('adminAlert', '⚠ Failed to export data', 'error');
+        showAlert('adminAlert', '⚠ Failed to export data: ' + e.message, 'error');
       }
     }
     
     // Import data from JSON file
     // Import comprehensive data from JSON file
-    function importData(file) {
+    async function importData(file) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = async function(e) {
         try {
           const data = JSON.parse(e.target.result);
-          if (confirm('This will replace all current data including attendance records. Are you sure?')) {
-            // Import core data
+          
+          // Show detailed confirmation
+          const confirmMsg = `⚠️ RESTORE COMPLETE BACKUP?\n\n` +
+            `This will restore:\n` +
+            `• ${data.members?.length || 0} members (including signatures)\n` +
+            `• ${data.beneficiaries?.length || 0} beneficiaries\n` +
+            `• ${data.paymentProofs?.length || 0} payment proofs\n` +
+            `• ${data.meetingMinutes?.length || 0} meeting minutes\n` +
+            `• ${data.payouts?.length || 0} payouts\n` +
+            `• ${Object.keys(data.attendance || {}).length} attendance records\n\n` +
+            `Current data will be REPLACED. Continue?`;
+          
+          if (confirm(confirmMsg)) {
+            // Import ALL data
             members = data.members || [];
             beneficiaries = data.beneficiaries || [];
             payouts = data.payouts || [];
             penalties = data.penalties || [];
-            memberIdCounter = data.memberIdCounter || 4;
+            meetingMinutes = data.meetingMinutes || [];
+            paymentProofs = data.paymentProofs || [];
+            payoutCollectors = data.payoutCollectors || [];
+            
+            // Import counters
+            memberIdCounter = data.memberIdCounter || 16;
+            minutesIdCounter = data.minutesIdCounter || 1;
+            proofIdCounter = data.proofIdCounter || 1;
             
             // Import attendance data if available
             if (data.attendance) {
               localStorage.setItem('attendance', JSON.stringify(data.attendance));
             }
             
-            // Save all imported data
-            saveDataToStorage();
+            // Save all imported data to cloud immediately
+            updateSyncStatus('syncing');
+            const cloudSaveSuccess = await saveDataToStorage(true);
+            
+            // Refresh UI
             updateAdmin();
             
-            // Show success message with statistics
-            let message = '✓ Data imported successfully!';
-            if (data.systemInfo) {
-              message += `\n📊 Imported: ${data.systemInfo.totalMembers} members, ${data.systemInfo.totalMeetings} meetings`;
-            }
-            showAlert('adminAlert', message, 'success');
+            // Show detailed success message
+            const signaturesCount = members.filter(m => m.signature).length;
+            const message = cloudSaveSuccess 
+              ? `✅ COMPLETE RESTORE SUCCESSFUL!\n\n` +
+                `Restored and synced to cloud:\n` +
+                `• ${members.length} members (${signaturesCount} with signatures)\n` +
+                `• ${beneficiaries.length} beneficiaries\n` +
+                `• ${paymentProofs.length} payment proofs\n` +
+                `• ${meetingMinutes.length} meeting minutes\n` +
+                `• ${payouts.length} payouts`
+              : `⚠️ DATA RESTORED LOCALLY\n\n` +
+                `Cloud sync failed. Data saved locally:\n` +
+                `• ${members.length} members\n` +
+                `• ${beneficiaries.length} beneficiaries\n` +
+                `Please check internet connection.`;
             
-            console.log('✓ Import completed:', data.systemInfo || 'Basic data structure');
+            alert(message);
+            showAlert('adminAlert', cloudSaveSuccess ? '✅ Complete backup restored and synced to cloud!' : '⚠️ Backup restored locally - cloud sync pending', cloudSaveSuccess ? 'success' : 'warning');
+            
+            console.log('✅ RESTORE COMPLETED:', {
+              members: members.length,
+              signatures: signaturesCount,
+              beneficiaries: beneficiaries.length,
+              paymentProofs: paymentProofs.length,
+              meetingMinutes: meetingMinutes.length,
+              cloudSynced: cloudSaveSuccess
+            });
           }
         } catch (err) {
           console.error('Import error:', err);
-          showAlert('adminAlert', '⚠ Invalid data file format', 'error');
+          showAlert('adminAlert', '❌ Invalid backup file format: ' + err.message, 'error');
         }
       };
       reader.readAsText(file);
