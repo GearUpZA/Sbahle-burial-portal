@@ -137,6 +137,7 @@
         <button class="tab" onclick="adminTab('members', event)">Members</button>
         <button class="tab" onclick="adminTab('beneficiaries', event)">Beneficiaries</button>
         <button class="tab" onclick="adminTab('attendance', event)">Attendance</button>
+        <button class="tab" onclick="adminTab('payments', event)">Payment Proofs</button>
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
         <button class="tab" onclick="adminTab('minutes', event)">Meeting Minutes</button>
@@ -172,6 +173,28 @@
         <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
         <button class="btn btn-primary" id="payoutBenBtn" style="display:none;" onclick="createPayoutModal()">💰 Create Payout</button>
         <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+      </div>
+
+      <div id="paymentsTab" class="hidden">
+        <h2>Payment Proofs - All Members</h2>
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <p><strong>📤 Review and approve member payment proofs</strong></p>
+          <p style="margin-top: 10px; color: #4a5568;">View uploaded payment proofs, verify files, and approve submissions</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Upload Date</th>
+              <th>Amount</th>
+              <th>Description</th>
+              <th>File</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminPaymentProofsTable"></tbody>
+        </table>
       </div>
 
       <div id="payoutsTab" class="hidden">
@@ -1668,6 +1691,7 @@
       document.getElementById('overviewTab').classList.toggle('hidden', t !== 'overview');
       document.getElementById('membersTab').classList.toggle('hidden', t !== 'members');
       document.getElementById('beneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
+      document.getElementById('paymentsTab').classList.toggle('hidden', t !== 'payments');
       document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
       document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
@@ -1677,6 +1701,7 @@
       if (e && e.target) e.target.classList.add('active');
       if (t === 'members') { displayMem(); }
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
+      if (t === 'payments') displayAdminPaymentProofs();
       if (t === 'payouts') displayPayouts();
       if (t === 'penalties') displayPenalties();
       if (t === 'minutes') displayMeetingMinutes();
@@ -3254,8 +3279,9 @@
           <input type="text" id="proofDescription" placeholder="e.g., Monthly contribution - October">
         </div>
         <div class="form-group">
-          <label>Upload File (Optional)</label>
-          <input type="file" id="proofFile" accept=".pdf,.jpg,.jpeg,.png">
+          <label>Upload File (PDF/JPEG) *</label>
+          <input type="file" id="proofFile" accept=".pdf,.jpg,.jpeg,.png" required>
+          <small style="color: #666; display: block; margin-top: 5px;">Supported formats: PDF, JPEG, PNG (Max 5MB)</small>
         </div>
         <button class="btn btn-primary" onclick="savePaymentProof()">Upload Proof</button>
       `;
@@ -3279,27 +3305,65 @@
         return;
       }
       
-      let fileName = 'No file attached';
-      if (fileInput && fileInput.files.length > 0) {
-        fileName = fileInput.files[0].name;
+      if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        alert('⚠ Please select a file to upload');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      
+      if (file.size > maxSize) {
+        alert('⚠ File size exceeds 5MB. Please choose a smaller file.');
+        return;
+      }
+      
+      // Check file type
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('⚠ Invalid file type. Please upload PDF, JPEG, or PNG files only.');
+        return;
       }
       
       try {
+        // Show loading indicator
+        const loadingMsg = document.createElement('div');
+        loadingMsg.innerHTML = '<div style="text-align: center; padding: 10px; color: #667eea;">📤 Uploading file...</div>';
+        document.querySelector('.modal-content').appendChild(loadingMsg);
+        
+        // Convert file to base64
+        const fileData = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        
         const newProof = {
           id: 'PROOF' + String(proofIdCounter++).padStart(3, '0'),
           memberId: currentUser.id,
           memberName: currentUser.name,
           amount: parseFloat(amount),
           description: description.trim(),
-          fileName,
+          fileName: file.name,
+          fileType: file.type,
+          fileData: fileData, // Store base64 encoded file
+          fileSize: file.size,
           uploadDate: new Date().toISOString(),
           status: 'Pending'
         };
         
         paymentProofs.push(newProof);
-        await saveDataToStorage(true);
+        
+        const cloudSaveSuccess = await saveDataToStorage(true);
         closeModal();
-        showAlert('memberAlert', '✓ Payment proof uploaded successfully!', 'success');
+        
+        if (cloudSaveSuccess === true) {
+          showAlert('memberAlert', '✅ Payment proof uploaded successfully and saved to cloud!', 'success');
+        } else {
+          showAlert('memberAlert', '⚠ Payment proof uploaded locally but cloud sync failed. Please try again.', 'warning');
+        }
+        
         displayMemberPaymentProofs();
         console.log('Payment proof saved successfully');
       } catch (error) {
@@ -3335,7 +3399,7 @@
         let fileIcon = '';
         let fileDisplay = '';
         
-        if (proof.fileName && proof.fileName !== 'No file attached' && proof.fileName !== 'No file') {
+        if (proof.fileName && proof.fileName !== 'No file attached' && proof.fileName !== 'No file' && proof.fileData) {
           const fileName = proof.fileName.toLowerCase();
           if (fileName.endsWith('.pdf')) {
             fileIcon = '📄';
@@ -3344,7 +3408,14 @@
           } else {
             fileIcon = '📎';
           }
-          fileDisplay = `<span style="font-size: 24px; cursor: pointer;" title="${proof.fileName}">${fileIcon}</span><br><small style="color: #666; font-size: 11px;">${proof.fileName}</small>`;
+          fileDisplay = `
+            <div style="text-align: center;">
+              <span style="font-size: 24px;">${fileIcon}</span><br>
+              <small style="color: #666; font-size: 11px; display: block; margin-bottom: 5px;">${proof.fileName}</small>
+              <button class="btn btn-sm btn-primary" onclick="viewPaymentProofFile('${proof.id}')" style="font-size: 11px; padding: 3px 8px;">View</button>
+              <button class="btn btn-sm" onclick="downloadPaymentProofFile('${proof.id}')" style="font-size: 11px; padding: 3px 8px; background: #48bb78; color: white;">Download</button>
+            </div>
+          `;
         } else {
           fileDisplay = '<span style="color: #999; font-size: 12px;">No file</span>';
         }
@@ -3415,6 +3486,168 @@
         console.error('Error deleting payment proof:', error);
         alert('⚠ Error deleting payment proof. Please try again.');
       }
+    }
+
+    function viewPaymentProofFile(proofId) {
+      const proof = paymentProofs.find(p => p.id === proofId);
+      if (!proof || !proof.fileData) {
+        alert('⚠ File not found');
+        return;
+      }
+      
+      // Open file in new window/tab
+      const newWindow = window.open();
+      if (proof.fileType === 'application/pdf') {
+        newWindow.document.write(`
+          <html>
+            <head><title>${proof.fileName}</title></head>
+            <body style="margin: 0;">
+              <iframe src="${proof.fileData}" style="width: 100%; height: 100vh; border: none;"></iframe>
+            </body>
+          </html>
+        `);
+      } else {
+        // For images
+        newWindow.document.write(`
+          <html>
+            <head><title>${proof.fileName}</title></head>
+            <body style="margin: 0; display: flex; justify-content: center; align-items: center; background: #333;">
+              <img src="${proof.fileData}" style="max-width: 100%; max-height: 100vh;" />
+            </body>
+          </html>
+        `);
+      }
+    }
+
+    function downloadPaymentProofFile(proofId) {
+      const proof = paymentProofs.find(p => p.id === proofId);
+      if (!proof || !proof.fileData) {
+        alert('⚠ File not found');
+        return;
+      }
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = proof.fileData;
+      link.download = proof.fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function displayAdminPaymentProofs() {
+      const table = document.getElementById('adminPaymentProofsTable');
+      if (!table) return;
+      
+      if (paymentProofs.length === 0) {
+        table.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #666;">No payment proofs uploaded yet.</td></tr>';
+        return;
+      }
+      
+      const sortedProofs = [...paymentProofs].sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+      
+      table.innerHTML = sortedProofs.map(proof => {
+        const uploadDate = new Date(proof.uploadDate);
+        const formattedDate = uploadDate.toLocaleDateString('en-ZA', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        let fileDisplay = '';
+        if (proof.fileName && proof.fileName !== 'No file attached' && proof.fileName !== 'No file' && proof.fileData) {
+          const fileName = proof.fileName.toLowerCase();
+          let fileIcon = '';
+          if (fileName.endsWith('.pdf')) {
+            fileIcon = '📄';
+          } else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')) {
+            fileIcon = '🖼️';
+          } else {
+            fileIcon = '📎';
+          }
+          fileDisplay = `
+            <div style="text-align: center;">
+              <span style="font-size: 20px;">${fileIcon}</span><br>
+              <small style="color: #666; font-size: 10px; display: block; margin: 3px 0;">${proof.fileName}</small>
+              <button class="btn btn-sm btn-primary" onclick="viewPaymentProofFile('${proof.id}')" style="font-size: 10px; padding: 2px 6px;">View</button>
+            </div>
+          `;
+        } else {
+          fileDisplay = '<span style="color: #999; font-size: 11px;">No file</span>';
+        }
+        
+        let statusBadge = '';
+        if (proof.status === 'Approved') {
+          statusBadge = '<span class="badge badge-approved">Approved</span>';
+        } else if (proof.status === 'Pending') {
+          statusBadge = '<span class="badge badge-pending">Pending</span>';
+        } else {
+          statusBadge = `<span class="badge">${proof.status}</span>`;
+        }
+        
+        let actionButtons = '';
+        if (proof.status === 'Pending') {
+          actionButtons = `
+            <button class="btn btn-success btn-sm" onclick="approvePaymentProof('${proof.id}')" style="font-size: 11px; padding: 3px 8px;">Approve</button>
+            <button class="btn btn-danger btn-sm" onclick="rejectPaymentProof('${proof.id}')" style="font-size: 11px; padding: 3px 8px;">Reject</button>
+          `;
+        } else {
+          actionButtons = '<span style="color: #999; font-size: 11px;">-</span>';
+        }
+        
+        return `
+        <tr>
+          <td>${proof.memberName}</td>
+          <td style="font-size: 11px;">${formattedDate}</td>
+          <td>R${proof.amount.toFixed(2)}</td>
+          <td>${proof.description}</td>
+          <td>${fileDisplay}</td>
+          <td>${statusBadge}</td>
+          <td style="text-align: center;">${actionButtons}</td>
+        </tr>
+      `}).join('');
+    }
+
+    async function approvePaymentProof(proofId) {
+      const proofIndex = paymentProofs.findIndex(p => p.id === proofId);
+      if (proofIndex === -1) {
+        alert('⚠ Payment proof not found');
+        return;
+      }
+      
+      paymentProofs[proofIndex].status = 'Approved';
+      const cloudSaveSuccess = await saveDataToStorage(true);
+      
+      if (cloudSaveSuccess === true) {
+        showAlert('adminAlert', '✅ Payment proof approved!', 'success');
+      } else {
+        showAlert('adminAlert', '⚠ Approval saved locally but cloud sync failed', 'warning');
+      }
+      
+      displayAdminPaymentProofs();
+    }
+
+    async function rejectPaymentProof(proofId) {
+      const proofIndex = paymentProofs.findIndex(p => p.id === proofId);
+      if (proofIndex === -1) {
+        alert('⚠ Payment proof not found');
+        return;
+      }
+      
+      const reason = prompt('Reason for rejection (optional):');
+      paymentProofs[proofIndex].status = reason ? `Rejected: ${reason}` : 'Rejected';
+      
+      const cloudSaveSuccess = await saveDataToStorage(true);
+      
+      if (cloudSaveSuccess === true) {
+        showAlert('adminAlert', '✅ Payment proof rejected', 'success');
+      } else {
+        showAlert('adminAlert', '⚠ Rejection saved locally but cloud sync failed', 'warning');
+      }
+      
+      displayAdminPaymentProofs();
     }
 
     // Update updateMember function to show payment proofs
