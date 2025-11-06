@@ -409,6 +409,10 @@
           <input type="text" id="profPhone" disabled>
         </div>
         <div class="form-group">
+          <label>ID Number</label>
+          <input type="text" id="profIdNumber" disabled>
+        </div>
+        <div class="form-group">
           <label>Role</label>
           <input type="text" id="profRole" disabled>
         </div>
@@ -452,7 +456,8 @@
         <div class="form-group"><label>Name</label><input type="text" id="memberProfName" disabled></div>
         <div class="form-group"><label>Email</label><input type="text" id="memberProfEmail" disabled></div>
         <div class="form-group"><label>Phone</label><input type="text" id="memberProfPhone" disabled></div>
-        <button class="btn btn-primary" onclick="editMemberProf()">Edit</button>
+        <div class="form-group"><label>ID Number</label><input type="text" id="memberProfIdNumber" disabled></div>
+        <button class="btn btn-primary" onclick="editMemberProf()">Edit Profile</button>
         <button class="btn btn-success hidden" id="saveMemberProf" onclick="saveMemberProf()">Save</button>
       </div>
 
@@ -1800,6 +1805,7 @@
       document.getElementById('memberProfName').value = currentUser.name;
       document.getElementById('memberProfEmail').value = currentUser.email;
       document.getElementById('memberProfPhone').value = currentUser.phone;
+      document.getElementById('memberProfIdNumber').value = currentUser.idNumber || '';
       document.getElementById('profRole').value = currentUser.role || 'Member';
       const badge = document.getElementById('memStatus');
       badge.textContent = currentUser.status;
@@ -2336,16 +2342,19 @@
       document.getElementById('memberProfName').disabled = false;
       document.getElementById('memberProfEmail').disabled = false;
       document.getElementById('memberProfPhone').disabled = false;
+      document.getElementById('memberProfIdNumber').disabled = false;
       document.getElementById('saveMemberProf').classList.remove('hidden');
     }
 
-    function saveMemberProf() {
+    async function saveMemberProf() {
       currentUser.name = document.getElementById('memberProfName').value;
       currentUser.email = document.getElementById('memberProfEmail').value;
       currentUser.phone = document.getElementById('memberProfPhone').value;
+      currentUser.idNumber = document.getElementById('memberProfIdNumber').value;
       document.getElementById('memberProfName').disabled = true;
       document.getElementById('memberProfEmail').disabled = true;
       document.getElementById('memberProfPhone').disabled = true;
+      document.getElementById('memberProfIdNumber').disabled = true;
       document.getElementById('saveMemberProf').classList.add('hidden');
       
       // Update in members array
@@ -2354,10 +2363,15 @@
         members[memberIndex].name = currentUser.name;
         members[memberIndex].email = currentUser.email;
         members[memberIndex].phone = currentUser.phone;
-        saveDataToStorage(true);
+        members[memberIndex].idNumber = currentUser.idNumber;
+        const cloudSaveSuccess = await saveDataToStorage(true);
+        
+        if (cloudSaveSuccess === true) {
+          showAlert('memberAlert', '✅ Profile updated and synced to cloud!', 'success');
+        } else {
+          showAlert('memberAlert', '⚠ Profile updated locally but cloud sync failed. Please try again.', 'warning');
+        }
       }
-      
-      showAlert('memberAlert', '✓ Profile updated!', 'success');
     }
 
     function addContribModal() {
