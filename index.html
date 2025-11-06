@@ -1476,6 +1476,12 @@
         currentUser = { type: 'admin' };
         show('adminPage');
         updateAdmin();
+        // Update sync status immediately
+        if (cloudStorageAvailable) {
+          updateSyncStatus('default');
+        } else {
+          updateSyncStatus('offline');
+        }
       } else alert('Invalid');
     }
 
@@ -1507,6 +1513,13 @@
       console.log('Filtered beneficiaries:', tempBeneficiaries);
       show('memberPage');
       updateMember();
+      
+      // Update sync status immediately
+      if (cloudStorageAvailable) {
+        updateSyncStatus('default');
+      } else {
+        updateSyncStatus('offline');
+      }
     }
 
     // FORGOT PASSWORD FUNCTIONALITY
