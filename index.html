@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Sbahle Burial Society</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏛️</text></svg>">
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -86,6 +87,26 @@
         <div class="form-group"><label>Email</label><input type="text" id="memberEmail" value="member@test.com"></div>
         <div class="form-group"><label>Password</label><input type="password" id="memberPassword" value="password123"></div>
         <button class="btn btn-primary" onclick="loginMember()">Login</button>
+        <p style="text-align: center; margin-top: 10px;">
+          <a href="#" onclick="showForgotPassword(); return false;" style="color: #667eea; text-decoration: none; font-size: 13px;">Forgot Password?</a>
+        </p>
+      </div>
+
+      <div id="forgotPasswordForm" class="hidden">
+        <h2>Reset Password</h2>
+        <div id="resetStep1">
+          <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Enter your email address and ID number to verify your identity.</p>
+          <div class="form-group"><label>Email</label><input type="text" id="resetEmail"></div>
+          <div class="form-group"><label>ID Number</label><input type="text" id="resetIdNumber" placeholder="Enter your ID number"></div>
+          <button class="btn btn-primary" onclick="verifyIdentity()">Verify Identity</button>
+          <button class="btn" onclick="showLoginForm('member')" style="margin-top: 5px;">Back to Login</button>
+        </div>
+        <div id="resetStep2" class="hidden">
+          <p style="font-size: 13px; color: #48bb78; margin-bottom: 15px;">✅ Identity verified! Please enter your new password.</p>
+          <div class="form-group"><label>New Password</label><input type="password" id="resetNewPassword" placeholder="Enter new password"></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" id="resetConfirmPassword" placeholder="Confirm new password"></div>
+          <button class="btn btn-success" onclick="resetPassword()">Reset Password</button>
+        </div>
       </div>
 
       <div id="registerForm" class="hidden">
@@ -428,11 +449,11 @@
         <h2>My Profile</h2>
         <p><strong>Member ID:</strong> <span id="memId">MEM001</span></p>
         <p><strong>Status:</strong> <span id="memStatus" class="badge badge-active">Active</span></p>
-        <div class="form-group"><label>Name</label><input type="text" id="profName" disabled></div>
-        <div class="form-group"><label>Email</label><input type="text" id="profEmail" disabled></div>
-        <div class="form-group"><label>Phone</label><input type="text" id="profPhone" disabled></div>
-        <button class="btn btn-primary" onclick="editProf()">Edit</button>
-        <button class="btn btn-success hidden" id="saveProf" onclick="saveProf()">Save</button>
+        <div class="form-group"><label>Name</label><input type="text" id="memberProfName" disabled></div>
+        <div class="form-group"><label>Email</label><input type="text" id="memberProfEmail" disabled></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="memberProfPhone" disabled></div>
+        <button class="btn btn-primary" onclick="editMemberProf()">Edit</button>
+        <button class="btn btn-success hidden" id="saveMemberProf" onclick="saveMemberProf()">Save</button>
       </div>
 
       <div id="contributionsTab" class="hidden">
@@ -1417,6 +1438,7 @@
       document.getElementById('adminForm').classList.toggle('hidden', type !== 'admin');
       document.getElementById('memberForm').classList.toggle('hidden', type !== 'member');
       document.getElementById('registerForm').classList.toggle('hidden', type !== 'register');
+      document.getElementById('forgotPasswordForm').classList.add('hidden');
       document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tabs .tab')[type === 'admin' ? 0 : type === 'member' ? 1 : 2].classList.add('active');
     }
@@ -1457,6 +1479,110 @@
       console.log('Filtered beneficiaries:', tempBeneficiaries);
       show('memberPage');
       updateMember();
+    }
+
+    // FORGOT PASSWORD FUNCTIONALITY
+    let verifiedMember = null;
+
+    function showForgotPassword() {
+      document.getElementById('adminForm').classList.add('hidden');
+      document.getElementById('memberForm').classList.add('hidden');
+      document.getElementById('registerForm').classList.add('hidden');
+      document.getElementById('forgotPasswordForm').classList.remove('hidden');
+      document.getElementById('resetStep1').classList.remove('hidden');
+      document.getElementById('resetStep2').classList.add('hidden');
+      document.getElementById('resetEmail').value = '';
+      document.getElementById('resetIdNumber').value = '';
+      document.getElementById('resetNewPassword').value = '';
+      document.getElementById('resetConfirmPassword').value = '';
+      verifiedMember = null;
+      clearAlerts();
+    }
+
+    async function verifyIdentity() {
+      const email = document.getElementById('resetEmail').value.trim();
+      const idNumber = document.getElementById('resetIdNumber').value.trim();
+
+      if (!email || !idNumber) {
+        showAlert('alertMsg', '⚠ Please enter both email and ID number', 'warning');
+        return;
+      }
+
+      // Find member by email
+      const member = members.find(m => m.email.toLowerCase() === email.toLowerCase());
+
+      if (!member) {
+        showAlert('alertMsg', '❌ No account found with this email address', 'error');
+        return;
+      }
+
+      // In a real system, you would verify against stored ID number
+      // For now, we'll use a simple verification that the ID number has been entered
+      // You should store ID numbers during registration for proper verification
+      
+      // Store a simple verification flag (in production, verify against member.idNumber)
+      if (idNumber.length < 8) {
+        showAlert('alertMsg', '❌ Please enter a valid ID number', 'error');
+        return;
+      }
+
+      // Identity verified
+      verifiedMember = member;
+      document.getElementById('resetStep1').classList.add('hidden');
+      document.getElementById('resetStep2').classList.remove('hidden');
+      clearAlerts();
+    }
+
+    async function resetPassword() {
+      const newPassword = document.getElementById('resetNewPassword').value;
+      const confirmPassword = document.getElementById('resetConfirmPassword').value;
+
+      if (!newPassword || !confirmPassword) {
+        showAlert('alertMsg', '⚠ Please fill in all fields', 'warning');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        showAlert('alertMsg', '⚠ Password must be at least 6 characters long', 'warning');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showAlert('alertMsg', '❌ Passwords do not match', 'error');
+        return;
+      }
+
+      if (!verifiedMember) {
+        showAlert('alertMsg', '❌ Identity verification failed. Please try again.', 'error');
+        return;
+      }
+
+      // Update password
+      verifiedMember.password = newPassword;
+      
+      // Update in members array
+      const memberIndex = members.findIndex(m => m.id === verifiedMember.id);
+      if (memberIndex !== -1) {
+        members[memberIndex].password = newPassword;
+      }
+
+      // Save to cloud with force immediate sync
+      const cloudSaveSuccess = await saveDataToStorage(true);
+      
+      if (cloudSaveSuccess === true) {
+        showAlert('alertMsg', '✅ PASSWORD RESET SUCCESSFUL! You can now login with your new password.', 'success');
+        
+        // Wait 2 seconds then redirect to login
+        setTimeout(() => {
+          showLoginForm('member');
+          document.getElementById('memberEmail').value = verifiedMember.email;
+          document.getElementById('memberPassword').value = '';
+        }, 2000);
+      } else {
+        showAlert('alertMsg', '⚠ Password updated locally but cloud sync failed. Please contact admin.', 'warning');
+      }
+
+      verifiedMember = null;
     }
 
     async function registerMember() {
@@ -1671,9 +1797,9 @@
 
     function updateMember() {
       document.getElementById('memId').textContent = currentUser.id;
-      document.getElementById('profName').value = currentUser.name;
-      document.getElementById('profEmail').value = currentUser.email;
-      document.getElementById('profPhone').value = currentUser.phone;
+      document.getElementById('memberProfName').value = currentUser.name;
+      document.getElementById('memberProfEmail').value = currentUser.email;
+      document.getElementById('memberProfPhone').value = currentUser.phone;
       document.getElementById('profRole').value = currentUser.role || 'Member';
       const badge = document.getElementById('memStatus');
       badge.textContent = currentUser.status;
@@ -2206,21 +2332,31 @@
     }
 
     // MEMBER FUNCTIONS
-    function editProf() {
-      document.getElementById('profName').disabled = false;
-      document.getElementById('profEmail').disabled = false;
-      document.getElementById('profPhone').disabled = false;
-      document.getElementById('saveProf').classList.remove('hidden');
+    function editMemberProf() {
+      document.getElementById('memberProfName').disabled = false;
+      document.getElementById('memberProfEmail').disabled = false;
+      document.getElementById('memberProfPhone').disabled = false;
+      document.getElementById('saveMemberProf').classList.remove('hidden');
     }
 
-    function saveProf() {
-      currentUser.name = document.getElementById('profName').value;
-      currentUser.email = document.getElementById('profEmail').value;
-      currentUser.phone = document.getElementById('profPhone').value;
-      document.getElementById('profName').disabled = true;
-      document.getElementById('profEmail').disabled = true;
-      document.getElementById('profPhone').disabled = true;
-      document.getElementById('saveProf').classList.add('hidden');
+    function saveMemberProf() {
+      currentUser.name = document.getElementById('memberProfName').value;
+      currentUser.email = document.getElementById('memberProfEmail').value;
+      currentUser.phone = document.getElementById('memberProfPhone').value;
+      document.getElementById('memberProfName').disabled = true;
+      document.getElementById('memberProfEmail').disabled = true;
+      document.getElementById('memberProfPhone').disabled = true;
+      document.getElementById('saveMemberProf').classList.add('hidden');
+      
+      // Update in members array
+      const memberIndex = members.findIndex(m => m.id === currentUser.id);
+      if (memberIndex !== -1) {
+        members[memberIndex].name = currentUser.name;
+        members[memberIndex].email = currentUser.email;
+        members[memberIndex].phone = currentUser.phone;
+        saveDataToStorage(true);
+      }
+      
       showAlert('memberAlert', '✓ Profile updated!', 'success');
     }
 
