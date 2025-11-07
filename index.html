@@ -6,6 +6,11 @@
   <title>Welcome to Sbahle Burial Society</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏛️</text></svg>">
   
+  <!-- Cache Control Headers - Force browsers to check for updates -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
@@ -615,6 +620,126 @@
   </div>
 
   <script>
+    // ===== VERSION CONTROL & CACHE MANAGEMENT =====
+    const SYSTEM_VERSION = "2.6.0"; // Update this with each deployment
+    const VERSION_CHECK_INTERVAL = 300000; // Check for updates every 5 minutes
+    
+    // Check if user has old cached version
+    function checkSystemVersion() {
+      const storedVersion = localStorage.getItem('sbahle_system_version');
+      const lastVersionCheck = localStorage.getItem('sbahle_last_version_check');
+      const now = Date.now();
+      
+      // First time user or version mismatch
+      if (!storedVersion || storedVersion !== SYSTEM_VERSION) {
+        console.log(`📦 System updated: ${storedVersion || 'first visit'} → ${SYSTEM_VERSION}`);
+        localStorage.setItem('sbahle_system_version', SYSTEM_VERSION);
+        
+        // Show update notification if this isn't first visit
+        if (storedVersion && storedVersion !== SYSTEM_VERSION) {
+          showVersionUpdateNotification();
+        }
+      }
+      
+      // Periodic version check (every 5 minutes)
+      if (!lastVersionCheck || (now - parseInt(lastVersionCheck)) > VERSION_CHECK_INTERVAL) {
+        localStorage.setItem('sbahle_last_version_check', now.toString());
+        // In future, can check remote version file here
+      }
+    }
+    
+    // Show notification when new version is detected
+    function showVersionUpdateNotification() {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 10000;
+        font-weight: 600;
+        text-align: center;
+        max-width: 90%;
+        animation: slideDown 0.5s ease-out;
+      `;
+      notification.innerHTML = `
+        <div style="margin-bottom: 10px;">
+          ✨ New system update installed! (v${SYSTEM_VERSION})
+        </div>
+        <div style="font-size: 13px; opacity: 0.9;">
+          You now have the latest features and improvements
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideUp 0.5s ease-out';
+        setTimeout(() => notification.remove(), 500);
+      }, 5000);
+    }
+    
+    // Detect if user needs to clear cache (old version stuck)
+    function detectStaleCache() {
+      const deployDate = new Date('2025-11-07'); // Today's deployment
+      const lastVisit = localStorage.getItem('sbahle_last_visit');
+      
+      if (lastVisit) {
+        const lastVisitDate = new Date(lastVisit);
+        const daysSinceVisit = (Date.now() - lastVisitDate) / (1000 * 60 * 60 * 24);
+        
+        // If last visit was before deployment and version is old
+        if (lastVisitDate < deployDate && localStorage.getItem('sbahle_system_version') !== SYSTEM_VERSION) {
+          console.warn('⚠️ Old cached version detected - may need cache clear');
+          showCacheClearPrompt();
+        }
+      }
+      
+      localStorage.setItem('sbahle_last_visit', new Date().toISOString());
+    }
+    
+    // Prompt user to clear cache if needed
+    function showCacheClearPrompt() {
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const message = isMobile 
+        ? '🔄 Please refresh this page to get the latest updates.\n\nTap your browser menu → Reload/Refresh'
+        : '🔄 Please refresh this page to get the latest updates.\n\nPress Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)';
+      
+      // Don't show if already shown today
+      const lastPrompt = localStorage.getItem('sbahle_cache_prompt');
+      if (lastPrompt && (Date.now() - parseInt(lastPrompt)) < 86400000) return; // 24 hours
+      
+      setTimeout(() => {
+        if (confirm(message)) {
+          localStorage.setItem('sbahle_cache_prompt', Date.now().toString());
+          location.reload(true);
+        }
+      }, 2000);
+    }
+    
+    // Add slide animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideDown {
+        from { transform: translate(-50%, -100px); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { transform: translate(-50%, 0); opacity: 1; }
+        to { transform: translate(-50%, -100px); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Run version checks on page load
+    checkSystemVersion();
+    detectStaleCache();
+    
     // ===== CLOUD STORAGE CONFIGURATION =====
     // Using JSONBin.io free service for cross-browser data sync
     const CLOUD_STORAGE = {
@@ -695,6 +820,18 @@
       const memberText = document.getElementById('memberSyncText');
       const memberContainer = document.getElementById('memberCloudSyncStatus');
       
+      // Helper to format time ago
+      const getTimeAgo = (timestamp) => {
+        if (!timestamp) return '';
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+        if (seconds < 60) return 'just now';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        return `${Math.floor(hours / 24)}d ago`;
+      };
+      
       // Update both admin and member indicators
       const updateIndicator = (ind, txt, cont) => {
         if (!ind || !txt || !cont) return;
@@ -705,18 +842,24 @@
             txt.textContent = 'Syncing...';
             cont.style.background = '#fef3c7';
             cont.style.color = '#92400e';
+            cont.title = 'Uploading data to cloud storage...';
             break;
           case 'synced':
             ind.textContent = '✅';
             txt.textContent = 'Synced';
             cont.style.background = '#d1fae5';
             cont.style.color = '#065f46';
-            // Reset to normal after 2 seconds
+            cont.title = 'Data successfully synced to cloud';
+            // Update last sync time
+            lastCloudSync = Date.now();
+            // Reset to normal after 2 seconds, showing last sync time
             setTimeout(() => {
               ind.textContent = '☁️';
-              txt.textContent = 'Cloud Connected';
+              const timeAgo = getTimeAgo(lastCloudSync);
+              txt.textContent = timeAgo ? `Synced ${timeAgo}` : 'Cloud Connected';
               cont.style.background = '#e0f2fe';
               cont.style.color = '#075985';
+              cont.title = `Last synced: ${new Date(lastCloudSync).toLocaleTimeString()}\nSystem version: ${SYSTEM_VERSION}`;
             }, 2000);
             break;
           case 'error':
@@ -724,7 +867,7 @@
             txt.textContent = syncRetryCount >= MAX_SYNC_RETRIES ? 'Sync Error - Saved Locally' : 'Sync Error - Retrying...';
             cont.style.background = '#fee2e2';
             cont.style.color = '#991b1b';
-            cont.title = 'Cloud sync failed. Data saved locally.';
+            cont.title = `Cloud sync failed. Data saved locally.\nAttempt ${syncRetryCount}/${MAX_SYNC_RETRIES}`;
             
             // Only retry if we haven't exceeded max retries
             if (syncRetryCount < MAX_SYNC_RETRIES) {
@@ -747,12 +890,17 @@
             txt.textContent = 'Offline';
             cont.style.background = '#f3f4f6';
             cont.style.color = '#6b7280';
+            cont.title = 'No internet connection. Data saved locally and will sync when online.';
             break;
           default:
             ind.textContent = '☁️';
-            txt.textContent = 'Cloud Connected';
+            const timeAgo = getTimeAgo(lastCloudSync);
+            txt.textContent = timeAgo ? `Synced ${timeAgo}` : 'Cloud Connected';
             cont.style.background = '#e0f2fe';
             cont.style.color = '#075985';
+            cont.title = lastCloudSync 
+              ? `Last synced: ${new Date(lastCloudSync).toLocaleTimeString()}\nSystem version: ${SYSTEM_VERSION}`
+              : `Cloud storage ready\nSystem version: ${SYSTEM_VERSION}`;
         }
       };
       
@@ -760,6 +908,13 @@
       updateIndicator(indicator, text, container);
       updateIndicator(memberIndicator, memberText, memberContainer);
     }
+    
+    // Update sync time display periodically
+    setInterval(() => {
+      if (lastCloudSync && (document.getElementById('cloudSyncStatus') || document.getElementById('memberCloudSyncStatus'))) {
+        updateSyncStatus('default'); // Refresh the "time ago" display
+      }
+    }, 60000); // Update every minute
     
     // Fast deep clone function (more efficient than JSON parse/stringify)
     function fastClone(obj) {
