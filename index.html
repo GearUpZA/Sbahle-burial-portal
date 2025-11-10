@@ -11,6 +11,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   
+  <!-- Chart.js for Financial Dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
@@ -139,6 +142,7 @@
       </div>
       <div class="tabs">
         <button class="tab active" onclick="adminTab('overview', event)">Overview</button>
+        <button class="tab" onclick="adminTab('financials', event)">📊 Financials</button>
         <button class="tab" onclick="adminTab('members', event)">Members</button>
         <button class="tab" onclick="adminTab('beneficiaries', event)">Beneficiaries</button>
         <button class="tab" onclick="adminTab('attendance', event)">Attendance</button>
@@ -146,6 +150,7 @@
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
         <button class="tab" onclick="adminTab('minutes', event)">Meeting Minutes</button>
+        <button class="tab" onclick="adminTab('constitution', event)">Constitution</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
       </div>
       <div id="adminAlert"></div>
@@ -158,11 +163,104 @@
         <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
       </div>
 
+      <!-- FINANCIAL DASHBOARD TAB -->
+      <div id="financialsTab" class="hidden">
+        <h2>📊 Financial Dashboard</h2>
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <p><strong>📈 Track income, expenses, and financial trends</strong></p>
+          <p style="margin-top: 10px; color: #4a5568;">Comprehensive view of society's financial health with charts and reports</p>
+        </div>
+
+        <!-- Financial Summary Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 25px;">
+          <div class="stat" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);">
+            <h3>Total Income (All Time)</h3>
+            <div class="value" id="totalIncome" style="font-size: 28px;">R 0</div>
+          </div>
+          <div class="stat" style="background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);">
+            <h3>Total Payouts</h3>
+            <div class="value" id="totalPayouts" style="font-size: 28px;">R 0</div>
+          </div>
+          <div class="stat" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);">
+            <h3>Total Penalties</h3>
+            <div class="value" id="totalPenalties" style="font-size: 28px;">R 0</div>
+          </div>
+          <div class="stat" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <h3>Net Balance</h3>
+            <div class="value" id="netBalance" style="font-size: 28px;">R 0</div>
+          </div>
+        </div>
+
+        <!-- Time Period Filter -->
+        <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <label style="margin-right: 10px; font-weight: bold;">Filter by Period:</label>
+          <select id="financialPeriod" onchange="updateFinancialDashboard()" style="width: auto; display: inline-block; margin-right: 10px;">
+            <option value="all">All Time</option>
+            <option value="thisYear">This Year</option>
+            <option value="last6months">Last 6 Months</option>
+            <option value="last3months">Last 3 Months</option>
+            <option value="thisMonth">This Month</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="exportFinancialReport()">📥 Export PDF Report</button>
+          <button class="btn btn-success btn-sm" onclick="refreshFinancialDashboard()">🔄 Refresh</button>
+        </div>
+
+        <!-- Charts Section -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 25px;">
+          <!-- Income vs Expenses Chart -->
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+            <h3 style="margin-bottom: 15px; color: #2d3748;">Income vs Payouts</h3>
+            <canvas id="incomeVsExpensesChart" style="max-height: 300px;"></canvas>
+          </div>
+
+          <!-- Payment Trends Chart -->
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+            <h3 style="margin-bottom: 15px; color: #2d3748;">Monthly Payment Trends</h3>
+            <canvas id="monthlyTrendsChart" style="max-height: 300px;"></canvas>
+          </div>
+        </div>
+
+        <!-- Member Contribution Status -->
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+          <h3 style="margin-bottom: 15px; color: #2d3748;">Member Contribution Overview</h3>
+          <canvas id="memberContributionChart" style="max-height: 300px;"></canvas>
+        </div>
+
+        <!-- Financial Breakdown Tables -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+          <!-- Top Contributors -->
+          <div>
+            <h3 style="margin-bottom: 10px; color: #2d3748;">🏆 Top Contributors</h3>
+            <table style="font-size: 12px;">
+              <thead>
+                <tr><th>Member</th><th>Total Contributed</th><th>Status</th></tr>
+              </thead>
+              <tbody id="topContributorsTable">
+                <tr><td colspan="3" style="text-align: center; color: #999;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Recent Payouts -->
+          <div>
+            <h3 style="margin-bottom: 10px; color: #2d3748;">💸 Recent Payouts</h3>
+            <table style="font-size: 12px;">
+              <thead>
+                <tr><th>Member</th><th>Amount</th><th>Date</th></tr>
+              </thead>
+              <tbody id="recentPayoutsTable">
+                <tr><td colspan="3" style="text-align: center; color: #999;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <div id="membersTab" class="hidden">
         <h2>Members</h2>
         <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
         <table>
-          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Registered</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Registered</th><th>Status</th><th>Missed</th><th>Contrib Status</th><th>Actions</th></tr></thead>
           <tbody id="memTable"></tbody>
         </table>
       </div>
@@ -324,6 +422,62 @@
         </table>
       </div>
 
+      <div id="constitutionTab" class="hidden">
+        <h2>Society Constitution</h2>
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+          <p><strong>📜 Upload and manage the society constitution document</strong></p>
+          <p style="margin-top: 10px; color: #4a5568;">Members can view and download the constitution from their dashboard</p>
+        </div>
+
+        <!-- Upload Section -->
+        <div style="background: white; padding: 20px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="margin-bottom: 15px;">📤 Upload Constitution</h3>
+          <div class="form-group">
+            <label>Select Document (PDF, DOC, DOCX)</label>
+            <input type="file" id="constitutionFile" accept=".pdf,.doc,.docx" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+          </div>
+          <div class="form-group">
+            <label>Document Title</label>
+            <input type="text" id="constitutionTitle" placeholder="e.g., Sbahle Burial Society Constitution 2025" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+          </div>
+          <div class="form-group">
+            <label>Version / Notes (Optional)</label>
+            <input type="text" id="constitutionNotes" placeholder="e.g., Version 2.0 - Amended November 2025" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+          </div>
+          <button class="btn btn-success" onclick="uploadConstitution()">
+            📤 Upload Constitution
+          </button>
+        </div>
+
+        <!-- Current Constitution Section -->
+        <div id="currentConstitutionSection" style="background: #e8f5e9; padding: 20px; border: 1px solid #4caf50; border-radius: 8px; display: none;">
+          <h3 style="margin-bottom: 15px; color: #2e7d32;">✅ Current Constitution</h3>
+          <div style="background: white; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+            <p style="margin-bottom: 5px;"><strong>Title:</strong> <span id="constitutionTitleDisplay"></span></p>
+            <p style="margin-bottom: 5px;"><strong>Uploaded:</strong> <span id="constitutionDateDisplay"></span></p>
+            <p style="margin-bottom: 5px;"><strong>File Size:</strong> <span id="constitutionSizeDisplay"></span></p>
+            <p style="margin-bottom: 0;"><strong>Notes:</strong> <span id="constitutionNotesDisplay"></span></p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" onclick="viewConstitution()">
+              👁️ View Document
+            </button>
+            <button class="btn btn-warning" onclick="downloadConstitution()">
+              📥 Download
+            </button>
+            <button class="btn btn-danger" onclick="deleteConstitution()">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- No Constitution Uploaded -->
+        <div id="noConstitutionSection" style="background: #fff3e0; padding: 20px; border: 1px solid #ff9800; border-radius: 8px;">
+          <p style="margin: 0; color: #e65100;"><strong>⚠️ No constitution uploaded yet</strong></p>
+          <p style="margin-top: 10px; color: #666;">Upload a constitution document so members can access it from their dashboard.</p>
+        </div>
+      </div>
+
       <div id="dataTab" class="hidden">
         <h2>Data Management</h2>
         <div style="background: #dcfce7; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #16a34a;">
@@ -344,6 +498,144 @@
             <p style="margin-bottom: 15px; font-size: 13px; opacity: 0.9;">Upload a previously saved backup file to restore all data</p>
             <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px; padding: 8px; border-radius: 5px; background: white;">
             <button class="btn" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])" style="background: white; color: #16a34a; font-weight: bold; font-size: 14px;">📤 Restore Backup</button>
+          </div>
+          
+          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">☁️ Cloud Sync Status</h3>
+            <div id="syncHealthDisplay" style="margin-bottom: 15px;">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px;">
+                <div style="padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                  <div style="font-size: 12px; color: #666;">Total Syncs</div>
+                  <div id="syncTotalCount" style="font-size: 20px; font-weight: bold; color: #667eea;">0</div>
+                </div>
+                <div style="padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                  <div style="font-size: 12px; color: #666;">Success Rate</div>
+                  <div id="syncSuccessRate" style="font-size: 20px; font-weight: bold; color: #10b981;">N/A</div>
+                </div>
+                <div style="padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                  <div style="font-size: 12px; color: #666;">Consecutive Failures</div>
+                  <div id="syncFailures" style="font-size: 20px; font-weight: bold; color: #ef4444;">0</div>
+                </div>
+                <div style="padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                  <div style="font-size: 12px; color: #666;">Avg Sync Time</div>
+                  <div id="syncAvgTime" style="font-size: 20px; font-weight: bold; color: #8b5cf6;">0ms</div>
+                </div>
+              </div>
+              <div style="padding: 10px; background: #f8f9fa; border-radius: 5px; margin-bottom: 10px;">
+                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Last Successful Sync</div>
+                <div id="syncLastSuccess" style="font-size: 14px; font-weight: 500; color: #333;">Never</div>
+              </div>
+              <div style="padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Sync Queue</div>
+                <div id="syncQueueSize" style="font-size: 14px; font-weight: 500; color: #333;">0 operations pending</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="forceSyncNow()" style="flex: 1;">🔄 Force Sync Now</button>
+              <button class="btn btn-secondary" onclick="displaySyncHealth()" style="flex: 1;">📊 Refresh Stats</button>
+            </div>
+          </div>
+          
+          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">💾 Automated Backups</h3>
+            
+            <div id="pendingBackupNotice" style="display: none; background: #fef3c7; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #f59e0b;">
+              <p style="margin: 0; font-size: 13px; color: #92400e;"><strong>📧 Weekly Backup Ready!</strong></p>
+              <p style="margin: 5px 0 0 0; font-size: 12px; color: #78350f;">A weekly backup is available for download.</p>
+              <button class="btn btn-warning" onclick="downloadPendingEmailBackup()" style="margin-top: 10px; font-size: 13px;">📥 Download Weekly Backup</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px;">
+              <div style="padding: 12px; background: #f8f9fa; border-radius: 6px; text-align: center;">
+                <div style="font-size: 11px; color: #666; margin-bottom: 5px;">Last Weekly Backup</div>
+                <div id="lastWeeklyBackup" style="font-size: 13px; font-weight: 600; color: #333;">Never</div>
+              </div>
+              <div style="padding: 12px; background: #f8f9fa; border-radius: 6px; text-align: center;">
+                <div style="font-size: 11px; color: #666; margin-bottom: 5px;">Last Monthly Download</div>
+                <div id="lastMonthlyBackup" style="font-size: 13px; font-weight: 600; color: #333;">Never</div>
+              </div>
+              <div style="padding: 12px; background: #f8f9fa; border-radius: 6px; text-align: center;">
+                <div style="font-size: 11px; color: #666; margin-bottom: 5px;">Backup Snapshots</div>
+                <div id="backupSnapshotCount" style="font-size: 13px; font-weight: 600; color: #333;">0</div>
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-success" onclick="downloadBackupFile('manual')" style="flex: 1;">💾 Download Backup Now</button>
+              <button class="btn btn-secondary" onclick="showBackupSnapshots()" style="flex: 1;">📋 View Snapshots</button>
+            </div>
+            
+            <div id="snapshotsList" style="display: none; margin-top: 15px; max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 6px;">
+              <h4 style="margin: 0 0 10px 0; font-size: 14px;">Available Snapshots:</h4>
+              <div id="snapshotsContent"></div>
+            </div>
+          </div>
+          
+          <!-- MULTI-ADMIN MANAGEMENT SECTION -->
+          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">👥 Admin Users & Roles</h3>
+            <div style="background: #f0f9ff; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #0ea5e9;">
+              <p style="margin: 0; font-size: 13px;"><strong>Role-Based Access Control</strong></p>
+              <p style="margin: 5px 0 0 0; font-size: 12px; color: #0c4a6e;">Manage multiple administrators with different permission levels</p>
+            </div>
+            
+            <!-- Current Admin Display -->
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+              <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Currently Logged In As:</div>
+              <div style="font-size: 14px; font-weight: 600; color: #333;">
+                <span id="currentAdminDisplay">admin (Full Admin)</span>
+                <span id="currentAdminRole" style="margin-left: 10px; padding: 3px 8px; border-radius: 12px; font-size: 11px; background: #c6f6d5; color: #22543d;">FULL ADMIN</span>
+              </div>
+            </div>
+            
+            <!-- Admin List -->
+            <div style="margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="margin: 0; font-size: 14px;">All Administrators</h4>
+                <button class="btn btn-success btn-sm" onclick="showAddAdminModal()">+ Add Admin</button>
+              </div>
+              <table style="font-size: 12px;">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th>Last Login</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersTable">
+                  <tr><td colspan="5" style="text-align: center; color: #999;">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Role Descriptions -->
+            <details style="background: #f8f9fa; padding: 12px; border-radius: 6px;">
+              <summary style="cursor: pointer; font-weight: 600; font-size: 13px; color: #333;">ℹ️ Role Descriptions</summary>
+              <div style="margin-top: 10px; font-size: 12px;">
+                <div style="margin-bottom: 8px; padding: 8px; background: white; border-radius: 4px;">
+                  <strong style="color: #22543d;">Full Admin:</strong> Complete access to all features including managing other admins, financial data, and system settings
+                </div>
+                <div style="margin-bottom: 8px; padding: 8px; background: white; border-radius: 4px;">
+                  <strong style="color: #2c5282;">Secretary:</strong> Manage members, attendance, meeting minutes. View-only access to financials
+                </div>
+                <div style="margin-bottom: 0; padding: 8px; background: white; border-radius: 4px;">
+                  <strong style="color: #744210;">Treasurer:</strong> Manage payments, payouts, penalties. View-only access to members
+                </div>
+              </div>
+            </details>
+            
+            <!-- Audit Log Preview -->
+            <div style="margin-top: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="margin: 0; font-size: 14px;">Recent Admin Actions</h4>
+                <button class="btn btn-secondary btn-sm" onclick="showFullAuditLog()">View Full Log</button>
+              </div>
+              <div id="auditLogPreview" style="max-height: 150px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 6px; font-size: 12px;">
+                <div style="color: #999; text-align: center;">No recent actions</div>
+              </div>
+            </div>
           </div>
           
           <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
@@ -419,6 +711,7 @@
         <button class="tab" onclick="memberTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="memberTab('minutes', event)">Meeting Minutes</button>
         <button class="tab" onclick="memberTab('payments', event)">Payment Proofs</button>
+        <button class="tab" onclick="memberTab('constitution', event)">Constitution</button>
         <button class="tab" onclick="memberTab('documents', event)">Documents</button>
       </div>
       <div id="memberAlert"></div>
@@ -464,39 +757,21 @@
           <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;">
         </div>
       </div>
-      <div class="header">
-        <h1>Member Dashboard</h1>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
-      </div>
-      <div class="tabs">
-        <button class="tab active" onclick="memberTab('profile', event)">Profile</button>
-        <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
-        <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
-        <button class="tab" onclick="memberTab('documents', event)">Documents</button>
-        <button class="tab" onclick="memberTab('signature', event)">Signature</button>
-        <button class="tab" onclick="memberTab('payouts', event)">Payouts</button>
-      </div>
-      <div id="memberAlert"></div>
 
-      <div id="profileTab">
-        <h2>My Profile</h2>
-        <p><strong>Member ID:</strong> <span id="memId">MEM001</span></p>
-        <p><strong>Status:</strong> <span id="memStatus" class="badge badge-active">Active</span></p>
-        <div class="form-group"><label>Name</label><input type="text" id="memberProfName" disabled></div>
-        <div class="form-group"><label>Email</label><input type="text" id="memberProfEmail" disabled></div>
-        <div class="form-group"><label>Phone</label><input type="text" id="memberProfPhone" disabled></div>
-        <div class="form-group"><label>ID Number</label><input type="text" id="memberProfIdNumber" disabled></div>
-        <button class="btn btn-primary" onclick="editMemberProf()">Edit Profile</button>
-        <button class="btn btn-success hidden" id="saveMemberProf" onclick="saveMemberProf()">Save</button>
-      </div>
-
-      <div id="contributionsTab" class="hidden">
-        <h2>Contributions - R 170/Month Required</h2>
-        <button class="btn btn-success" onclick="addContribModal()">+ Add Contribution</button>
+      <div id="memberContributionsTab" class="hidden">
+        <h2>My Contributions</h2>
+        <p style="color: #666; margin-bottom: 15px;">Monthly Contribution Required: <strong style="color: #667eea;">R 170</strong></p>
         <table>
-          <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>2025-03-15</td><td>R 170</td><td>Bank Transfer</td><td><span class="badge badge-approved">Verified</span></td></tr>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="memberContribTable">
+            <tr><td colspan="4" style="text-align: center; color: #999;">No contributions recorded</td></tr>
           </tbody>
         </table>
       </div>
@@ -534,6 +809,25 @@
         </div>
       </div>
 
+      <div id="memberPayoutsTab" class="hidden">
+        <h2>Request Payout</h2>
+        <button class="btn btn-success" onclick="reqPayoutModal()">+ Request Payout</button>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Reason</th>
+              <th>Recipients</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="memPayTable">
+            <tr><td colspan="5" style="text-align: center; color: #999;">No payout requests</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <div id="memberMinutesTab" class="hidden">
         <h2>Meeting Minutes</h2>
         <div id="memberMinutesContent" style="max-height: 600px; overflow-y: auto;">
@@ -546,14 +840,69 @@
         <button class="btn btn-success" onclick="uploadPaymentProofModal()">+ Upload Payment Proof</button>
         <div style="margin-top: 15px;">
           <table>
-            <thead><tr><th>Upload Date</th><th>Amount</th><th>Description</th><th>Attachment</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="memberPaymentProofsTable"></tbody>
+            <thead>
+              <tr>
+                <th>Upload Date</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Attachment</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="memberPaymentProofsTable">
+              <tr><td colspan="6" style="text-align: center; color: #999;">No payment proofs uploaded</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
 
-      <div id="documentsTab" class="hidden">
-        <h2>Upload Documents</h2>
+      <div id="memberConstitutionTab" class="hidden">
+        <h2>Society Constitution</h2>
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+          <p><strong>📜 View and download the society constitution</strong></p>
+        </div>
+
+        <!-- Constitution Available -->
+        <div id="memberConstitutionAvailable" style="display: none;">
+          <div style="background: white; padding: 20px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px; color: #667eea;">📄 Constitution Document</h3>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+              <p style="margin-bottom: 8px;"><strong>Title:</strong> <span id="memberConstitutionTitle"></span></p>
+              <p style="margin-bottom: 8px;"><strong>Uploaded:</strong> <span id="memberConstitutionDate"></span></p>
+              <p style="margin-bottom: 8px;"><strong>File Size:</strong> <span id="memberConstitutionSize"></span></p>
+              <p style="margin-bottom: 0;"><strong>Notes:</strong> <span id="memberConstitutionNotes"></span></p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="viewConstitutionMember()">
+                👁️ View Document
+              </button>
+              <button class="btn btn-success" onclick="downloadConstitutionMember()">
+                📥 Download Constitution
+              </button>
+            </div>
+          </div>
+
+          <!-- Info Section -->
+          <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #4caf50;">
+            <p style="margin: 0; color: #2e7d32;"><strong>ℹ️ About the Constitution</strong></p>
+            <p style="margin-top: 10px; color: #666; font-size: 14px;">The constitution outlines the rules, regulations, and procedures of our burial society. All members should read and understand the constitution.</p>
+          </div>
+        </div>
+
+        <!-- No Constitution Available -->
+        <div id="memberConstitutionNotAvailable">
+          <div style="background: #fff3e0; padding: 20px; border: 1px solid #ff9800; border-radius: 8px; text-align: center;">
+            <p style="font-size: 48px; margin-bottom: 15px;">📜</p>
+            <p style="margin: 0; color: #e65100; font-size: 16px;"><strong>No Constitution Available</strong></p>
+            <p style="margin-top: 10px; color: #666;">The admin has not uploaded the constitution yet. Please check back later.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="memberDocumentsTab" class="hidden">
+        <h2>My Documents</h2>
+        <p style="color: #666; margin-bottom: 15px;">Upload and manage your documents</p>
         <div class="file-input">
           <label>Proof of Payment (PDF/JPEG)</label>
           <input type="file" id="payFile" accept=".pdf,.jpg,.jpeg">
@@ -567,34 +916,6 @@
           <input type="file" id="suppFile" accept=".pdf,.jpg,.jpeg">
         </div>
         <button class="btn btn-success" onclick="saveDocs()">Save Documents</button>
-      </div>
-
-      <div id="signatureTab" class="hidden">
-        <h2>Digital Signature</h2>
-        <p style="font-size: 13px; color: #666;">Draw your signature below:</p>
-        <canvas id="sigCanvas" width="500" height="150" style="border: 2px solid #ddd; border-radius: 8px; background: white;"></canvas>
-        <div style="margin-top: 10px;">
-          <button class="btn btn-secondary" onclick="clearSig()">Clear</button>
-          <button class="btn btn-success" onclick="saveSig()">Save Signature</button>
-        </div>
-        
-        <!-- Display saved signature -->
-        <div id="savedSignaturePreview" style="margin-top: 20px; display: none;">
-          <h3 style="font-size: 16px; margin-bottom: 10px;">Saved Signature:</h3>
-          <div style="border: 2px solid #48bb78; border-radius: 8px; padding: 15px; background: #f0fff4;">
-            <img id="savedSignatureImg" src="" style="max-width: 100%; height: auto; max-height: 150px;">
-          </div>
-          <p style="color: #48bb78; margin-top: 10px;">✓ This signature will appear in attendance records</p>
-        </div>
-      </div>
-
-      <div id="memberPayoutsTab" class="hidden">
-        <h2>Request Payout</h2>
-        <button class="btn btn-success" onclick="reqPayoutModal()">+ Request Payout</button>
-        <table>
-          <thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Recipients</th><th>Status</th></tr></thead>
-          <tbody id="memPayTable"></tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -754,44 +1075,252 @@
     let lastCloudSync = 0;
     let syncTimer = null;
     
-    // Test cloud storage availability
+    // Enhanced sync management
+    const syncQueue = [];
+    let isSyncing = false;
+    let syncFailCount = 0;
+    let lastSyncAttempt = 0;
+    const SYNC_HEALTH = {
+      consecutiveFailures: 0,
+      lastSuccessfulSync: 0,
+      totalSyncs: 0,
+      totalFailures: 0,
+      averageSyncTime: 0
+    };
+    
+    // Test cloud storage availability with enhanced health check
     async function initCloudStorage() {
       try {
+        console.log('🔄 Initializing cloud storage connection...');
         const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
           headers: {
             'X-Access-Key': CLOUD_STORAGE.apiKey
-          }
+          },
+          timeout: 10000 // 10 second timeout
         });
         cloudStorageAvailable = response.ok;
         if (cloudStorageAvailable) {
-          console.log('✓ Cloud storage connected - data will sync across all browsers');
+          console.log('✅ Cloud storage connected - data will sync across all browsers');
+          SYNC_HEALTH.lastSuccessfulSync = Date.now();
+          SYNC_HEALTH.consecutiveFailures = 0;
           updateSyncStatus('default');
           startCloudSync();
+          // Test write access
+          await testCloudWrite();
         } else {
-          console.log('⚠ Cloud storage unavailable - using localStorage only');
+          console.log('⚠ Cloud storage unavailable (Status: ' + response.status + ') - using localStorage only');
+          cloudStorageAvailable = false;
           updateSyncStatus('offline');
         }
       } catch (error) {
-        console.log('⚠ Cloud storage unavailable - using localStorage only:', error.message);
+        console.log('⚠ Cloud storage initialization failed:', error.message);
         cloudStorageAvailable = false;
         updateSyncStatus('offline');
+        // Retry connection after 30 seconds
+        setTimeout(() => {
+          console.log('🔄 Retrying cloud storage connection...');
+          initCloudStorage();
+        }, 30000);
       }
     }
     
-    // Monitor online/offline status
-    window.addEventListener('online', () => {
+    // Test cloud write capability
+    async function testCloudWrite() {
+      try {
+        const testData = { test: true, timestamp: Date.now() };
+        const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Access-Key': CLOUD_STORAGE.apiKey
+          },
+          body: JSON.stringify(testData)
+        });
+        if (response.ok) {
+          console.log('✅ Cloud write access confirmed');
+          return true;
+        } else {
+          console.warn('⚠️ Cloud write test failed:', response.status);
+          return false;
+        }
+      } catch (error) {
+        console.warn('⚠️ Cloud write test error:', error.message);
+        return false;
+      }
+    }
+    
+    // Monitor online/offline status with enhanced recovery
+    window.addEventListener('online', async () => {
       console.log('🌐 Internet connection restored');
       cloudStorageAvailable = true;
-      updateSyncStatus('default');
+      updateSyncStatus('syncing');
+      // Reset failure counters
+      SYNC_HEALTH.consecutiveFailures = 0;
+      syncFailCount = 0;
+      // Process any queued sync operations
+      if (syncQueue.length > 0) {
+        console.log(`📤 Processing ${syncQueue.length} queued sync operations...`);
+        await processSyncQueue();
+      }
       // Immediately try to sync pending data
-      saveDataToStorage(true);
+      await saveDataToStorage(true);
+      // Verify sync was successful
+      setTimeout(() => {
+        if (lastCloudSync < Date.now() - 10000) {
+          console.warn('⚠️ Sync verification failed, retrying...');
+          saveDataToStorage(true);
+        }
+      }, 5000);
     });
     
     window.addEventListener('offline', () => {
-      console.log('📴 Internet connection lost - data will save locally');
+      console.log('📴 Internet connection lost - data will save locally and queue for sync');
       cloudStorageAvailable = false;
       updateSyncStatus('offline');
     });
+    
+    // Process queued sync operations
+    async function processSyncQueue() {
+      if (isSyncing || syncQueue.length === 0) return;
+      
+      isSyncing = true;
+      console.log(`🔄 Processing sync queue (${syncQueue.length} items)...`);
+      
+      while (syncQueue.length > 0 && cloudStorageAvailable) {
+        const operation = syncQueue.shift();
+        try {
+          await operation();
+          console.log('✅ Queued sync operation completed');
+          await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between operations
+        } catch (error) {
+          console.error('❌ Queued sync operation failed:', error);
+          // Re-queue if not too many failures
+          if (syncFailCount < 5) {
+            syncQueue.push(operation);
+            syncFailCount++;
+          }
+        }
+      }
+      
+      isSyncing = false;
+      if (syncQueue.length > 0) {
+        console.log(`⚠️ ${syncQueue.length} sync operations still in queue`);
+      } else {
+        console.log('✅ All queued sync operations completed');
+        syncFailCount = 0;
+      }
+    }
+    
+    // Add operation to sync queue
+    function queueSyncOperation(operation) {
+      syncQueue.push(operation);
+      console.log(`📥 Sync operation queued (Queue size: ${syncQueue.length})`);
+      // Try to process immediately if online
+      if (cloudStorageAvailable && !isSyncing) {
+        processSyncQueue();
+      }
+    }
+    
+    // Validate data before sync
+    function validateSyncData(data) {
+      const errors = [];
+      
+      // Check required fields
+      if (!data.members || !Array.isArray(data.members)) {
+        errors.push('Invalid members data structure');
+      }
+      if (!data.beneficiaries || !Array.isArray(data.beneficiaries)) {
+        errors.push('Invalid beneficiaries data structure');
+      }
+      if (!data.payouts || !Array.isArray(data.payouts)) {
+        errors.push('Invalid payouts data structure');
+      }
+      
+      // Check data integrity
+      if (data.members) {
+        const memberIds = new Set();
+        data.members.forEach((member, index) => {
+          if (!member.id) {
+            errors.push(`Member at index ${index} missing ID`);
+          } else if (memberIds.has(member.id)) {
+            errors.push(`Duplicate member ID: ${member.id}`);
+          } else {
+            memberIds.add(member.id);
+          }
+          
+          if (!member.name || !member.email) {
+            errors.push(`Member ${member.id || index} missing required fields`);
+          }
+        });
+      }
+      
+      // Check version compatibility
+      if (data.version && !data.version.startsWith('2.')) {
+        errors.push(`Incompatible data version: ${data.version}`);
+      }
+      
+      return {
+        valid: errors.length === 0,
+        errors: errors
+      };
+    }
+    
+    // Merge local and cloud data (conflict resolution)
+    function mergeData(localData, cloudData) {
+      console.log('🔄 Merging local and cloud data...');
+      
+      // Use cloud data as base if both exist
+      if (!localData) return cloudData;
+      if (!cloudData) return localData;
+      
+      const merged = { ...cloudData };
+      
+      // Compare timestamps to determine which is newer
+      const localTime = new Date(localData.lastSaved || 0).getTime();
+      const cloudTime = new Date(cloudData.lastSaved || 0).getTime();
+      
+      console.log(`📊 Local timestamp: ${new Date(localTime).toLocaleString()}`);
+      console.log(`📊 Cloud timestamp: ${new Date(cloudTime).toLocaleString()}`);
+      
+      // If local is newer, merge arrays intelligently
+      if (localTime > cloudTime) {
+        console.log('⚡ Local data is newer - merging updates...');
+        
+        // Merge members (prefer local if IDs match)
+        if (localData.members && cloudData.members) {
+          const memberMap = new Map();
+          cloudData.members.forEach(m => memberMap.set(m.id, m));
+          localData.members.forEach(m => memberMap.set(m.id, m)); // Local overrides cloud
+          merged.members = Array.from(memberMap.values());
+        }
+        
+        // Merge beneficiaries
+        if (localData.beneficiaries && cloudData.beneficiaries) {
+          const benMap = new Map();
+          cloudData.beneficiaries.forEach(b => benMap.set(b.id, b));
+          localData.beneficiaries.forEach(b => benMap.set(b.id, b));
+          merged.beneficiaries = Array.from(benMap.values());
+        }
+        
+        // Use local data for other arrays if local is newer
+        merged.payouts = localData.payouts || cloudData.payouts || [];
+        merged.penalties = localData.penalties || cloudData.penalties || [];
+        merged.meetingMinutes = localData.meetingMinutes || cloudData.meetingMinutes || [];
+        merged.paymentProofs = localData.paymentProofs || cloudData.paymentProofs || [];
+        merged.payoutCollectors = localData.payoutCollectors || cloudData.payoutCollectors || [];
+        merged.constitutionDocument = localData.constitutionDocument || cloudData.constitutionDocument || null;
+        
+        // Use highest counters
+        merged.memberIdCounter = Math.max(localData.memberIdCounter || 0, cloudData.memberIdCounter || 0);
+        merged.minutesIdCounter = Math.max(localData.minutesIdCounter || 0, cloudData.minutesIdCounter || 0);
+        merged.proofIdCounter = Math.max(localData.proofIdCounter || 0, cloudData.proofIdCounter || 0);
+        
+        merged.lastSaved = localData.lastSaved;
+      }
+      
+      console.log(`✅ Data merged: ${merged.members?.length || 0} members, ${merged.beneficiaries?.length || 0} beneficiaries`);
+      return merged;
+    }
     
     // ===== PERFORMANCE OPTIMIZATION SYSTEM =====
     const PERFORMANCE_CONFIG = {
@@ -1023,6 +1552,216 @@
     const STORAGE_KEY = 'sbahle_burial_society_data';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' }; // In production, hash this!
     
+    // ===== AUTOMATED BACKUP SYSTEM =====
+    const BACKUP_CONFIG = {
+      WEEKLY_EMAIL_ENABLED: true,
+      MONTHLY_AUTO_DOWNLOAD: true,
+      KEEP_SNAPSHOTS_DAYS: 7,
+      LAST_EMAIL_BACKUP_KEY: 'last_email_backup',
+      LAST_MONTHLY_BACKUP_KEY: 'last_monthly_backup',
+      ADMIN_EMAIL: 'maqashela@gmail.com' // Change to admin's email
+    };
+    
+    // Initialize backup system
+    function initBackupSystem() {
+      // Check if weekly email backup is due
+      checkWeeklyEmailBackup();
+      
+      // Check if monthly auto-download is due
+      checkMonthlyAutoDownload();
+      
+      // Clean old snapshots
+      cleanOldBackupSnapshots();
+      
+      // Set up periodic checks (daily)
+      setInterval(() => {
+        checkWeeklyEmailBackup();
+        checkMonthlyAutoDownload();
+        cleanOldBackupSnapshots();
+      }, 86400000); // Check every 24 hours
+    }
+    
+    // Check and send weekly email backup
+    async function checkWeeklyEmailBackup() {
+      if (!BACKUP_CONFIG.WEEKLY_EMAIL_ENABLED) return;
+      
+      const lastBackup = localStorage.getItem(BACKUP_CONFIG.LAST_EMAIL_BACKUP_KEY);
+      const now = Date.now();
+      const oneWeek = 7 * 24 * 60 * 60 * 1000;
+      
+      if (!lastBackup || (now - parseInt(lastBackup)) > oneWeek) {
+        console.log('📧 Weekly email backup due - generating backup data...');
+        const backupData = await generateBackupData();
+        
+        // In production, this would call an email service
+        // For now, we'll prepare the data and log it
+        console.log('✅ Weekly backup ready. Size:', (JSON.stringify(backupData).length / 1024).toFixed(2), 'KB');
+        
+        // Save backup link for admin to download
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        // Store backup metadata
+        const backupMeta = {
+          date: new Date().toISOString(),
+          size: blob.size,
+          members: backupData.members?.length || 0,
+          url: url
+        };
+        
+        localStorage.setItem('pending_email_backup', JSON.stringify(backupMeta));
+        localStorage.setItem(BACKUP_CONFIG.LAST_EMAIL_BACKUP_KEY, now.toString());
+        
+        // Show notification to admin
+        if (currentUser && currentUser.role === 'Admin') {
+          showAlert('adminAlert', '📧 Weekly backup ready! Check Data Management tab to download.', 'info');
+        }
+      }
+    }
+    
+    // Check and perform monthly auto-download
+    function checkMonthlyAutoDownload() {
+      if (!BACKUP_CONFIG.MONTHLY_AUTO_DOWNLOAD) return;
+      
+      const lastDownload = localStorage.getItem(BACKUP_CONFIG.LAST_MONTHLY_BACKUP_KEY);
+      const now = Date.now();
+      const oneMonth = 30 * 24 * 60 * 60 * 1000;
+      
+      if (!lastDownload || (now - parseInt(lastDownload)) > oneMonth) {
+        console.log('💾 Monthly auto-download due - preparing backup...');
+        
+        // Only auto-download if admin is logged in
+        if (currentUser && currentUser.role === 'Admin' && !document.getElementById('adminPage').classList.contains('hidden')) {
+          downloadBackupFile('monthly');
+          localStorage.setItem(BACKUP_CONFIG.LAST_MONTHLY_BACKUP_KEY, now.toString());
+        } else {
+          console.log('⏳ Monthly backup pending - will download when admin logs in');
+        }
+      }
+    }
+    
+    // Clean old backup snapshots (keep last 7 days)
+    function cleanOldBackupSnapshots() {
+      const now = Date.now();
+      const maxAge = BACKUP_CONFIG.KEEP_SNAPSHOTS_DAYS * 24 * 60 * 60 * 1000;
+      
+      // Get all localStorage keys
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(STORAGE_KEY + '_backup_')) {
+          // Extract date from key
+          const dateStr = key.split('_backup_')[1];
+          try {
+            const backupDate = new Date(dateStr).getTime();
+            if (now - backupDate > maxAge) {
+              keysToRemove.push(key);
+            }
+          } catch (e) {
+            // Invalid date format, keep it
+          }
+        }
+      }
+      
+      // Remove old backups
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        console.log('🗑️ Removed old backup:', key);
+      });
+      
+      if (keysToRemove.length > 0) {
+        console.log(`✅ Cleaned ${keysToRemove.length} old backup snapshots`);
+      }
+    }
+    
+    // Generate backup data
+    async function generateBackupData() {
+      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
+      
+      return {
+        // Core data
+        members,
+        beneficiaries,
+        payouts,
+        penalties,
+        attendance: attendanceData,
+        meetingMinutes,
+        paymentProofs,
+        payoutCollectors,
+        constitutionDocument,
+        
+        // Counters
+        memberIdCounter,
+        minutesIdCounter,
+        proofIdCounter,
+        
+        // Metadata
+        backupDate: new Date().toISOString(),
+        version: '2.6.1-enhanced-sync',
+        systemInfo: {
+          totalMembers: members.length,
+          activeMembers: members.filter(m => m.status === 'Active').length,
+          totalBeneficiaries: beneficiaries.length,
+          totalMeetings: Object.keys(attendanceData).length,
+          syncHealth: SYNC_HEALTH
+        }
+      };
+    }
+    
+    // Download backup file (one-click backup)
+    async function downloadBackupFile(type = 'manual') {
+      try {
+        const backupData = await generateBackupData();
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+        const filename = `SBS-Backup-${type}-${timestamp}.json`;
+        
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        console.log(`✅ Backup downloaded: ${filename} (${(blob.size / 1024).toFixed(2)} KB)`);
+        showAlert('adminAlert', `✅ Backup downloaded: ${filename}`, 'success');
+        
+        if (type === 'monthly') {
+          localStorage.setItem(BACKUP_CONFIG.LAST_MONTHLY_BACKUP_KEY, Date.now().toString());
+        }
+      } catch (error) {
+        console.error('Backup download error:', error);
+        showAlert('adminAlert', '❌ Backup download failed: ' + error.message, 'error');
+      }
+    }
+    
+    // Get member contribution status
+    function getMemberContributionStatus(member) {
+      // Count contributions in last 3 months
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+      
+      const recentContributions = (member.contributions || []).filter(c => {
+        const contribDate = new Date(c.date);
+        return contribDate >= threeMonthsAgo;
+      }).length;
+      
+      // Determine status
+      if (recentContributions >= 3) return 'up-to-date'; // Green
+      if (recentContributions >= 2) return 'warning'; // Yellow
+      return 'behind'; // Red
+    }
+    
+    // Get status badge HTML
+    function getStatusBadgeHTML(status) {
+      const badges = {
+        'up-to-date': '<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">🟢 UP TO DATE</span>',
+        'warning': '<span style="background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">🟡 1 BEHIND</span>',
+        'behind': '<span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">🔴 2+ BEHIND</span>'
+      };
+      return badges[status] || badges['behind'];
+    }
+    
     // Simple encryption/decryption (for basic security - use proper encryption in production)
     function encryptData(data) {
       try {
@@ -1044,11 +1783,20 @@
       }
     }
     
-    // Optimized save function with cloud storage
+    // Optimized save function with enhanced cloud storage reliability
     async function saveDataToStorage(forceImmediate = false) {
       const performSave = async () => {
+        const syncStartTime = performance.now();
         try {
-          // Update sync indicator
+          // Prevent concurrent saves
+          if (isSyncing && !forceImmediate) {
+            console.log('⏳ Sync already in progress, queuing...');
+            return new Promise((resolve) => {
+              queueSyncOperation(() => saveDataToStorage(true).then(resolve));
+            });
+          }
+          
+          isSyncing = true;
           updateSyncStatus('syncing');
           
           const startTime = performance.now();
@@ -1075,6 +1823,9 @@
             paymentProofs,
             payoutCollectors,
             
+            // Constitution document
+            constitutionDocument,
+            
             // System data
             memberIdCounter,
             minutesIdCounter,
@@ -1082,7 +1833,7 @@
             
             // Metadata
             lastSaved: new Date().toISOString(),
-            version: '2.5-payouts',
+            version: '2.6.1-enhanced-sync',
             systemInfo: {
               totalMembers: members.length,
               activeMembers: members.filter(m => m.status === 'Active').length,
@@ -1093,66 +1844,156 @@
               totalMeetings: Object.keys(attendanceData).length,
               totalMinutes: meetingMinutes.length,
               totalProofs: paymentProofs.length,
-              lastSaveTime: performance.now() - startTime
+              lastSaveTime: performance.now() - startTime,
+              syncHealth: {
+                consecutiveFailures: SYNC_HEALTH.consecutiveFailures,
+                totalSyncs: SYNC_HEALTH.totalSyncs,
+                successRate: SYNC_HEALTH.totalSyncs > 0 
+                  ? ((SYNC_HEALTH.totalSyncs - SYNC_HEALTH.totalFailures) / SYNC_HEALTH.totalSyncs * 100).toFixed(1) + '%'
+                  : 'N/A'
+              }
             }
           };
+          
+          // Validate data before sync
+          const validation = validateSyncData(data);
+          if (!validation.valid) {
+            console.error('❌ Data validation failed:', validation.errors);
+            showAlert('adminAlert', '⚠️ Data validation failed: ' + validation.errors[0], 'error');
+            isSyncing = false;
+            updateSyncStatus('error');
+            return false;
+          }
           
           let cloudSaveSuccess = false;
           
           // Save to cloud storage if available
           if (cloudStorageAvailable && CLOUD_STORAGE.enabled) {
             try {
+              // Check if enough time has passed since last attempt to avoid rate limiting
+              const timeSinceLastAttempt = Date.now() - lastSyncAttempt;
+              if (timeSinceLastAttempt < 1000 && !forceImmediate) {
+                console.log('⏱️ Rate limiting - waiting before sync...');
+                await new Promise(resolve => setTimeout(resolve, 1000 - timeSinceLastAttempt));
+              }
+              
+              lastSyncAttempt = Date.now();
+              
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+              
               const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}`, {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
                   'X-Access-Key': CLOUD_STORAGE.apiKey
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
+                signal: controller.signal
               });
               
+              clearTimeout(timeoutId);
+              
               if (response.ok) {
+                const syncTime = performance.now() - syncStartTime;
+                SYNC_HEALTH.totalSyncs++;
+                SYNC_HEALTH.consecutiveFailures = 0;
+                SYNC_HEALTH.lastSuccessfulSync = Date.now();
+                SYNC_HEALTH.averageSyncTime = ((SYNC_HEALTH.averageSyncTime + syncTime) / 2).toFixed(0);
+                
                 console.log('✅ CLOUD SAVE SUCCESS:', {
                   time: data.lastSaved,
                   members: data.members.length,
+                  beneficiaries: data.beneficiaries.length,
                   meetingMinutes: data.meetingMinutes.length,
                   signatures: data.members.filter(m => m.signature).length + ' members with signatures',
-                  totalDataSize: JSON.stringify(data).length + ' bytes'
+                  totalDataSize: (JSON.stringify(data).length / 1024).toFixed(2) + ' KB',
+                  syncTime: syncTime.toFixed(0) + 'ms',
+                  health: `${SYNC_HEALTH.totalSyncs} syncs, ${SYNC_HEALTH.consecutiveFailures} failures`
                 });
+                
                 lastCloudSync = Date.now();
-                syncRetryCount = 0; // Reset retry counter on success
+                syncRetryCount = 0;
+                syncFailCount = 0;
                 updateSyncStatus('synced');
                 cloudSaveSuccess = true;
+                
+                // Clear sync queue on success
+                if (syncQueue.length > 0) {
+                  console.log('✅ Clearing sync queue after successful sync');
+                  syncQueue.length = 0;
+                }
               } else {
                 const errorText = await response.text();
+                SYNC_HEALTH.totalFailures++;
+                SYNC_HEALTH.consecutiveFailures++;
+                
                 console.error('❌ CLOUD SAVE ERROR:', {
                   status: response.status,
                   statusText: response.statusText,
-                  error: errorText
+                  error: errorText,
+                  consecutiveFailures: SYNC_HEALTH.consecutiveFailures
                 });
                 
-                // Specific error handling
+                // Specific error handling with exponential backoff
                 if (response.status === 429) {
-                  console.warn('⚠️ Rate limit reached - will retry');
+                  const retryDelay = Math.min(2000 * Math.pow(2, SYNC_HEALTH.consecutiveFailures), 30000);
+                  console.warn(`⚠️ Rate limit reached - retrying in ${retryDelay/1000}s`);
                   updateSyncStatus('error');
-                  // Retry after 2 seconds
-                  setTimeout(() => saveDataToStorage(true), 2000);
+                  queueSyncOperation(() => saveDataToStorage(true));
+                  setTimeout(() => processSyncQueue(), retryDelay);
                 } else if (response.status === 413) {
                   console.error('❌ Data too large for cloud storage');
                   updateSyncStatus('error');
-                  showAlert('memberAlert', '⚠️ Data size too large. Contact admin.', 'error');
+                  showAlert('adminAlert', '⚠️ Data size too large. Consider archiving old records.', 'error');
+                } else if (response.status === 401 || response.status === 403) {
+                  console.error('❌ Cloud storage authentication failed');
+                  updateSyncStatus('error');
+                  showAlert('adminAlert', '⚠️ Cloud authentication error. Please check configuration.', 'error');
+                  cloudStorageAvailable = false;
+                  // Retry connection after 60 seconds
+                  setTimeout(() => initCloudStorage(), 60000);
+                } else if (response.status >= 500) {
+                  console.error('❌ Cloud storage server error');
+                  updateSyncStatus('error');
+                  // Queue for retry with exponential backoff
+                  const retryDelay = Math.min(5000 * Math.pow(2, SYNC_HEALTH.consecutiveFailures), 60000);
+                  console.warn(`⚠️ Server error - retrying in ${retryDelay/1000}s`);
+                  queueSyncOperation(() => saveDataToStorage(true));
+                  setTimeout(() => processSyncQueue(), retryDelay);
                 } else {
                   updateSyncStatus('error');
-                  // Don't disable cloud storage, just log the error
                   console.error('Cloud save failed but will retry on next save');
+                  if (SYNC_HEALTH.consecutiveFailures < 3) {
+                    queueSyncOperation(() => saveDataToStorage(true));
+                  }
                 }
                 cloudSaveSuccess = false;
               }
             } catch (error) {
-              console.error('❌ CLOUD SAVE NETWORK ERROR:', error.message);
-              // Network error - don't disable cloud storage permanently
-              updateSyncStatus('error');
-              console.warn('⚠️ Network error - data saved locally, will sync when connection restored');
+              SYNC_HEALTH.totalFailures++;
+              SYNC_HEALTH.consecutiveFailures++;
+              
+              console.error('❌ CLOUD SAVE NETWORK ERROR:', {
+                message: error.message,
+                type: error.name,
+                consecutiveFailures: SYNC_HEALTH.consecutiveFailures
+              });
+              
+              // Handle timeout vs network errors differently
+              if (error.name === 'AbortError') {
+                console.warn('⚠️ Sync timeout - will retry with exponential backoff');
+                updateSyncStatus('error');
+                const retryDelay = Math.min(3000 * Math.pow(2, SYNC_HEALTH.consecutiveFailures), 30000);
+                queueSyncOperation(() => saveDataToStorage(true));
+                setTimeout(() => processSyncQueue(), retryDelay);
+              } else {
+                // Network error - queue for retry when connection restored
+                updateSyncStatus('offline');
+                console.warn('⚠️ Network error - data saved locally, queued for sync when connection restored');
+                queueSyncOperation(() => saveDataToStorage(true));
+              }
+              
               cloudSaveSuccess = false;
             }
           } else {
@@ -1169,14 +2010,23 @@
           const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
           localStorage.setItem(backupKey, encrypted);
           
+          // Track save performance
+          const saveTime = performance.now() - startTime;
+          performanceMetrics.saveTime = saveTime.toFixed(2);
+          
           console.log('✓ Data saved to secure storage at', data.lastSaved);
           console.log('✓ System Info:', data.systemInfo);
+          console.log(`✓ Save completed in ${saveTime.toFixed(0)}ms`);
+          
+          isSyncing = false;
           
           // Return cloud save status
           return cloudSaveSuccess;
         } catch (e) {
           console.error('Failed to save data:', e);
-          showAlert('adminAlert', '⚠ Failed to save data', 'error');
+          showAlert('adminAlert', '⚠ Failed to save data: ' + e.message, 'error');
+          isSyncing = false;
+          updateSyncStatus('error');
           return false;
         }
       };
@@ -1196,44 +2046,82 @@
       }
     }
     
-    // Optimized load data from cloud storage
+    // Enhanced load data with conflict resolution
     async function loadDataFromStorage() {
       try {
         showLoading('Loading system data...');
         const startTime = performance.now();
-        let data = null;
+        let cloudData = null;
+        let localData = null;
         
         // Try loading from cloud storage first
         if (cloudStorageAvailable && CLOUD_STORAGE.enabled) {
           try {
+            console.log('🔄 Fetching data from cloud storage...');
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            
             const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
               headers: {
                 'X-Access-Key': CLOUD_STORAGE.apiKey
-              }
+              },
+              signal: controller.signal
             });
+            
+            clearTimeout(timeoutId);
             
             if (response.ok) {
               const result = await response.json();
-              data = result.record;
-              console.log('✓ Data loaded from cloud storage');
+              cloudData = result.record;
+              console.log('✅ Data loaded from cloud storage:', {
+                members: cloudData.members?.length || 0,
+                lastSaved: cloudData.lastSaved,
+                version: cloudData.version
+              });
               lastCloudSync = Date.now();
+              SYNC_HEALTH.lastSuccessfulSync = Date.now();
+            } else {
+              console.warn('⚠️ Cloud load failed with status:', response.status);
             }
           } catch (error) {
-            console.warn('Cloud load failed, trying localStorage:', error);
+            if (error.name === 'AbortError') {
+              console.warn('⚠️ Cloud load timeout - using local data');
+            } else {
+              console.warn('⚠️ Cloud load error:', error.message);
+            }
           }
         }
         
-        // Fallback to localStorage if cloud fails
-        if (!data) {
-          const encrypted = localStorage.getItem(STORAGE_KEY);
-          if (encrypted) {
-            data = decryptData(encrypted);
-            console.log('✓ Data loaded from local storage (fallback)');
-          }
+        // Always try to load from localStorage
+        const encrypted = localStorage.getItem(STORAGE_KEY);
+        if (encrypted) {
+          localData = decryptData(encrypted);
+          console.log('✅ Data loaded from local storage:', {
+            members: localData.members?.length || 0,
+            lastSaved: localData.lastSaved
+          });
+        }
+        
+        // Merge cloud and local data if both exist
+        let data = null;
+        if (cloudData && localData) {
+          console.log('🔄 Both cloud and local data found - merging...');
+          data = mergeData(localData, cloudData);
+        } else {
+          data = cloudData || localData;
         }
         
         if (data) {
-            // Use cloud/stored data directly - NO merging with defaults
+            // Validate loaded data
+            const validation = validateSyncData(data);
+            if (!validation.valid) {
+              console.error('❌ Loaded data validation failed:', validation.errors);
+              showAlert('adminAlert', '⚠️ Data integrity issue detected. Using safe defaults.', 'error');
+              // Don't load corrupted data, use defaults instead
+              return;
+            }
+            
+            // Load validated data
             members = data.members || [];
             beneficiaries = data.beneficiaries || [];
             payouts = data.payouts || [];
@@ -1241,6 +2129,7 @@
             meetingMinutes = data.meetingMinutes || [];
             paymentProofs = data.paymentProofs || [];
             payoutCollectors = data.payoutCollectors || [];
+            constitutionDocument = data.constitutionDocument || null;
             memberIdCounter = data.memberIdCounter || 7;
             minutesIdCounter = data.minutesIdCounter || 1;
             proofIdCounter = data.proofIdCounter || 1;
@@ -1496,6 +2385,7 @@
             meetingMinutes = data.meetingMinutes || [];
             paymentProofs = data.paymentProofs || [];
             payoutCollectors = data.payoutCollectors || [];
+            constitutionDocument = data.constitutionDocument || null;
             
             // Import counters
             memberIdCounter = data.memberIdCounter || 16;
@@ -1560,6 +2450,202 @@
       }
     }
     
+    // Constitution management functions
+    async function uploadConstitution() {
+      const fileInput = document.getElementById('constitutionFile');
+      const titleInput = document.getElementById('constitutionTitle');
+      const notesInput = document.getElementById('constitutionNotes');
+      
+      if (!fileInput.files || !fileInput.files[0]) {
+        showAlert('adminAlert', '⚠️ Please select a file to upload', 'error');
+        return;
+      }
+      
+      if (!titleInput.value.trim()) {
+        showAlert('adminAlert', '⚠️ Please enter a document title', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      const maxSize = 10 * 1024 * 1024; // 10MB limit
+      
+      if (file.size > maxSize) {
+        showAlert('adminAlert', '⚠️ File is too large. Maximum size is 10MB', 'error');
+        return;
+      }
+      
+      // Validate file type
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowedTypes.includes(file.type)) {
+        showAlert('adminAlert', '⚠️ Invalid file type. Only PDF, DOC, and DOCX files are allowed', 'error');
+        return;
+      }
+      
+      showAlert('adminAlert', '📤 Uploading constitution...', 'info');
+      
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        constitutionDocument = {
+          title: titleInput.value.trim(),
+          uploadDate: new Date().toISOString(),
+          fileData: e.target.result,
+          fileSize: file.size,
+          fileType: file.type,
+          fileName: file.name,
+          notes: notesInput.value.trim() || 'No notes'
+        };
+        
+        await saveDataToStorage(true);
+        showAlert('adminAlert', '✅ Constitution uploaded successfully!', 'success');
+        
+        // Clear inputs
+        fileInput.value = '';
+        titleInput.value = '';
+        notesInput.value = '';
+        
+        // Update display
+        displayConstitution();
+      };
+      
+      reader.readAsDataURL(file);
+    }
+    
+    function displayConstitution() {
+      const currentSection = document.getElementById('currentConstitutionSection');
+      const noSection = document.getElementById('noConstitutionSection');
+      
+      if (constitutionDocument) {
+        currentSection.style.display = 'block';
+        noSection.style.display = 'none';
+        
+        document.getElementById('constitutionTitleDisplay').textContent = constitutionDocument.title;
+        document.getElementById('constitutionDateDisplay').textContent = new Date(constitutionDocument.uploadDate).toLocaleString();
+        document.getElementById('constitutionSizeDisplay').textContent = formatFileSize(constitutionDocument.fileSize);
+        document.getElementById('constitutionNotesDisplay').textContent = constitutionDocument.notes;
+      } else {
+        currentSection.style.display = 'none';
+        noSection.style.display = 'block';
+      }
+      
+      // Update member view
+      displayConstitutionMember();
+    }
+    
+    function displayConstitutionMember() {
+      const availableSection = document.getElementById('memberConstitutionAvailable');
+      const notAvailableSection = document.getElementById('memberConstitutionNotAvailable');
+      
+      if (constitutionDocument) {
+        availableSection.style.display = 'block';
+        notAvailableSection.style.display = 'none';
+        
+        document.getElementById('memberConstitutionTitle').textContent = constitutionDocument.title;
+        document.getElementById('memberConstitutionDate').textContent = new Date(constitutionDocument.uploadDate).toLocaleDateString();
+        document.getElementById('memberConstitutionSize').textContent = formatFileSize(constitutionDocument.fileSize);
+        document.getElementById('memberConstitutionNotes').textContent = constitutionDocument.notes;
+      } else {
+        availableSection.style.display = 'none';
+        notAvailableSection.style.display = 'block';
+      }
+    }
+    
+    function viewConstitution() {
+      if (!constitutionDocument) {
+        showAlert('adminAlert', '⚠️ No constitution uploaded', 'error');
+        return;
+      }
+      
+      // Open in new window/tab
+      const blob = dataURLtoBlob(constitutionDocument.fileData);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    }
+    
+    function viewConstitutionMember() {
+      if (!constitutionDocument) {
+        showAlert('memberAlert', '⚠️ Constitution not available', 'error');
+        return;
+      }
+      
+      const blob = dataURLtoBlob(constitutionDocument.fileData);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    }
+    
+    function downloadConstitution() {
+      if (!constitutionDocument) {
+        showAlert('adminAlert', '⚠️ No constitution uploaded', 'error');
+        return;
+      }
+      
+      const blob = dataURLtoBlob(constitutionDocument.fileData);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = constitutionDocument.fileName || 'constitution.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showAlert('adminAlert', '✅ Constitution downloaded', 'success');
+    }
+    
+    function downloadConstitutionMember() {
+      if (!constitutionDocument) {
+        showAlert('memberAlert', '⚠️ Constitution not available', 'error');
+        return;
+      }
+      
+      const blob = dataURLtoBlob(constitutionDocument.fileData);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = constitutionDocument.fileName || 'constitution.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showAlert('memberAlert', '✅ Constitution downloaded', 'success');
+    }
+    
+    async function deleteConstitution() {
+      if (!constitutionDocument) {
+        showAlert('adminAlert', '⚠️ No constitution to delete', 'error');
+        return;
+      }
+      
+      if (confirm('Are you sure you want to delete the constitution? This action cannot be undone.')) {
+        constitutionDocument = null;
+        await saveDataToStorage(true);
+        displayConstitution();
+        showAlert('adminAlert', '✅ Constitution deleted successfully', 'success');
+      }
+    }
+    
+    // Helper function to convert data URL to Blob
+    function dataURLtoBlob(dataURL) {
+      const arr = dataURL.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    }
+    
+    // Helper function to format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+    
     // Default/initial data - includes all registered members
     let members = [
       { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
@@ -1587,6 +2673,7 @@
     let meetingMinutes = []; // Store meeting minutes
     let paymentProofs = []; // Store payment proof uploads
     let payoutCollectors = []; // Store payout collectors: { memberId, collectors: [{name, phone}, {name, phone}] }
+    let constitutionDocument = null; // Store constitution document: { title, uploadDate, fileData, fileSize, fileType, notes }
     let currentUser = null;
     let tempBeneficiaries = [];
     let isDrawing = false;
@@ -1603,6 +2690,131 @@
       await loadDataFromStorage();
       
       console.log('✓ System initialized with', members.length, 'members');
+      
+      // Start health monitoring
+      startHealthMonitoring();
+      
+      // Start periodic sync verification
+      startSyncVerification();
+      
+      // Start automated backup system
+      initBackupSystem();
+      
+      console.log('✅ All systems initialized successfully');
+    }
+    
+    // Monitor sync health and auto-recover
+    function startHealthMonitoring() {
+      setInterval(() => {
+        const now = Date.now();
+        const timeSinceLastSync = now - SYNC_HEALTH.lastSuccessfulSync;
+        const timeSinceLastAttempt = now - lastSyncAttempt;
+        
+        // If no successful sync in 5 minutes and we're online, investigate
+        if (timeSinceLastSync > 300000 && navigator.onLine && cloudStorageAvailable) {
+          console.warn('⚠️ No successful sync in 5 minutes - running health check...');
+          
+          // Check if we have pending queue items
+          if (syncQueue.length > 0) {
+            console.log(`📤 Processing ${syncQueue.length} pending sync operations...`);
+            processSyncQueue();
+          } else {
+            // Try a test sync
+            console.log('🔄 Attempting recovery sync...');
+            saveDataToStorage(true);
+          }
+        }
+        
+        // If too many consecutive failures, reset and reinitialize
+        if (SYNC_HEALTH.consecutiveFailures >= 5) {
+          console.error('❌ Too many consecutive sync failures - reinitializing cloud connection...');
+          SYNC_HEALTH.consecutiveFailures = 0;
+          cloudStorageAvailable = false;
+          initCloudStorage();
+        }
+        
+        // Log health status every 10 minutes
+        if (now % 600000 < 30000) { // Within 30 seconds of 10-minute mark
+          console.log('📊 Sync Health Status:', {
+            consecutiveFailures: SYNC_HEALTH.consecutiveFailures,
+            totalSyncs: SYNC_HEALTH.totalSyncs,
+            totalFailures: SYNC_HEALTH.totalFailures,
+            successRate: SYNC_HEALTH.totalSyncs > 0 
+              ? ((SYNC_HEALTH.totalSyncs - SYNC_HEALTH.totalFailures) / SYNC_HEALTH.totalSyncs * 100).toFixed(1) + '%'
+              : 'N/A',
+            lastSuccessfulSync: SYNC_HEALTH.lastSuccessfulSync 
+              ? new Date(SYNC_HEALTH.lastSuccessfulSync).toLocaleString()
+              : 'Never',
+            queueSize: syncQueue.length,
+            averageSyncTime: SYNC_HEALTH.averageSyncTime + 'ms'
+          });
+        }
+      }, 30000); // Check every 30 seconds
+    }
+    
+    // Verify sync integrity periodically
+    function startSyncVerification() {
+      setInterval(async () => {
+        // Only verify if we're online and cloud is available
+        if (!navigator.onLine || !cloudStorageAvailable) return;
+        
+        // Don't verify if currently syncing
+        if (isSyncing) return;
+        
+        try {
+          console.log('🔍 Running sync verification...');
+          
+          // Fetch latest cloud data
+          const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
+            headers: {
+              'X-Access-Key': CLOUD_STORAGE.apiKey
+            }
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            const cloudData = result.record;
+            
+            // Compare with local data
+            const localMemberCount = members.length;
+            const cloudMemberCount = cloudData.members?.length || 0;
+            
+            if (localMemberCount !== cloudMemberCount) {
+              console.warn('⚠️ Member count mismatch detected!', {
+                local: localMemberCount,
+                cloud: cloudMemberCount
+              });
+              
+              // Merge and sync
+              const merged = mergeData(
+                {
+                  members, beneficiaries, payouts, penalties, meetingMinutes,
+                  paymentProofs, payoutCollectors, constitutionDocument,
+                  memberIdCounter, minutesIdCounter, proofIdCounter,
+                  lastSaved: new Date().toISOString()
+                },
+                cloudData
+              );
+              
+              // Update local with merged data
+              members = merged.members || [];
+              beneficiaries = merged.beneficiaries || [];
+              
+              console.log('✅ Data synchronized:', {
+                members: members.length,
+                beneficiaries: beneficiaries.length
+              });
+              
+              // Save merged data
+              await saveDataToStorage(true);
+            } else {
+              console.log('✅ Sync verification passed - data is consistent');
+            }
+          }
+        } catch (error) {
+          console.warn('⚠️ Sync verification failed:', error.message);
+        }
+      }, 120000); // Verify every 2 minutes
     }
     
     // Initialize system and load saved data on page load
@@ -1694,6 +2906,256 @@
           
           showAlert('memberAlert', '✓ Signature saved successfully!', 'success');
         }
+      }
+    }
+    
+    // ===== SYNC HEALTH MONITORING FUNCTIONS =====
+    
+    // Display sync health statistics
+    function displaySyncHealth() {
+      const successRate = SYNC_HEALTH.totalSyncs > 0 
+        ? ((SYNC_HEALTH.totalSyncs - SYNC_HEALTH.totalFailures) / SYNC_HEALTH.totalSyncs * 100).toFixed(1) + '%'
+        : 'N/A';
+      
+      const lastSyncText = SYNC_HEALTH.lastSuccessfulSync 
+        ? new Date(SYNC_HEALTH.lastSuccessfulSync).toLocaleString()
+        : 'Never';
+      
+      document.getElementById('syncTotalCount').textContent = SYNC_HEALTH.totalSyncs;
+      document.getElementById('syncSuccessRate').textContent = successRate;
+      document.getElementById('syncFailures').textContent = SYNC_HEALTH.consecutiveFailures;
+      document.getElementById('syncAvgTime').textContent = SYNC_HEALTH.averageSyncTime + 'ms';
+      document.getElementById('syncLastSuccess').textContent = lastSyncText;
+      document.getElementById('syncQueueSize').textContent = syncQueue.length + ' operations pending';
+      
+      // Color code based on health
+      const failureEl = document.getElementById('syncFailures');
+      if (SYNC_HEALTH.consecutiveFailures === 0) {
+        failureEl.style.color = '#10b981'; // Green
+      } else if (SYNC_HEALTH.consecutiveFailures < 3) {
+        failureEl.style.color = '#f59e0b'; // Yellow
+      } else {
+        failureEl.style.color = '#ef4444'; // Red
+      }
+      
+      console.log('📊 Sync health displayed:', {
+        totalSyncs: SYNC_HEALTH.totalSyncs,
+        successRate: successRate,
+        consecutiveFailures: SYNC_HEALTH.consecutiveFailures,
+        queueSize: syncQueue.length
+      });
+    }
+    
+    // Force immediate sync
+    async function forceSyncNow() {
+      showAlert('adminAlert', '🔄 Forcing immediate sync...', 'info');
+      
+      try {
+        // Check internet connection
+        if (!navigator.onLine) {
+          showAlert('adminAlert', '⚠️ No internet connection. Data saved locally.', 'error');
+          return;
+        }
+        
+        // Reinitialize cloud if needed
+        if (!cloudStorageAvailable) {
+          showAlert('adminAlert', '🔄 Reconnecting to cloud storage...', 'info');
+          await initCloudStorage();
+        }
+        
+        // Process any queued operations first
+        if (syncQueue.length > 0) {
+          showAlert('adminAlert', `📤 Processing ${syncQueue.length} queued operations...`, 'info');
+          await processSyncQueue();
+        }
+        
+        // Force save
+        const success = await saveDataToStorage(true);
+        
+        if (success) {
+          showAlert('adminAlert', '✅ Sync completed successfully!', 'success');
+          displaySyncHealth();
+        } else {
+          showAlert('adminAlert', '⚠️ Sync failed. Data saved locally. Will retry automatically.', 'error');
+        }
+      } catch (error) {
+        console.error('Force sync error:', error);
+        showAlert('adminAlert', '❌ Sync error: ' + error.message, 'error');
+      }
+    }
+    
+    // ===== BACKUP MANAGEMENT FUNCTIONS =====
+    
+    // Download pending email backup
+    function downloadPendingEmailBackup() {
+      const backupMeta = localStorage.getItem('pending_email_backup');
+      if (backupMeta) {
+        const meta = JSON.parse(backupMeta);
+        const a = document.createElement('a');
+        a.href = meta.url;
+        a.download = `SBS-Weekly-Backup-${meta.date.split('T')[0]}.json`;
+        a.click();
+        
+        // Clear pending notice
+        localStorage.removeItem('pending_email_backup');
+        document.getElementById('pendingBackupNotice').style.display = 'none';
+        
+        showAlert('adminAlert', '✅ Weekly backup downloaded!', 'success');
+      }
+    }
+    
+    // Show backup snapshots list
+    function showBackupSnapshots() {
+      const snapshotsList = document.getElementById('snapshotsList');
+      const snapshotsContent = document.getElementById('snapshotsContent');
+      
+      // Get all backup snapshots
+      const snapshots = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(STORAGE_KEY + '_backup_')) {
+          const dateStr = key.split('_backup_')[1];
+          const data = localStorage.getItem(key);
+          if (data) {
+            snapshots.push({
+              key: key,
+              date: dateStr,
+              size: data.length
+            });
+          }
+        }
+      }
+      
+      // Sort by date (newest first)
+      snapshots.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      if (snapshots.length === 0) {
+        snapshotsContent.innerHTML = '<p style="color: #999; font-size: 13px; margin: 0;">No snapshots available</p>';
+      } else {
+        snapshotsContent.innerHTML = snapshots.map(snap => `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: white; border-radius: 4px; margin-bottom: 8px;">
+            <div>
+              <div style="font-size: 13px; font-weight: 600;">${new Date(snap.date).toLocaleDateString()}</div>
+              <div style="font-size: 11px; color: #666;">${(snap.size / 1024).toFixed(2)} KB</div>
+            </div>
+            <div style="display: flex; gap: 5px;">
+              <button class="btn btn-primary" onclick="restoreFromSnapshot('${snap.key}')" style="font-size: 11px; padding: 5px 10px;">Restore</button>
+              <button class="btn btn-secondary" onclick="downloadSnapshot('${snap.key}')" style="font-size: 11px; padding: 5px 10px;">Download</button>
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      // Toggle visibility
+      snapshotsList.style.display = snapshotsList.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    // Download specific snapshot
+    function downloadSnapshot(key) {
+      const data = localStorage.getItem(key);
+      if (data) {
+        const decrypted = decryptData(data);
+        const blob = new Blob([JSON.stringify(decrypted, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const dateStr = key.split('_backup_')[1];
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `SBS-Snapshot-${dateStr}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        showAlert('adminAlert', '✅ Snapshot downloaded!', 'success');
+      }
+    }
+    
+    // Restore from snapshot
+    async function restoreFromSnapshot(key) {
+      if (!confirm('⚠️ This will replace all current data with the snapshot. Are you sure?')) {
+        return;
+      }
+      
+      try {
+        const data = localStorage.getItem(key);
+        if (!data) {
+          showAlert('adminAlert', '❌ Snapshot not found', 'error');
+          return;
+        }
+        
+        const backupData = decryptData(data);
+        const dateStr = key.split('_backup_')[1];
+        
+        // Restore data
+        members = backupData.members || [];
+        beneficiaries = backupData.beneficiaries || [];
+        payouts = backupData.payouts || [];
+        penalties = backupData.penalties || [];
+        meetingMinutes = backupData.meetingMinutes || [];
+        paymentProofs = backupData.paymentProofs || [];
+        payoutCollectors = backupData.payoutCollectors || [];
+        constitutionDocument = backupData.constitutionDocument || null;
+        memberIdCounter = backupData.memberIdCounter || 7;
+        minutesIdCounter = backupData.minutesIdCounter || 1;
+        proofIdCounter = backupData.proofIdCounter || 1;
+        
+        if (backupData.attendance) {
+          localStorage.setItem('attendance', JSON.stringify(backupData.attendance));
+        }
+        
+        // Save restored data
+        await saveDataToStorage(true);
+        
+        showAlert('adminAlert', `✅ Data restored from snapshot (${new Date(dateStr).toLocaleDateString()})`, 'success');
+        
+        // Refresh displays
+        displayMem();
+        updateStorageInfo();
+        
+      } catch (error) {
+        console.error('Restore error:', error);
+        showAlert('adminAlert', '❌ Restore failed: ' + error.message, 'error');
+      }
+    }
+    
+    // Update backup display info
+    function updateBackupDisplay() {
+      // Check for pending email backup
+      const pendingBackup = localStorage.getItem('pending_email_backup');
+      const pendingNotice = document.getElementById('pendingBackupNotice');
+      if (pendingBackup && pendingNotice) {
+        pendingNotice.style.display = 'block';
+      }
+      
+      // Update last backup dates
+      const lastWeekly = localStorage.getItem(BACKUP_CONFIG.LAST_EMAIL_BACKUP_KEY);
+      const lastMonthly = localStorage.getItem(BACKUP_CONFIG.LAST_MONTHLY_BACKUP_KEY);
+      
+      const weeklyEl = document.getElementById('lastWeeklyBackup');
+      const monthlyEl = document.getElementById('lastMonthlyBackup');
+      
+      if (weeklyEl) {
+        weeklyEl.textContent = lastWeekly 
+          ? new Date(parseInt(lastWeekly)).toLocaleDateString()
+          : 'Never';
+      }
+      
+      if (monthlyEl) {
+        monthlyEl.textContent = lastMonthly 
+          ? new Date(parseInt(lastMonthly)).toLocaleDateString()
+          : 'Never';
+      }
+      
+      // Count snapshots
+      let snapshotCount = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(STORAGE_KEY + '_backup_')) {
+          snapshotCount++;
+        }
+      }
+      
+      const countEl = document.getElementById('backupSnapshotCount');
+      if (countEl) {
+        countEl.textContent = snapshotCount;
       }
     }
 
@@ -1938,6 +3400,7 @@
 
     function adminTab(t, e) {
       document.getElementById('overviewTab').classList.toggle('hidden', t !== 'overview');
+      document.getElementById('financialsTab').classList.toggle('hidden', t !== 'financials');
       document.getElementById('membersTab').classList.toggle('hidden', t !== 'members');
       document.getElementById('beneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
       document.getElementById('paymentsTab').classList.toggle('hidden', t !== 'payments');
@@ -1945,15 +3408,18 @@
       document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
       document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
       document.getElementById('minutesTab').classList.toggle('hidden', t !== 'minutes');
+      document.getElementById('constitutionTab').classList.toggle('hidden', t !== 'constitution');
       document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
       document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
       if (t === 'members') { displayMem(); }
+      if (t === 'financials') { initializeFinancialDashboard(); }
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
       if (t === 'payments') displayAdminPaymentProofs();
       if (t === 'payouts') displayPayouts();
       if (t === 'penalties') displayPenalties();
       if (t === 'minutes') displayMeetingMinutes();
+      if (t === 'constitution') displayConstitution();
       if (t === 'attendance') { 
         // Set today's date if not already set
         const dateInput = document.getElementById('meetingDate');
@@ -1963,7 +3429,7 @@
         }
         showAttendanceList(); 
       }
-      if (t === 'data') { updateStorageInfo(); }
+      if (t === 'data') { updateStorageInfo(); displaySyncHealth(); updateBackupDisplay(); updateAdminUsersDisplay(); updateAuditLogPreview(); }
     }
     
     function updateStorageInfo() {
@@ -2018,18 +3484,20 @@
     }
 
     function memberTab(t, e) {
-      document.getElementById('profileTab').classList.toggle('hidden', t !== 'profile');
+      document.getElementById('memberProfileTab').classList.toggle('hidden', t !== 'profile');
+      document.getElementById('memberSignatureTab').classList.toggle('hidden', t !== 'signature');
       document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
       document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
+      document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.getElementById('memberMinutesTab').classList.toggle('hidden', t !== 'minutes');
       document.getElementById('memberPaymentsTab').classList.toggle('hidden', t !== 'payments');
+      document.getElementById('memberConstitutionTab').classList.toggle('hidden', t !== 'constitution');
       document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
-      document.getElementById('signatureTab').classList.toggle('hidden', t !== 'signature');
-      document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
       if (t === 'minutes') displayMemberMinutes();
       if (t === 'payments') displayMemberPaymentProofs();
+      if (t === 'constitution') displayConstitutionMember();
       if (t === 'beneficiaries') {
         // Refresh tempBeneficiaries from the main beneficiaries array - using fast clone
         tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
@@ -2109,7 +3577,12 @@
           const row = document.createElement('tr');
           const regDate = m.registeredAt ? new Date(m.registeredAt).toLocaleDateString('en-ZA', {year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A';
           const role = m.role || 'Member';
-          row.innerHTML = `<td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-pending">${role}</span></td><td>${regDate}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
+          
+          // Get contribution status badge
+          const contribStatus = getMemberContributionStatus(m);
+          const statusBadge = getStatusBadgeHTML(contribStatus);
+          
+          row.innerHTML = `<td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-pending">${role}</span></td><td>${regDate}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>${statusBadge}</td><td>
             <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
             <button class="btn btn-warning btn-sm" onclick="editMemberRole('${m.id}')">Role</button>
             ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
@@ -4062,6 +5535,923 @@
       
       display.innerHTML = collectorsHtml;
     }
+
+    // ==================== FINANCIAL DASHBOARD FUNCTIONS ====================
+    
+    // Chart instances (global to allow destruction/recreation)
+    let incomeVsExpensesChart = null;
+    let monthlyTrendsChart = null;
+    let memberContributionChart = null;
+
+    // Initialize Financial Dashboard
+    function initializeFinancialDashboard() {
+      console.log('🔄 Initializing Financial Dashboard...');
+      updateFinancialDashboard();
+    }
+
+    // Refresh Financial Dashboard
+    function refreshFinancialDashboard() {
+      updateFinancialDashboard();
+      showAlert('adminAlert', '✓ Financial dashboard refreshed!', 'success');
+    }
+
+    // Main function to update all financial data and charts
+    function updateFinancialDashboard() {
+      const period = document.getElementById('financialPeriod').value;
+      const financialData = calculateFinancialData(period);
+      
+      // Update summary cards
+      document.getElementById('totalIncome').textContent = `R ${financialData.totalIncome.toFixed(2)}`;
+      document.getElementById('totalPayouts').textContent = `R ${financialData.totalPayouts.toFixed(2)}`;
+      document.getElementById('totalPenalties').textContent = `R ${financialData.totalPenalties.toFixed(2)}`;
+      document.getElementById('netBalance').textContent = `R ${financialData.netBalance.toFixed(2)}`;
+      
+      // Update charts
+      renderIncomeVsExpensesChart(financialData);
+      renderMonthlyTrendsChart(financialData);
+      renderMemberContributionChart(financialData);
+      
+      // Update tables
+      updateTopContributorsTable(financialData);
+      updateRecentPayoutsTable(financialData);
+    }
+
+    // Calculate financial data based on period
+    function calculateFinancialData(period) {
+      const now = new Date();
+      let startDate = new Date(0); // Beginning of time for "all"
+      
+      switch(period) {
+        case 'thisYear':
+          startDate = new Date(now.getFullYear(), 0, 1);
+          break;
+        case 'last6months':
+          startDate = new Date(now.setMonth(now.getMonth() - 6));
+          break;
+        case 'last3months':
+          startDate = new Date(now.setMonth(now.getMonth() - 3));
+          break;
+        case 'thisMonth':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+      }
+
+      // Calculate income from approved payment proofs
+      let totalIncome = 0;
+      let monthlyIncome = {};
+      
+      members.forEach(member => {
+        if (member.paymentProofs && Array.isArray(member.paymentProofs)) {
+          member.paymentProofs.forEach(proof => {
+            if (proof.status === 'approved') {
+              const proofDate = new Date(proof.uploadDate);
+              if (proofDate >= startDate) {
+                const amount = parseFloat(proof.amount) || 0;
+                totalIncome += amount;
+                
+                // Track monthly income
+                const monthKey = `${proofDate.getFullYear()}-${String(proofDate.getMonth() + 1).padStart(2, '0')}`;
+                monthlyIncome[monthKey] = (monthlyIncome[monthKey] || 0) + amount;
+              }
+            }
+          });
+        }
+      });
+
+      // Calculate payouts
+      let totalPayouts = 0;
+      let recentPayoutsData = [];
+      
+      payouts.forEach(payout => {
+        const payoutDate = new Date(payout.date);
+        if (payoutDate >= startDate) {
+          const amount = parseFloat(payout.amount) || 0;
+          totalPayouts += amount;
+          recentPayoutsData.push({
+            member: payout.member,
+            amount: amount,
+            date: payout.date
+          });
+        }
+      });
+
+      // Calculate penalties
+      let totalPenalties = 0;
+      members.forEach(member => {
+        if (member.penalties && Array.isArray(member.penalties)) {
+          member.penalties.forEach(penalty => {
+            const penaltyDate = new Date(penalty.date);
+            if (penaltyDate >= startDate && penalty.status === 'paid') {
+              totalPenalties += parseFloat(penalty.amount) || 0;
+            }
+          });
+        }
+      });
+
+      // Calculate member contributions
+      let memberContributions = {};
+      members.forEach(member => {
+        let memberTotal = 0;
+        if (member.paymentProofs && Array.isArray(member.paymentProofs)) {
+          member.paymentProofs.forEach(proof => {
+            if (proof.status === 'approved') {
+              const proofDate = new Date(proof.uploadDate);
+              if (proofDate >= startDate) {
+                memberTotal += parseFloat(proof.amount) || 0;
+              }
+            }
+          });
+        }
+        if (memberTotal > 0) {
+          memberContributions[member.name] = memberTotal;
+        }
+      });
+
+      return {
+        totalIncome,
+        totalPayouts,
+        totalPenalties,
+        netBalance: totalIncome - totalPayouts + totalPenalties,
+        monthlyIncome,
+        recentPayouts: recentPayoutsData.slice(-5).reverse(),
+        memberContributions,
+        period
+      };
+    }
+
+    // Render Income vs Expenses Chart
+    function renderIncomeVsExpensesChart(data) {
+      const ctx = document.getElementById('incomeVsExpensesChart');
+      if (!ctx) return;
+      
+      // Destroy previous chart
+      if (incomeVsExpensesChart) {
+        incomeVsExpensesChart.destroy();
+      }
+      
+      incomeVsExpensesChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Income (Contributions)', 'Payouts', 'Penalties (Income)'],
+          datasets: [{
+            data: [data.totalIncome, data.totalPayouts, data.totalPenalties],
+            backgroundColor: ['#48bb78', '#f56565', '#ed8936'],
+            borderWidth: 2,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 15,
+                font: { size: 12 }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': R ' + context.parsed.toFixed(2);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Render Monthly Trends Chart
+    function renderMonthlyTrendsChart(data) {
+      const ctx = document.getElementById('monthlyTrendsChart');
+      if (!ctx) return;
+      
+      // Destroy previous chart
+      if (monthlyTrendsChart) {
+        monthlyTrendsChart.destroy();
+      }
+      
+      // Prepare monthly data (last 6 months)
+      const months = [];
+      const incomeData = [];
+      const now = new Date();
+      
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const monthLabel = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        
+        months.push(monthLabel);
+        incomeData.push(data.monthlyIncome[monthKey] || 0);
+      }
+      
+      monthlyTrendsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [{
+            label: 'Monthly Income',
+            data: incomeData,
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true,
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: '#667eea'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'Income: R ' + context.parsed.y.toFixed(2);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return 'R ' + value;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Render Member Contribution Chart
+    function renderMemberContributionChart(data) {
+      const ctx = document.getElementById('memberContributionChart');
+      if (!ctx) return;
+      
+      // Destroy previous chart
+      if (memberContributionChart) {
+        memberContributionChart.destroy();
+      }
+      
+      // Sort members by contribution
+      const sortedMembers = Object.entries(data.memberContributions)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10); // Top 10
+      
+      const memberNames = sortedMembers.map(m => m[0]);
+      const contributions = sortedMembers.map(m => m[1]);
+      
+      memberContributionChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: memberNames,
+          datasets: [{
+            label: 'Total Contribution',
+            data: contributions,
+            backgroundColor: '#667eea',
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'Contributed: R ' + context.parsed.y.toFixed(2);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return 'R ' + value;
+                }
+              }
+            },
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Update Top Contributors Table
+    function updateTopContributorsTable(data) {
+      const tbody = document.getElementById('topContributorsTable');
+      if (!tbody) return;
+      
+      const sorted = Object.entries(data.memberContributions)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      
+      if (sorted.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">No contributions yet</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = sorted.map(([name, amount]) => {
+        const member = members.find(m => m.name === name);
+        const status = member ? getMemberContributionStatus(member) : 'unknown';
+        const badge = getStatusBadgeHTML(status);
+        
+        return `
+          <tr>
+            <td>${name}</td>
+            <td><strong>R ${amount.toFixed(2)}</strong></td>
+            <td>${badge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Update Recent Payouts Table
+    function updateRecentPayoutsTable(data) {
+      const tbody = document.getElementById('recentPayoutsTable');
+      if (!tbody) return;
+      
+      if (data.recentPayouts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">No recent payouts</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = data.recentPayouts.map(payout => `
+        <tr>
+          <td>${payout.member}</td>
+          <td><strong style="color: #f56565;">R ${payout.amount.toFixed(2)}</strong></td>
+          <td>${new Date(payout.date).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Export Financial Report as PDF (using browser print)
+    function exportFinancialReport() {
+      const period = document.getElementById('financialPeriod').value;
+      const periodText = document.getElementById('financialPeriod').selectedOptions[0].text;
+      const data = calculateFinancialData(period);
+      
+      // Create printable report
+      const reportWindow = window.open('', '', 'width=800,height=600');
+      reportWindow.document.write(`
+        <html>
+        <head>
+          <title>Financial Report - ${periodText}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 30px; }
+            h1 { color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+            h2 { color: #333; margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+            .summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+            .summary-card { background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea; }
+            .summary-card h3 { font-size: 14px; color: #718096; margin-bottom: 5px; }
+            .summary-card .value { font-size: 24px; font-weight: bold; color: #2d3748; }
+            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+            th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+            th { background: #667eea; color: white; }
+            .footer { margin-top: 30px; padding-top: 15px; border-top: 2px solid #e2e8f0; color: #718096; font-size: 12px; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <h1>Sbahle Burial Society - Financial Report</h1>
+          <p><strong>Period:</strong> ${periodText}</p>
+          <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+          
+          <div class="summary">
+            <div class="summary-card">
+              <h3>Total Income</h3>
+              <div class="value" style="color: #48bb78;">R ${data.totalIncome.toFixed(2)}</div>
+            </div>
+            <div class="summary-card">
+              <h3>Total Payouts</h3>
+              <div class="value" style="color: #f56565;">R ${data.totalPayouts.toFixed(2)}</div>
+            </div>
+            <div class="summary-card">
+              <h3>Total Penalties</h3>
+              <div class="value" style="color: #ed8936;">R ${data.totalPenalties.toFixed(2)}</div>
+            </div>
+            <div class="summary-card">
+              <h3>Net Balance</h3>
+              <div class="value" style="color: #667eea;">R ${data.netBalance.toFixed(2)}</div>
+            </div>
+          </div>
+          
+          <h2>Top Contributors</h2>
+          <table>
+            <thead><tr><th>Member</th><th>Total Contributed</th></tr></thead>
+            <tbody>
+              ${Object.entries(data.memberContributions)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([name, amount]) => `<tr><td>${name}</td><td>R ${amount.toFixed(2)}</td></tr>`)
+                .join('')}
+            </tbody>
+          </table>
+          
+          <h2>Recent Payouts</h2>
+          <table>
+            <thead><tr><th>Member</th><th>Amount</th><th>Date</th></tr></thead>
+            <tbody>
+              ${data.recentPayouts.map(p => `
+                <tr><td>${p.member}</td><td>R ${p.amount.toFixed(2)}</td><td>${new Date(p.date).toLocaleDateString()}</td></tr>
+              `).join('')}
+            </tbody>
+          </table>
+          
+          <div class="footer">
+            <p><strong>Sbahle Burial Society</strong> | Generated by Financial Dashboard System v2.7.0</p>
+            <p>This report is confidential and for internal use only.</p>
+          </div>
+          
+          <div class="no-print" style="margin-top: 20px;">
+            <button onclick="window.print()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Print Report</button>
+            <button onclick="window.close()" style="padding: 10px 20px; background: #e2e8f0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;">Close</button>
+          </div>
+        </body>
+        </html>
+      `);
+      reportWindow.document.close();
+    }
+
+    // ==================== MULTI-ADMIN SUPPORT FUNCTIONS ====================
+    
+    // Admin users storage - default includes main admin
+    let adminUsers = JSON.parse(localStorage.getItem('adminUsers') || JSON.stringify([
+      {
+        id: 'admin-1',
+        username: 'admin',
+        password: 'admin123', // In production, use hashed passwords
+        role: 'fulladmin',
+        createdDate: '2024-01-01',
+        lastLogin: null
+      }
+    ]));
+    
+    // Audit log for tracking admin actions
+    let auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
+    
+    // Current admin session (updated on login)
+    let currentAdmin = null;
+    
+    // Role permissions configuration
+    const ROLE_PERMISSIONS = {
+      fulladmin: {
+        label: 'Full Admin',
+        color: '#22543d',
+        bgColor: '#c6f6d5',
+        permissions: ['*'] // All permissions
+      },
+      secretary: {
+        label: 'Secretary',
+        color: '#2c5282',
+        bgColor: '#bee3f8',
+        permissions: [
+          'view_members', 'add_members', 'edit_members',
+          'view_attendance', 'manage_attendance',
+          'view_minutes', 'add_minutes', 'edit_minutes',
+          'view_financials' // Read-only
+        ]
+      },
+      treasurer: {
+        label: 'Treasurer',
+        color: '#744210',
+        bgColor: '#feebc8',
+        permissions: [
+          'view_financials', 'manage_payments', 'approve_payments',
+          'view_payouts', 'create_payouts',
+          'view_penalties', 'manage_penalties',
+          'view_members' // Read-only
+        ]
+      }
+    };
+    
+    // Check if current admin has permission
+    function hasPermission(permission) {
+      if (!currentAdmin) return false;
+      const role = ROLE_PERMISSIONS[currentAdmin.role];
+      if (!role) return false;
+      return role.permissions.includes('*') || role.permissions.includes(permission);
+    }
+    
+    // Log admin action to audit trail
+    function logAdminAction(action, details) {
+      const logEntry = {
+        id: 'log-' + Date.now(),
+        timestamp: new Date().toISOString(),
+        admin: currentAdmin ? currentAdmin.username : 'system',
+        role: currentAdmin ? currentAdmin.role : 'system',
+        action,
+        details
+      };
+      
+      auditLog.unshift(logEntry); // Add to beginning
+      
+      // Keep only last 500 entries
+      if (auditLog.length > 500) {
+        auditLog = auditLog.slice(0, 500);
+      }
+      
+      localStorage.setItem('auditLog', JSON.stringify(auditLog));
+      
+      // Update preview if visible
+      updateAuditLogPreview();
+    }
+    
+    // Update admin users display
+    function updateAdminUsersDisplay() {
+      const tbody = document.getElementById('adminUsersTable');
+      if (!tbody) return;
+      
+      if (adminUsers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No admin users</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = adminUsers.map(admin => {
+        const role = ROLE_PERMISSIONS[admin.role];
+        const isCurrentAdmin = currentAdmin && currentAdmin.id === admin.id;
+        
+        return `
+          <tr style="${isCurrentAdmin ? 'background: #f0f9ff;' : ''}">
+            <td>
+              <strong>${admin.username}</strong>
+              ${isCurrentAdmin ? '<span style="color: #0ea5e9; font-size: 11px; margin-left: 5px;">(You)</span>' : ''}
+            </td>
+            <td>
+              <span style="padding: 3px 8px; border-radius: 12px; font-size: 11px; background: ${role.bgColor}; color: ${role.color}; font-weight: 600;">
+                ${role.label.toUpperCase()}
+              </span>
+            </td>
+            <td>${new Date(admin.createdDate).toLocaleDateString()}</td>
+            <td>${admin.lastLogin ? new Date(admin.lastLogin).toLocaleString() : '<span style="color: #999;">Never</span>'}</td>
+            <td>
+              ${hasPermission('*') && admin.id !== 'admin-1' ? `
+                <button class="btn btn-warning btn-sm" onclick="editAdminModal('${admin.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteAdmin('${admin.id}')">Delete</button>
+              ` : '<span style="color: #999; font-size: 11px;">Protected</span>'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    // Show Add Admin Modal
+    function showAddAdminModal() {
+      if (!hasPermission('*')) {
+        alert('⚠ Only Full Admins can add new administrators');
+        return;
+      }
+      
+      openModal(`
+        <h2>Add New Administrator</h2>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="newAdminUsername" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="newAdminPassword" placeholder="Create password">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="newAdminPasswordConfirm" placeholder="Confirm password">
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="newAdminRole">
+            <option value="fulladmin">Full Admin - Complete access</option>
+            <option value="secretary">Secretary - Members & meetings</option>
+            <option value="treasurer">Treasurer - Financial management</option>
+          </select>
+        </div>
+        <div style="background: #fef3c7; padding: 10px; border-radius: 5px; margin: 10px 0; font-size: 12px;">
+          <strong>⚠️ Important:</strong> The new admin will be able to login immediately with these credentials.
+        </div>
+        <button class="btn btn-success" onclick="saveNewAdmin()">Create Admin</button>
+        <button class="btn" onclick="closeModal()">Cancel</button>
+      `);
+    }
+    
+    // Save New Admin
+    function saveNewAdmin() {
+      const username = document.getElementById('newAdminUsername').value.trim();
+      const password = document.getElementById('newAdminPassword').value;
+      const passwordConfirm = document.getElementById('newAdminPasswordConfirm').value;
+      const role = document.getElementById('newAdminRole').value;
+      
+      // Validation
+      if (!username || !password || !role) {
+        alert('⚠ Please fill all fields');
+        return;
+      }
+      
+      if (username.length < 3) {
+        alert('⚠ Username must be at least 3 characters');
+        return;
+      }
+      
+      if (password.length < 6) {
+        alert('⚠ Password must be at least 6 characters');
+        return;
+      }
+      
+      if (password !== passwordConfirm) {
+        alert('⚠ Passwords do not match');
+        return;
+      }
+      
+      // Check for duplicate username
+      if (adminUsers.find(a => a.username.toLowerCase() === username.toLowerCase())) {
+        alert('⚠ Username already exists');
+        return;
+      }
+      
+      // Create new admin
+      const newAdmin = {
+        id: 'admin-' + Date.now(),
+        username,
+        password, // In production, hash this
+        role,
+        createdDate: new Date().toISOString(),
+        lastLogin: null
+      };
+      
+      adminUsers.push(newAdmin);
+      localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+      
+      // Log action
+      logAdminAction('ADD_ADMIN', `Created new ${ROLE_PERMISSIONS[role].label} user: ${username}`);
+      
+      // Update display
+      updateAdminUsersDisplay();
+      closeModal();
+      showAlert('adminAlert', `✓ Admin user "${username}" created successfully!`, 'success');
+      
+      // Sync to cloud
+      if (cloudStorageAvailable) {
+        syncToCloud();
+      }
+    }
+    
+    // Edit Admin Modal
+    function editAdminModal(adminId) {
+      const admin = adminUsers.find(a => a.id === adminId);
+      if (!admin) return;
+      
+      openModal(`
+        <h2>Edit Administrator</h2>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="editAdminUsername" value="${admin.username}">
+        </div>
+        <div class="form-group">
+          <label>New Password (leave blank to keep current)</label>
+          <input type="password" id="editAdminPassword" placeholder="Enter new password or leave blank">
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="editAdminRole">
+            <option value="fulladmin" ${admin.role === 'fulladmin' ? 'selected' : ''}>Full Admin - Complete access</option>
+            <option value="secretary" ${admin.role === 'secretary' ? 'selected' : ''}>Secretary - Members & meetings</option>
+            <option value="treasurer" ${admin.role === 'treasurer' ? 'selected' : ''}>Treasurer - Financial management</option>
+          </select>
+        </div>
+        <button class="btn btn-success" onclick="saveEditedAdmin('${adminId}')">Save Changes</button>
+        <button class="btn" onclick="closeModal()">Cancel</button>
+      `);
+    }
+    
+    // Save Edited Admin
+    function saveEditedAdmin(adminId) {
+      const admin = adminUsers.find(a => a.id === adminId);
+      if (!admin) return;
+      
+      const username = document.getElementById('editAdminUsername').value.trim();
+      const password = document.getElementById('editAdminPassword').value;
+      const role = document.getElementById('editAdminRole').value;
+      
+      if (!username) {
+        alert('⚠ Username cannot be empty');
+        return;
+      }
+      
+      // Check for duplicate username (excluding current admin)
+      if (adminUsers.find(a => a.id !== adminId && a.username.toLowerCase() === username.toLowerCase())) {
+        alert('⚠ Username already exists');
+        return;
+      }
+      
+      // Update admin
+      admin.username = username;
+      admin.role = role;
+      if (password) {
+        admin.password = password; // In production, hash this
+      }
+      
+      localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+      
+      // Log action
+      logAdminAction('EDIT_ADMIN', `Updated ${ROLE_PERMISSIONS[role].label} user: ${username}`);
+      
+      // Update display
+      updateAdminUsersDisplay();
+      closeModal();
+      showAlert('adminAlert', `✓ Admin user "${username}" updated successfully!`, 'success');
+      
+      // Sync to cloud
+      if (cloudStorageAvailable) {
+        syncToCloud();
+      }
+    }
+    
+    // Delete Admin
+    function deleteAdmin(adminId) {
+      const admin = adminUsers.find(a => a.id === adminId);
+      if (!admin) return;
+      
+      if (adminId === 'admin-1') {
+        alert('⚠ Cannot delete the main admin account');
+        return;
+      }
+      
+      if (!confirm(`Are you sure you want to delete admin user "${admin.username}"?\n\nThis action cannot be undone.`)) {
+        return;
+      }
+      
+      // Remove admin
+      adminUsers = adminUsers.filter(a => a.id !== adminId);
+      localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+      
+      // Log action
+      logAdminAction('DELETE_ADMIN', `Deleted admin user: ${admin.username}`);
+      
+      // Update display
+      updateAdminUsersDisplay();
+      showAlert('adminAlert', `✓ Admin user "${admin.username}" deleted`, 'success');
+      
+      // Sync to cloud
+      if (cloudStorageAvailable) {
+        syncToCloud();
+      }
+    }
+    
+    // Update current admin display
+    function updateCurrentAdminDisplay() {
+      const display = document.getElementById('currentAdminDisplay');
+      const roleDisplay = document.getElementById('currentAdminRole');
+      
+      if (!display || !roleDisplay || !currentAdmin) return;
+      
+      const role = ROLE_PERMISSIONS[currentAdmin.role];
+      display.textContent = `${currentAdmin.username} (${role.label})`;
+      roleDisplay.textContent = role.label.toUpperCase();
+      roleDisplay.style.background = role.bgColor;
+      roleDisplay.style.color = role.color;
+    }
+    
+    // Update audit log preview (last 5 actions)
+    function updateAuditLogPreview() {
+      const preview = document.getElementById('auditLogPreview');
+      if (!preview) return;
+      
+      if (auditLog.length === 0) {
+        preview.innerHTML = '<div style="color: #999; text-align: center;">No recent actions</div>';
+        return;
+      }
+      
+      const recentLogs = auditLog.slice(0, 5);
+      preview.innerHTML = recentLogs.map(log => {
+        const time = new Date(log.timestamp).toLocaleString();
+        const role = ROLE_PERMISSIONS[log.role];
+        
+        return `
+          <div style="padding: 8px; border-bottom: 1px solid #e2e8f0;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <strong style="font-size: 11px;">${log.admin}</strong>
+              <span style="font-size: 10px; color: #666;">${time}</span>
+            </div>
+            <div style="font-size: 11px; color: #4a5568;">${log.action}: ${log.details}</div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Show full audit log in modal
+    function showFullAuditLog() {
+      if (!hasPermission('*')) {
+        alert('⚠ Only Full Admins can view the complete audit log');
+        return;
+      }
+      
+      const logsHtml = auditLog.length === 0 ? 
+        '<p style="text-align: center; color: #999;">No audit log entries</p>' :
+        `
+          <div style="max-height: 400px; overflow-y: auto;">
+            ${auditLog.map(log => {
+              const time = new Date(log.timestamp).toLocaleString();
+              return `
+                <div style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 12px;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <strong>${log.admin}</strong>
+                    <span style="color: #666;">${time}</span>
+                  </div>
+                  <div><strong>Action:</strong> ${log.action}</div>
+                  <div><strong>Details:</strong> ${log.details}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      
+      openModal(`
+        <h2>Complete Audit Log</h2>
+        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">All administrator actions are logged for security and accountability.</p>
+        ${logsHtml}
+        <button class="btn btn-primary" onclick="exportAuditLog()">📥 Export Log</button>
+        <button class="btn" onclick="closeModal()">Close</button>
+      `);
+    }
+    
+    // Export audit log as JSON
+    function exportAuditLog() {
+      const dataStr = JSON.stringify(auditLog, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `audit-log-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      logAdminAction('EXPORT_AUDIT_LOG', 'Exported complete audit log');
+      showAlert('adminAlert', '✓ Audit log exported successfully!', 'success');
+    }
+    
+    // Enhanced loginAdmin function (replaces existing)
+    function loginAdminEnhanced() {
+      const username = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      
+      // Find admin user
+      const admin = adminUsers.find(a => a.username === username && a.password === password);
+      
+      if (!admin) {
+        alert('❌ Invalid username or password');
+        return;
+      }
+      
+      // Update last login
+      admin.lastLogin = new Date().toISOString();
+      localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+      
+      // Set current admin
+      currentAdmin = admin;
+      currentUser = { type: 'admin', role: admin.role };
+      
+      // Log login
+      logAdminAction('LOGIN', `Logged in as ${ROLE_PERMISSIONS[admin.role].label}`);
+      
+      // Show admin page
+      show('adminPage');
+      updateAdmin();
+      updateCurrentAdminDisplay();
+      updateAdminUsersDisplay();
+      updateAuditLogPreview();
+      
+      // Update sync status
+      if (cloudStorageAvailable) {
+        updateSyncStatus('default');
+      } else {
+        updateSyncStatus('offline');
+      }
+    }
+    
+    // Initialize multi-admin system on page load
+    setTimeout(() => {
+      // Replace loginAdmin with enhanced version
+      window.loginAdmin = loginAdminEnhanced;
+      
+      console.log('✓ Multi-Admin system initialized');
+    }, 100);
 
   </script>
 </body>
