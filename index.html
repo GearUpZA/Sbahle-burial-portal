@@ -1230,38 +1230,46 @@
     function validateSyncData(data) {
       const errors = [];
       
-      // Check required fields
-      if (!data.members || !Array.isArray(data.members)) {
-        errors.push('Invalid members data structure');
-      }
-      if (!data.beneficiaries || !Array.isArray(data.beneficiaries)) {
-        errors.push('Invalid beneficiaries data structure');
-      }
-      if (!data.payouts || !Array.isArray(data.payouts)) {
-        errors.push('Invalid payouts data structure');
+      // Basic data structure check (lenient - allow missing arrays)
+      if (!data || typeof data !== 'object') {
+        errors.push('Invalid data structure - not an object');
+        return { valid: false, errors: errors };
       }
       
-      // Check data integrity
-      if (data.members) {
-        const memberIds = new Set();
-        data.members.forEach((member, index) => {
-          if (!member.id) {
-            errors.push(`Member at index ${index} missing ID`);
-          } else if (memberIds.has(member.id)) {
-            errors.push(`Duplicate member ID: ${member.id}`);
-          } else {
-            memberIds.add(member.id);
-          }
-          
-          if (!member.name || !member.email) {
-            errors.push(`Member ${member.id || index} missing required fields`);
-          }
-        });
+      // Check members array if it exists
+      if (data.members !== undefined) {
+        if (!Array.isArray(data.members)) {
+          errors.push('Invalid members data structure');
+        } else if (data.members.length > 0) {
+          // Check for critical member data issues
+          const memberIds = new Set();
+          data.members.forEach((member, index) => {
+            if (!member.id) {
+              errors.push(`Member at index ${index} missing ID`);
+            } else if (memberIds.has(member.id)) {
+              errors.push(`Duplicate member ID: ${member.id}`);
+            } else {
+              memberIds.add(member.id);
+            }
+            
+            if (!member.name && !member.email) {
+              errors.push(`Member ${member.id || index} missing both name and email`);
+            }
+          });
+        }
       }
       
-      // Check version compatibility
+      // Optional arrays - don't fail if missing, just warn
+      if (data.beneficiaries !== undefined && !Array.isArray(data.beneficiaries)) {
+        console.warn('⚠️ Beneficiaries is not an array, will use empty array');
+      }
+      if (data.payouts !== undefined && !Array.isArray(data.payouts)) {
+        console.warn('⚠️ Payouts is not an array, will use empty array');
+      }
+      
+      // Version check (lenient - allow old versions)
       if (data.version && !data.version.startsWith('2.')) {
-        errors.push(`Incompatible data version: ${data.version}`);
+        console.warn(`⚠️ Old data version detected: ${data.version}, will attempt to load anyway`);
       }
       
       return {
@@ -2121,9 +2129,27 @@
             const validation = validateSyncData(data);
             if (!validation.valid) {
               console.error('❌ Loaded data validation failed:', validation.errors);
-              showAlert('adminAlert', '⚠️ Data integrity issue detected. Using safe defaults.', 'error');
-              // Don't load corrupted data, use defaults instead
-              return;
+              console.warn('⚠️ Attempting to load data anyway with fixes...');
+              
+              // Try to fix common issues instead of rejecting
+              if (!data.members || !Array.isArray(data.members)) data.members = [];
+              if (!data.beneficiaries || !Array.isArray(data.beneficiaries)) data.beneficiaries = [];
+              if (!data.payouts || !Array.isArray(data.payouts)) data.payouts = [];
+              if (!data.penalties || !Array.isArray(data.penalties)) data.penalties = [];
+              if (!data.meetingMinutes || !Array.isArray(data.meetingMinutes)) data.meetingMinutes = [];
+              if (!data.paymentProofs || !Array.isArray(data.paymentProofs)) data.paymentProofs = [];
+              if (!data.payoutCollectors || !Array.isArray(data.payoutCollectors)) data.payoutCollectors = [];
+              
+              // If still critical errors after fixes, use defaults
+              const revalidation = validateSyncData(data);
+              if (!revalidation.valid) {
+                console.error('❌ Data cannot be fixed, using defaults');
+                showAlert('adminAlert', '⚠️ Data integrity issue. Using safe defaults.', 'error');
+                hideLoading();
+                return false;
+              }
+              
+              console.log('✅ Data fixed and loaded successfully');
             }
             
             // Load validated data
