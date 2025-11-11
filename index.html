@@ -2730,6 +2730,26 @@
         
         console.log('✓ System initialized with', members.length, 'members');
         
+        // Check if critical members exist (like MEM007 - Mlungisi Maqashela)
+        const mem007 = members.find(m => m.id === 'MEM007');
+        if (!mem007) {
+          console.warn('⚠️ Critical member MEM007 missing - restoring default data');
+          // Restore the member if missing
+          members.push({
+            id: 'MEM007',
+            name: 'Mlungisi Maqashela',
+            email: 'maqashela@gmail.com',
+            password: 'mM!47258369',
+            phone: '0781234567',
+            idNum: '9512345678902',
+            status: 'Active',
+            missedPayments: 0
+          });
+          // Force save to cloud
+          await saveDataToStorage(true);
+          console.log('✅ Member MEM007 restored and synced to cloud');
+        }
+        
         // Start health monitoring
         startHealthMonitoring();
         
