@@ -1092,12 +1092,17 @@
     async function initCloudStorage() {
       try {
         console.log('🔄 Initializing cloud storage connection...');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        
         const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
           headers: {
             'X-Access-Key': CLOUD_STORAGE.apiKey
           },
-          timeout: 10000 // 10 second timeout
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         cloudStorageAvailable = response.ok;
         if (cloudStorageAvailable) {
           console.log('✅ Cloud storage connected - data will sync across all browsers');
@@ -2059,7 +2064,7 @@
           try {
             console.log('🔄 Fetching data from cloud storage...');
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout (reduced)
             
             const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
               headers: {
@@ -2653,7 +2658,8 @@
       { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Active', missedPayments: 0 },
       { id: 'MEM004', name: 'Lerato Motaung', email: 'lerato@sbahle.com', password: 'password123', phone: '0751234567', idNum: '8912345678901', status: 'Active', missedPayments: 0 },
       { id: 'MEM005', name: 'Mandla Khoza', email: 'mandla@sbahle.com', password: 'password123', phone: '0761234567', idNum: '7712345678901', status: 'Active', missedPayments: 0 },
-      { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 }
+      { id: 'MEM006', name: 'Zanele Ngcobo', email: 'zanele@sbahle.com', password: 'password123', phone: '0771234567', idNum: '9212345678901', status: 'Active', missedPayments: 0 },
+      { id: 'MEM007', name: 'Mlungisi Maqashela', email: 'maqashela@gmail.com', password: 'mM!47258369', phone: '0781234567', idNum: '9512345678902', status: 'Active', missedPayments: 0 }
     ];
     let beneficiaries = [
       { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
@@ -2683,19 +2689,34 @@
     
     // Initialize system data on load
     async function initializeSystem() {
-      // Initialize cloud storage
-      await initCloudStorage();
+      // Failsafe: Force hide loading after 5 seconds no matter what
+      const failsafeTimeout = setTimeout(() => {
+        console.warn('⚠️ Loading timeout - forcing UI to display');
+        hideLoading();
+      }, 5000);
       
-      // Load data from cloud or localStorage
-      await loadDataFromStorage();
-      
-      console.log('✓ System initialized with', members.length, 'members');
-      
-      // Start health monitoring
-      startHealthMonitoring();
-      
-      // Start periodic sync verification
-      startSyncVerification();
+      try {
+        // Initialize cloud storage
+        await initCloudStorage();
+        
+        // Load data from cloud or localStorage
+        await loadDataFromStorage();
+        
+        console.log('✓ System initialized with', members.length, 'members');
+        
+        // Start health monitoring
+        startHealthMonitoring();
+        
+        // Start periodic sync verification
+        startSyncVerification();
+        
+        // Clear failsafe since loading completed successfully
+        clearTimeout(failsafeTimeout);
+      } catch (error) {
+        console.error('❌ System initialization error:', error);
+        hideLoading();
+        clearTimeout(failsafeTimeout);
+      }
       
       // Start automated backup system
       initBackupSystem();
@@ -5998,8 +6019,8 @@
     let adminUsers = JSON.parse(localStorage.getItem('adminUsers') || JSON.stringify([
       {
         id: 'admin-1',
-        username: 'admin',
-        password: 'admin123', // In production, use hashed passwords
+        username: 'Mlungisi Maqashela',
+        password: 'mM!47258369', // In production, use hashed passwords
         role: 'fulladmin',
         createdDate: '2024-01-01',
         lastLogin: null
