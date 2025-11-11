@@ -3551,41 +3551,54 @@
     }
 
     function memberTab(t, e) {
-      document.getElementById('memberProfileTab').classList.toggle('hidden', t !== 'profile');
-      document.getElementById('memberSignatureTab').classList.toggle('hidden', t !== 'signature');
-      document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
-      document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
-      document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
-      document.getElementById('memberMinutesTab').classList.toggle('hidden', t !== 'minutes');
-      document.getElementById('memberPaymentsTab').classList.toggle('hidden', t !== 'payments');
-      document.getElementById('memberConstitutionTab').classList.toggle('hidden', t !== 'constitution');
-      document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
-      document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
-      if (e && e.target) e.target.classList.add('active');
-      if (t === 'minutes') displayMemberMinutes();
-      if (t === 'payments') displayMemberPaymentProofs();
-      if (t === 'constitution') displayConstitutionMember();
-      if (t === 'beneficiaries') {
-        // Refresh tempBeneficiaries from the main beneficiaries array - using fast clone
-        tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
-        console.log('Beneficiaries tab clicked, count:', tempBeneficiaries.length);
-        console.log('Beneficiaries data:', tempBeneficiaries);
-        // Wait for the tab to be visible before rendering
-        setTimeout(() => {
-          console.log('Calling displayMemBen after tab is visible');
-          displayMemBen();
-        }, 50);
-      }
-      if (t === 'signature') {
-        // Load saved signature if exists
-        if (currentUser && currentUser.signature) {
-          document.getElementById('savedSignatureImg').src = currentUser.signature;
-          document.getElementById('savedSignaturePreview').style.display = 'block';
-        } else {
-          document.getElementById('savedSignaturePreview').style.display = 'none';
+      console.log('memberTab called:', t);
+      
+      try {
+        document.getElementById('memberProfileTab').classList.toggle('hidden', t !== 'profile');
+        document.getElementById('memberSignatureTab').classList.toggle('hidden', t !== 'signature');
+        document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
+        document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
+        document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
+        document.getElementById('memberMinutesTab').classList.toggle('hidden', t !== 'minutes');
+        document.getElementById('memberPaymentsTab').classList.toggle('hidden', t !== 'payments');
+        document.getElementById('memberConstitutionTab').classList.toggle('hidden', t !== 'constitution');
+        document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
+        document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
+        if (e && e.target) e.target.classList.add('active');
+        
+        if (t === 'profile') {
+          if (currentUser) updateMember();
         }
+        if (t === 'minutes') displayMemberMinutes();
+        if (t === 'payments') displayMemberPaymentProofs();
+        if (t === 'constitution') displayConstitutionMember();
+        if (t === 'beneficiaries') {
+          // Refresh tempBeneficiaries from the main beneficiaries array - using fast clone
+          tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
+          console.log('Beneficiaries tab clicked, count:', tempBeneficiaries.length);
+          console.log('Beneficiaries data:', tempBeneficiaries);
+          // Wait for the tab to be visible before rendering
+          setTimeout(() => {
+            console.log('Calling displayMemBen after tab is visible');
+            displayMemBen();
+          }, 50);
+        }
+        if (t === 'signature') {
+          // Load saved signature if exists
+          if (currentUser && currentUser.signature) {
+            document.getElementById('savedSignatureImg').src = currentUser.signature;
+            document.getElementById('savedSignaturePreview').style.display = 'block';
+          } else {
+            document.getElementById('savedSignaturePreview').style.display = 'none';
+          }
+        }
+        if (t === 'payouts') displayMemPayouts();
+        
+        console.log('memberTab completed successfully');
+      } catch (error) {
+        console.error('Error in memberTab:', error);
+        alert('Error switching tabs: ' + error.message);
       }
-      if (t === 'payouts') displayMemPayouts();
     }
 
     function updateAdmin() {
