@@ -3623,20 +3623,50 @@
     }
 
     function updateMember() {
-      document.getElementById('memId').textContent = currentUser.id;
-      document.getElementById('memberProfName').value = currentUser.name;
-      document.getElementById('memberProfEmail').value = currentUser.email;
-      document.getElementById('memberProfPhone').value = currentUser.phone;
-      document.getElementById('memberProfIdNumber').value = currentUser.idNumber || '';
-      document.getElementById('profRole').value = currentUser.role || 'Member';
+      // Check if currentUser exists and member page elements are in DOM
+      if (!currentUser) {
+        console.warn('⚠️ updateMember called but currentUser is null');
+        return;
+      }
+      
+      // Check if we're on the member page
+      const memberPage = document.getElementById('memberPage');
+      if (!memberPage || memberPage.classList.contains('hidden')) {
+        console.log('ℹ️ updateMember skipped - member page not visible');
+        return;
+      }
+      
+      // Safely update elements with null checks
+      const memId = document.getElementById('memId');
+      if (memId) memId.textContent = currentUser.id;
+      
+      const memberProfName = document.getElementById('memberProfName');
+      if (memberProfName) memberProfName.value = currentUser.name;
+      
+      const memberProfEmail = document.getElementById('memberProfEmail');
+      if (memberProfEmail) memberProfEmail.value = currentUser.email;
+      
+      const memberProfPhone = document.getElementById('memberProfPhone');
+      if (memberProfPhone) memberProfPhone.value = currentUser.phone;
+      
+      const memberProfIdNumber = document.getElementById('memberProfIdNumber');
+      if (memberProfIdNumber) memberProfIdNumber.value = currentUser.idNumber || '';
+      
+      const profRole = document.getElementById('profRole');
+      if (profRole) profRole.value = currentUser.role || 'Member';
+      
       const badge = document.getElementById('memStatus');
-      badge.textContent = currentUser.status;
-      badge.className = `badge badge-${currentUser.status === 'Active' ? 'active' : 'suspended'}`;
+      if (badge) {
+        badge.textContent = currentUser.status;
+        badge.className = `badge badge-${currentUser.status === 'Active' ? 'active' : 'suspended'}`;
+      }
+      
       // Make sure tempBeneficiaries is loaded from the main beneficiaries array - using fast clone
       if (!tempBeneficiaries || tempBeneficiaries.length === 0) {
         tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
         console.log('updateMember: loaded', tempBeneficiaries.length, 'beneficiaries');
       }
+      
       // Update member minutes display if the tab is active
       if (document.getElementById('memberMinutesTab') && !document.getElementById('memberMinutesTab').classList.contains('hidden')) {
         displayMemberMinutes();
