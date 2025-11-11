@@ -2677,6 +2677,167 @@
       return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     }
     
+    // ============================================================================
+    // BENEFICIARY VALIDATION FUNCTIONS
+    // ============================================================================
+    
+    /**
+     * Validate South African ID Number
+     * Format: YYMMDDGSSSCAZ (13 digits)
+     * - YYMMDD: Date of birth
+     * - G: Gender (0-4 female, 5-9 male)
+     * - SSS: Sequence number
+     * - C: Citizenship (0=SA, 1=non-SA)
+     * - A: Usually 8 or 9
+     * - Z: Checksum digit
+     */
+    function validateSouthAfricanID(idNumber) {
+      // Remove any spaces or dashes
+      idNumber = idNumber.replace(/[\s-]/g, '');
+      
+      // Check if 13 digits
+      if (!/^\d{13}$/.test(idNumber)) {
+        return { valid: false, error: 'ID must be exactly 13 digits' };
+      }
+      
+      // Extract date components
+      const year = parseInt(idNumber.substring(0, 2));
+      const month = parseInt(idNumber.substring(2, 4));
+      const day = parseInt(idNumber.substring(4, 6));
+      
+      // Validate date
+      if (month < 1 || month > 12) {
+        return { valid: false, error: 'Invalid month in ID number' };
+      }
+      if (day < 1 || day > 31) {
+        return { valid: false, error: 'Invalid day in ID number' };
+      }
+      
+      // Calculate checksum (Luhn algorithm)
+      let sum = 0;
+      for (let i = 0; i < 12; i++) {
+        let digit = parseInt(idNumber[i]);
+        if (i % 2 === 1) {
+          digit *= 2;
+          if (digit > 9) digit -= 9;
+        }
+        sum += digit;
+      }
+      const checkDigit = (10 - (sum % 10)) % 10;
+      
+      if (checkDigit !== parseInt(idNumber[12])) {
+        return { valid: false, error: 'Invalid ID number checksum' };
+      }
+      
+      return { valid: true, error: null };
+    }
+    
+    /**
+     * Calculate age from South African ID Number
+     */
+    function calculateAgeFromID(idNumber) {
+      idNumber = idNumber.replace(/[\s-]/g, '');
+      
+      if (!/^\d{13}$/.test(idNumber)) {
+        return null;
+      }
+      
+      let year = parseInt(idNumber.substring(0, 2));
+      const month = parseInt(idNumber.substring(2, 4));
+      const day = parseInt(idNumber.substring(4, 6));
+      
+      // Determine century (00-25 = 2000s, 26-99 = 1900s)
+      const currentYear = new Date().getFullYear();
+      const currentCentury = Math.floor(currentYear / 100);
+      
+      if (year >= 0 && year <= 25) {
+        year += 2000;
+      } else {
+        year += 1900;
+      }
+      
+      const birthDate = new Date(year, month - 1, day);
+      const today = new Date();
+      
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      return age;
+    }
+    
+    /**
+     * Get gender from South African ID Number
+     */
+    function getGenderFromID(idNumber) {
+      idNumber = idNumber.replace(/[\s-]/g, '');
+      
+      if (!/^\d{13}$/.test(idNumber)) {
+        return null;
+      }
+      
+      const genderDigit = parseInt(idNumber[6]);
+      return genderDigit < 5 ? 'Female' : 'Male';
+    }
+    
+    /**
+     * Validate beneficiary allocation percentages
+     */
+    function validateBeneficiaryAllocations(memberId, newPercentage, excludeBenId = null) {
+      // Get all beneficiaries for this member except the one being edited
+      const memberBeneficiaries = beneficiaries.filter(b => 
+        b.memberId === memberId && b.id !== excludeBenId
+      );
+      
+      // Calculate total percentage
+      let total = newPercentage;
+      memberBeneficiaries.forEach(b => {
+        total += parseInt(b.percentage) || 0;
+      });
+      
+      if (total > 100) {
+        return { valid: false, error: `Total allocation would be ${total}%. Maximum is 100%` };
+      }
+      
+      return { valid: true, total: total, remaining: 100 - total };
+    }
+    
+    /**
+     * Check for duplicate beneficiaries
+     */
+    function checkDuplicateBeneficiary(memberId, idNumber, excludeBenId = null) {
+      const duplicate = beneficiaries.find(b => 
+        b.memberId === memberId && 
+        b.idNum === idNumber && 
+        b.id !== excludeBenId
+      );
+      
+      if (duplicate) {
+        return { isDuplicate: true, beneficiary: duplicate };
+      }
+      
+      return { isDuplicate: false, beneficiary: null };
+    }
+    
+    /**
+     * Validate relationship type
+     */
+    function validateRelationship(relationship) {
+      const validRelationships = [
+        'Spouse', 'Child', 'Parent', 'Sibling', 
+        'Grandchild', 'Grandparent', 'Partner', 'Other'
+      ];
+      
+      if (!validRelationships.includes(relationship)) {
+        return { valid: false, error: 'Please select a valid relationship type' };
+      }
+      
+      return { valid: true };
+    }
+    
     // Default/initial data - includes all registered members
     let members = [
       { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
@@ -3963,16 +4124,79 @@
     }
 
     function saveBen(memId) {
-      const name = document.getElementById('benName').value;
+      const name = document.getElementById('benName').value.trim();
       const rel = document.getElementById('benRel').value;
-      const idNum = document.getElementById('benId').value;
-      const perc = document.getElementById('benPerc').value;
-      if (!name || !rel || !idNum || !perc) { alert('Fill all'); return; }
-      beneficiaries.push({ id: 'B' + Date.now(), memberId: memId, name, relationship: rel, idNum, percentage: parseInt(perc) });
+      const idNum = document.getElementById('benId').value.trim();
+      const perc = parseInt(document.getElementById('benPerc').value);
+      
+      // Basic validation
+      if (!name || !rel || !idNum || !perc) {
+        alert('❌ Please fill all fields');
+        return;
+      }
+      
+      // Validate South African ID
+      const idValidation = validateSouthAfricanID(idNum);
+      if (!idValidation.valid) {
+        alert(`❌ Invalid ID Number: ${idValidation.error}`);
+        return;
+      }
+      
+      // Calculate and display age
+      const age = calculateAgeFromID(idNum);
+      if (age !== null) {
+        console.log(`✓ Beneficiary ${name} - Age: ${age}, Gender: ${getGenderFromID(idNum)}`);
+      }
+      
+      // Validate relationship
+      const relValidation = validateRelationship(rel);
+      if (!relValidation.valid) {
+        alert(`❌ ${relValidation.error}`);
+        return;
+      }
+      
+      // Check for duplicates
+      const dupCheck = checkDuplicateBeneficiary(memId, idNum);
+      if (dupCheck.isDuplicate) {
+        alert(`❌ This beneficiary is already added for this member:\n${dupCheck.beneficiary.name} (${dupCheck.beneficiary.relationship})`);
+        return;
+      }
+      
+      // Validate allocation percentage
+      if (perc < 1 || perc > 100) {
+        alert('❌ Percentage must be between 1 and 100');
+        return;
+      }
+      
+      const allocValidation = validateBeneficiaryAllocations(memId, perc);
+      if (!allocValidation.valid) {
+        alert(`❌ ${allocValidation.error}\n\nCurrent allocation: ${allocValidation.total - perc}%\nYou can only add up to ${100 - (allocValidation.total - perc)}%`);
+        return;
+      }
+      
+      // All validations passed - add beneficiary
+      beneficiaries.push({ 
+        id: 'B' + Date.now(), 
+        memberId: memId, 
+        name, 
+        relationship: rel, 
+        idNum, 
+        percentage: perc 
+      });
+      
       saveDataToStorage(); // Auto-save
       closeModal();
       loadBeneficiaries();
-      showAlert('adminAlert', '✓ Beneficiary added!', 'success');
+      
+      const remaining = allocValidation.remaining;
+      let message = `✅ Beneficiary added successfully!\n\nTotal allocated: ${allocValidation.total}%`;
+      if (remaining > 0) {
+        message += `\nRemaining: ${remaining}%`;
+      } else {
+        message += `\n✓ 100% allocation complete`;
+      }
+      
+      showAlert('adminAlert', message, 'success');
     }
 
     function editBen(id) {
@@ -4262,16 +4486,76 @@
     }
 
     function addMemBen() {
-      const name = document.getElementById('memBenName').value;
+      const name = document.getElementById('memBenName').value.trim();
       const rel = document.getElementById('memBenRel').value;
-      const idNum = document.getElementById('memBenId').value;
-      const perc = document.getElementById('memBenPerc').value;
-      if (!name || !rel || !idNum || !perc) { alert('Fill all'); return; }
-      tempBeneficiaries.push({ id: 'BT' + Date.now(), memberId: currentUser.id, name, relationship: rel, idNum, percentage: parseInt(perc) });
+      const idNum = document.getElementById('memBenId').value.trim();
+      const perc = parseInt(document.getElementById('memBenPerc').value);
+      
+      // Basic validation
+      if (!name || !rel || !idNum || !perc) {
+        alert('❌ Please fill all fields');
+        return;
+      }
+      
+      // Validate South African ID
+      const idValidation = validateSouthAfricanID(idNum);
+      if (!idValidation.valid) {
+        alert(`❌ Invalid ID Number: ${idValidation.error}`);
+        return;
+      }
+      
+      // Display age and gender info
+      const age = calculateAgeFromID(idNum);
+      const gender = getGenderFromID(idNum);
+      if (age !== null) {
+        console.log(`✓ Adding beneficiary: ${name}, Age: ${age}, Gender: ${gender}`);
+      }
+      
+      // Check for duplicates in temp beneficiaries
+      const tempDuplicate = tempBeneficiaries.find(b => b.idNum === idNum);
+      if (tempDuplicate) {
+        alert(`❌ This beneficiary is already added:\n${tempDuplicate.name} (${tempDuplicate.relationship})`);
+        return;
+      }
+      
+      // Validate percentage
+      if (perc < 1 || perc > 100) {
+        alert('❌ Percentage must be between 1 and 100');
+        return;
+      }
+      
+      // Calculate current total
+      const currentTotal = tempBeneficiaries.reduce((sum, b) => sum + (b.percentage || 0), 0);
+      const newTotal = currentTotal + perc;
+      
+      if (newTotal > 100) {
+        alert(`❌ Total allocation cannot exceed 100%\n\nCurrent total: ${currentTotal}%\nTrying to add: ${perc}%\nWould be: ${newTotal}%\n\nMaximum you can add: ${100 - currentTotal}%`);
+        return;
+      }
+      
+      // All validations passed
+      tempBeneficiaries.push({ 
+        id: 'BT' + Date.now(), 
+        memberId: currentUser.id, 
+        name, 
+        relationship: rel, 
+        idNum, 
+        percentage: perc 
+      });
+      
       closeModal();
       displayMemBen();
       document.getElementById('saveBenMemBtn').classList.remove('hidden');
-      showAlert('memberAlert', '✓ Beneficiary added! Click Save to lock', 'success');
+      
+      const remaining = 100 - newTotal;
+      let message = `✅ Beneficiary added!\n\nTotal: ${newTotal}%`;
+      if (remaining > 0) {
+        message += `\nRemaining: ${remaining}%`;
+      } else {
+        message += `\n✓ 100% allocated - You can now save`;
+      }
+      
+      showAlert('memberAlert', message, 'success');
     }
 
     function saveBenMem() {
