@@ -725,26 +725,26 @@
         <h2>Profile</h2>
         <div class="form-group">
           <label>Name</label>
-          <input type="text" id="profName" disabled>
+          <input type="text" id="memberProfName" disabled>
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="text" id="profEmail" disabled>
+          <input type="text" id="memberProfEmail" disabled>
         </div>
         <div class="form-group">
           <label>Phone</label>
-          <input type="text" id="profPhone" disabled>
+          <input type="text" id="memberProfPhone" disabled>
         </div>
         <div class="form-group">
           <label>ID Number</label>
-          <input type="text" id="profIdNumber" disabled>
+          <input type="text" id="memberProfIdNumber" disabled>
         </div>
         <div class="form-group">
           <label>Role</label>
           <input type="text" id="profRole" disabled>
         </div>
-        <button class="btn btn-warning" onclick="editProf()">Edit Profile</button>
-        <button class="btn btn-success hidden" id="saveProf" onclick="saveProf()">Save</button>
+        <button class="btn btn-warning" onclick="editMemberProf()">Edit Profile</button>
+        <button class="btn btn-success hidden" id="saveMemberProf" onclick="saveMemberProf()">Save Changes</button>
       </div>
 
       <div id="memberSignatureTab" class="hidden">
@@ -4484,38 +4484,105 @@
 
     // MEMBER FUNCTIONS
     function editMemberProf() {
-      document.getElementById('memberProfName').disabled = false;
-      document.getElementById('memberProfEmail').disabled = false;
-      document.getElementById('memberProfPhone').disabled = false;
-      document.getElementById('memberProfIdNumber').disabled = false;
-      document.getElementById('saveMemberProf').classList.remove('hidden');
+      try {
+        const nameInput = document.getElementById('memberProfName');
+        const emailInput = document.getElementById('memberProfEmail');
+        const phoneInput = document.getElementById('memberProfPhone');
+        const idInput = document.getElementById('memberProfIdNumber');
+        const saveBtn = document.getElementById('saveMemberProf');
+        
+        if (!nameInput || !emailInput || !phoneInput || !idInput || !saveBtn) {
+          console.error('❌ Profile edit failed - missing form elements');
+          alert('⚠ Error: Profile form not found. Please refresh the page.');
+          return;
+        }
+        
+        nameInput.disabled = false;
+        emailInput.disabled = false;
+        phoneInput.disabled = false;
+        idInput.disabled = false;
+        saveBtn.classList.remove('hidden');
+        
+        console.log('✓ Profile editing enabled');
+      } catch (error) {
+        console.error('❌ Error in editMemberProf:', error);
+        alert('⚠ Error enabling profile edit. Please refresh and try again.');
+      }
     }
 
     async function saveMemberProf() {
-      currentUser.name = document.getElementById('memberProfName').value;
-      currentUser.email = document.getElementById('memberProfEmail').value;
-      currentUser.phone = document.getElementById('memberProfPhone').value;
-      currentUser.idNumber = document.getElementById('memberProfIdNumber').value;
-      document.getElementById('memberProfName').disabled = true;
-      document.getElementById('memberProfEmail').disabled = true;
-      document.getElementById('memberProfPhone').disabled = true;
-      document.getElementById('memberProfIdNumber').disabled = true;
-      document.getElementById('saveMemberProf').classList.add('hidden');
-      
-      // Update in members array
-      const memberIndex = members.findIndex(m => m.id === currentUser.id);
-      if (memberIndex !== -1) {
-        members[memberIndex].name = currentUser.name;
-        members[memberIndex].email = currentUser.email;
-        members[memberIndex].phone = currentUser.phone;
-        members[memberIndex].idNumber = currentUser.idNumber;
-        const cloudSaveSuccess = await saveDataToStorage(true);
+      try {
+        const nameInput = document.getElementById('memberProfName');
+        const emailInput = document.getElementById('memberProfEmail');
+        const phoneInput = document.getElementById('memberProfPhone');
+        const idInput = document.getElementById('memberProfIdNumber');
+        const saveBtn = document.getElementById('saveMemberProf');
         
-        if (cloudSaveSuccess === true) {
-          showAlert('memberAlert', '✅ Profile updated and synced to cloud!', 'success');
-        } else {
-          showAlert('memberAlert', '⚠ Profile updated locally but cloud sync failed. Please try again.', 'warning');
+        if (!nameInput || !emailInput || !phoneInput || !idInput || !saveBtn) {
+          alert('⚠ Error: Form elements not found');
+          return;
         }
+        
+        if (!currentUser) {
+          alert('⚠ Error: No user session found. Please login again.');
+          return;
+        }
+        
+        // Validate inputs
+        if (!nameInput.value.trim()) {
+          alert('⚠ Name cannot be empty');
+          return;
+        }
+        
+        if (!emailInput.value.trim() || !emailInput.value.includes('@')) {
+          alert('⚠ Please enter a valid email address');
+          return;
+        }
+        
+        if (!phoneInput.value.trim()) {
+          alert('⚠ Phone number cannot be empty');
+          return;
+        }
+        
+        // Update currentUser
+        currentUser.name = nameInput.value.trim();
+        currentUser.email = emailInput.value.trim();
+        currentUser.phone = phoneInput.value.trim();
+        currentUser.idNumber = idInput.value.trim();
+        
+        // Disable fields
+        nameInput.disabled = true;
+        emailInput.disabled = true;
+        phoneInput.disabled = true;
+        idInput.disabled = true;
+        saveBtn.classList.add('hidden');
+        
+        // Update in members array
+        const memberIndex = members.findIndex(m => m.id === currentUser.id);
+        if (memberIndex !== -1) {
+          members[memberIndex].name = currentUser.name;
+          members[memberIndex].email = currentUser.email;
+          members[memberIndex].phone = currentUser.phone;
+          members[memberIndex].idNumber = currentUser.idNumber;
+          
+          console.log('✓ Member data updated:', currentUser.name);
+          
+          const cloudSaveSuccess = await saveDataToStorage(true);
+          
+          if (cloudSaveSuccess === true) {
+            showAlert('memberAlert', '✅ Profile updated and synced to cloud!', 'success');
+            console.log('✓ Profile saved to cloud successfully');
+          } else {
+            showAlert('memberAlert', '⚠ Profile updated locally but cloud sync failed. Changes saved locally.', 'warning');
+            console.warn('⚠️ Cloud sync failed but local save succeeded');
+          }
+        } else {
+          alert('⚠ Error: Member not found in database');
+          console.error('❌ Member not found:', currentUser.id);
+        }
+      } catch (error) {
+        console.error('❌ Error in saveMemberProf:', error);
+        alert('⚠ Error saving profile. Please try again.');
       }
     }
 
