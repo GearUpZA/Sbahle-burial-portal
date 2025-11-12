@@ -2868,6 +2868,20 @@
     let payoutCollectors = []; // Store payout collectors: { memberId, collectors: [{name, phone}, {name, phone}] }
     let constitutionDocument = null; // Store constitution document: { title, uploadDate, fileData, fileSize, fileType, notes }
     let currentUser = null;
+    
+    // Admin users for multi-admin system
+    let adminUsers = JSON.parse(localStorage.getItem('adminUsers') || JSON.stringify([
+      {
+        id: 'admin-1',
+        username: 'admin',
+        password: 'Sbhahle2025',
+        role: 'fulladmin',
+        createdDate: '2024-01-01',
+        lastLogin: null
+      }
+    ]));
+    let currentAdmin = null; // Current admin session
+    let auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]'); // Audit log for tracking admin actions
     let tempBeneficiaries = [];
     let isDrawing = false;
     let memberIdCounter = 7; // Start from 7 since we have MEM001-MEM006
@@ -6620,23 +6634,8 @@
 
     // ==================== MULTI-ADMIN SUPPORT FUNCTIONS ====================
     
-    // Admin users storage - default includes main admin
-    let adminUsers = JSON.parse(localStorage.getItem('adminUsers') || JSON.stringify([
-      {
-        id: 'admin-1',
-        username: 'admin',
-        password: 'Sbhahle2025',
-        role: 'fulladmin',
-        createdDate: '2024-01-01',
-        lastLogin: null
-      }
-    ]));
-    
-    // Audit log for tracking admin actions
-    let auditLog = JSON.parse(localStorage.getItem('auditLog') || '[]');
-    
-    // Current admin session (updated on login)
-    let currentAdmin = null;
+    // Admin users, audit log, and current admin session are initialized at the top of script
+    // (See global variables section around line 2873)
     
     // Role permissions configuration
     const ROLE_PERMISSIONS = {
