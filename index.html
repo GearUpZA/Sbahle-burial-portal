@@ -417,7 +417,7 @@
         <h2>Meeting Minutes</h2>
         <button class="btn btn-success" onclick="addMinutesModal()">+ Add Meeting Minutes</button>
         <table>
-          <thead><tr><th>Date</th><th>Subject</th><th>Posted By</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Date</th><th>Subject / Attachment</th><th>Posted By</th><th>Actions</th></tr></thead>
           <tbody id="minutesTable"></tbody>
         </table>
       </div>
@@ -5263,6 +5263,14 @@
           <label>Minutes</label>
           <textarea id="minutesContent" rows="10" placeholder="Enter meeting minutes here..."></textarea>
         </div>
+        <div class="form-group">
+          <label>📎 Attach Document (Optional - DOC, DOCX only)</label>
+          <input type="file" id="minutesAttachment" accept=".doc,.docx" 
+            style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+          <small style="color: #666; display: block; margin-top: 5px;">
+            Upload meeting agenda, attendance register, or supporting documents
+          </small>
+        </div>
         <button class="btn btn-primary" onclick="saveMinutes()">Save Minutes</button>
       `;
       openModal(html);
@@ -5272,9 +5280,10 @@
       const date = document.getElementById('minutesDate').value;
       const subject = document.getElementById('minutesSubject').value;
       const content = document.getElementById('minutesContent').value;
+      const attachmentInput = document.getElementById('minutesAttachment');
       
       if (!date || !subject || !content) {
-        alert('⚠ Please fill all fields');
+        alert('⚠ Please fill all required fields');
         return;
       }
       
@@ -5286,6 +5295,52 @@
         postedBy: 'Admin',
         postedAt: new Date().toISOString()
       };
+      
+      // Handle file attachment if provided
+      if (attachmentInput && attachmentInput.files.length > 0) {
+        const file = attachmentInput.files[0];
+        
+        // Validate file type
+        const allowedTypes = [
+          'application/msword', // .doc
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+        ];
+        
+        if (!allowedTypes.includes(file.type) && !file.name.match(/\.(doc|docx)$/i)) {
+          alert('⚠ Only DOC and DOCX files are allowed');
+          return;
+        }
+        
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          alert('⚠ File too large. Maximum size is 10MB');
+          return;
+        }
+        
+        // Convert to base64
+        try {
+          const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+          
+          newMinutes.attachment = {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            data: base64,
+            uploadedAt: new Date().toISOString()
+          };
+          
+          console.log('✓ Document attached:', file.name, `(${(file.size / 1024).toFixed(1)} KB)`);
+        } catch (error) {
+          console.error('❌ File upload error:', error);
+          alert('⚠ Error uploading file. Please try again.');
+          return;
+        }
+      }
       
       meetingMinutes.push(newMinutes);
       await saveDataToStorage(true);
@@ -5305,10 +5360,14 @@
       table.innerHTML = meetingMinutes.map(min => `
         <tr>
           <td>${new Date(min.date).toLocaleDateString()}</td>
-          <td>${min.subject}</td>
+          <td>
+            ${min.subject}
+            ${min.attachment ? `<br><small style="color: #666;">📎 ${min.attachment.name}</small>` : ''}
+          </td>
           <td>${min.postedBy}</td>
           <td>
             <button class="btn btn-sm btn-primary" onclick="viewMinutes('${min.id}')">View</button>
+            ${min.attachment ? `<button class="btn btn-sm btn-success" onclick="downloadMinutesAttachment('${min.id}')">📥 Download</button>` : ''}
             <button class="btn btn-sm btn-danger" onclick="deleteMinutes('${min.id}')">Delete</button>
           </td>
         </tr>
@@ -5319,14 +5378,52 @@
       const minutes = meetingMinutes.find(m => m.id === id);
       if (!minutes) return;
       
+      const attachmentInfo = minutes.attachment ? `
+        <div style="background: #f0f9ff; padding: 10px; border-radius: 5px; margin-top: 10px; border-left: 3px solid #667eea;">
+          <p style="margin: 5px 0;"><strong>📎 Attached Document:</strong></p>
+          <p style="margin: 5px 0;">📄 ${minutes.attachment.name}</p>
+          <p style="margin: 5px 0; color: #666; font-size: 0.9em;">
+            Size: ${(minutes.attachment.size / 1024).toFixed(1)} KB | 
+            Uploaded: ${new Date(minutes.attachment.uploadedAt).toLocaleString()}
+          </p>
+          <button class="btn btn-sm btn-success" onclick="downloadMinutesAttachment('${minutes.id}')" style="margin-top: 5px;">
+            📥 Download Document
+          </button>
+        </div>
+      ` : '';
+      
       const html = `
         <h2>${minutes.subject}</h2>
         <p><strong>Date:</strong> ${new Date(minutes.date).toLocaleDateString()}</p>
         <p><strong>Posted By:</strong> ${minutes.postedBy}</p>
         <hr>
         <div style="white-space: pre-wrap;">${minutes.content}</div>
+        ${attachmentInfo}
       `;
       openModal(html);
+    }
+
+    function downloadMinutesAttachment(id) {
+      const minutes = meetingMinutes.find(m => m.id === id);
+      if (!minutes || !minutes.attachment) {
+        alert('⚠ No attachment found');
+        return;
+      }
+      
+      try {
+        // Create download link
+        const link = document.createElement('a');
+        link.href = minutes.attachment.data;
+        link.download = minutes.attachment.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log('✓ Document downloaded:', minutes.attachment.name);
+      } catch (error) {
+        console.error('❌ Download error:', error);
+        alert('⚠ Error downloading file. Please try again.');
+      }
     }
 
     async function deleteMinutes(id) {
@@ -5353,7 +5450,16 @@
             <strong>Date:</strong> ${new Date(min.date).toLocaleDateString()} | 
             <strong>Posted:</strong> ${new Date(min.postedAt).toLocaleDateString()}
           </p>
-          <div style="white-space: pre-wrap; color: #444;">${min.content}</div>
+          <div style="white-space: pre-wrap; color: #444; margin-bottom: 10px;">${min.content}</div>
+          ${min.attachment ? `
+            <div style="background: white; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+              <p style="margin: 5px 0; color: #333;"><strong>📎 Attached Document:</strong></p>
+              <p style="margin: 5px 0; color: #666;">📄 ${min.attachment.name} (${(min.attachment.size / 1024).toFixed(1)} KB)</p>
+              <button class="btn btn-sm btn-success" onclick="downloadMinutesAttachment('${min.id}')" style="margin-top: 5px;">
+                📥 Download Document
+              </button>
+            </div>
+          ` : ''}
         </div>
       `).join('');
     }
