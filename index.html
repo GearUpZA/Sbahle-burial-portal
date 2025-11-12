@@ -85,9 +85,14 @@
 
       <div id="adminForm">
         <h2>Admin Login</h2>
-        <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123"></div>
+        <div class="form-group"><label>Username</label><input type="text" id="adminEmail" placeholder="Enter your username"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="adminPassword" placeholder="Enter your password"></div>
         <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
+        <p style="margin-top: 15px; padding: 10px; background: #e6f7ff; border-radius: 5px; font-size: 13px; color: #0066cc;">
+          💡 <strong>Default Admin:</strong><br>
+          Username: <code>Mlungisi Maqashela</code><br>
+          Password: <code>mM!47258369</code>
+        </p>
       </div>
 
       <div id="memberForm" class="hidden">
@@ -3398,17 +3403,59 @@
     }
 
     function loginAdmin() {
-      if (document.getElementById('adminEmail').value === 'admin' && document.getElementById('adminPassword').value === 'admin123') {
-        currentUser = { type: 'admin' };
+      const username = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      
+      // Check if multi-admin system is initialized
+      if (typeof adminUsers !== 'undefined' && adminUsers.length > 0) {
+        // Use multi-admin system
+        const admin = adminUsers.find(a => a.username === username && a.password === password);
+        
+        if (!admin) {
+          alert('❌ Invalid username or password');
+          return;
+        }
+        
+        // Update last login
+        admin.lastLogin = new Date().toISOString();
+        localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+        
+        // Set current admin
+        currentAdmin = admin;
+        currentUser = { type: 'admin', role: admin.role };
+        
+        // Log login
+        if (typeof logAdminAction === 'function') {
+          logAdminAction('LOGIN', `Logged in as ${admin.role}`);
+        }
+        
+        // Show admin page
         show('adminPage');
         updateAdmin();
-        // Update sync status immediately
-        if (cloudStorageAvailable) {
-          updateSyncStatus('default');
+        
+        // Update admin displays if functions exist
+        if (typeof updateCurrentAdminDisplay === 'function') updateCurrentAdminDisplay();
+        if (typeof updateAdminUsersDisplay === 'function') updateAdminUsersDisplay();
+        if (typeof updateAuditLogPreview === 'function') updateAuditLogPreview();
+        
+      } else {
+        // Fallback to basic admin login
+        if (username === 'admin' && password === 'admin123') {
+          currentUser = { type: 'admin' };
+          show('adminPage');
+          updateAdmin();
         } else {
-          updateSyncStatus('offline');
+          alert('❌ Invalid username or password');
+          return;
         }
-      } else alert('Invalid');
+      }
+      
+      // Update sync status
+      if (cloudStorageAvailable) {
+        updateSyncStatus('default');
+      } else {
+        updateSyncStatus('offline');
+      }
     }
 
     function loginMember() {
