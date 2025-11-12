@@ -3415,13 +3415,49 @@
       const username = document.getElementById('adminEmail').value.trim();
       const password = document.getElementById('adminPassword').value;
       
+      console.log('🔐 Login attempt:', { username, passwordLength: password.length });
+      console.log('📋 adminUsers available:', typeof adminUsers !== 'undefined', 'count:', adminUsers?.length);
+      
+      // Ensure adminUsers is loaded from localStorage if not already
+      if (typeof adminUsers === 'undefined' || !adminUsers || adminUsers.length === 0) {
+        console.warn('⚠️ adminUsers not initialized, loading from localStorage...');
+        try {
+          const stored = localStorage.getItem('adminUsers');
+          if (stored) {
+            adminUsers = JSON.parse(stored);
+            console.log('✓ Loaded adminUsers from localStorage:', adminUsers.length);
+          } else {
+            // Initialize default admin
+            adminUsers = [{
+              id: 'admin-1',
+              username: 'admin',
+              password: 'Sbhahle2025',
+              role: 'fulladmin',
+              createdDate: '2024-01-01',
+              lastLogin: null
+            }];
+            localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+            console.log('✓ Created default admin user');
+          }
+        } catch (e) {
+          console.error('❌ Error loading adminUsers:', e);
+        }
+      }
+      
+      // Debug: Show what we're looking for
+      console.log('🔍 Looking for match:', { username, password });
+      console.log('📋 Available admins:', adminUsers.map(a => ({ username: a.username, role: a.role })));
+      
       // Check if multi-admin system is initialized
-      if (typeof adminUsers !== 'undefined' && adminUsers.length > 0) {
+      if (adminUsers && adminUsers.length > 0) {
         // Use multi-admin system
         const admin = adminUsers.find(a => a.username === username && a.password === password);
         
+        console.log('🔎 Admin found:', admin ? 'YES' : 'NO');
+        
         if (!admin) {
-          alert('❌ Invalid username or password');
+          alert('❌ Invalid username or password\n\nUsername: admin\nPassword: Sbhahle2025');
+          console.error('❌ Login failed - no matching admin found');
           return;
         }
         
@@ -3432,6 +3468,8 @@
         // Set current admin
         currentAdmin = admin;
         currentUser = { type: 'admin', role: admin.role };
+        
+        console.log('✅ Login successful as:', admin.username, '(' + admin.role + ')');
         
         // Log login
         if (typeof logAdminAction === 'function') {
@@ -3449,12 +3487,15 @@
         
       } else {
         // Fallback to basic admin login
+        console.warn('⚠️ Using fallback login (admin123)');
         if (username === 'admin' && password === 'admin123') {
           currentUser = { type: 'admin' };
           show('adminPage');
           updateAdmin();
+          console.log('✅ Logged in with fallback credentials');
         } else {
           alert('❌ Invalid username or password');
+          console.error('❌ Fallback login failed');
           return;
         }
       }
