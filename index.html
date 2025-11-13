@@ -88,6 +88,7 @@
         <div class="form-group"><label>Username</label><input type="text" id="adminEmail" placeholder="Enter your username"></div>
         <div class="form-group"><label>Password</label><input type="password" id="adminPassword" placeholder="Enter your password"></div>
         <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
+        <button class="btn btn-warning" onclick="resetAdminCredentials()" style="margin-top: 10px; font-size: 12px;">🔧 Reset Admin Credentials</button>
       </div>
 
       <div id="memberForm" class="hidden">
@@ -3506,6 +3507,34 @@
       } else {
         updateSyncStatus('offline');
       }
+    }
+
+    function resetAdminCredentials() {
+      if (!confirm('🔧 Reset admin credentials to default?\n\nUsername: admin\nPassword: Sbhahle2025\n\nThis will clear old admin data from localStorage.')) {
+        return;
+      }
+      
+      console.log('🔧 Resetting admin credentials...');
+      
+      // Force reset adminUsers in localStorage
+      const defaultAdmin = [{
+        id: 'admin-1',
+        username: 'admin',
+        password: 'Sbhahle2025',
+        role: 'fulladmin',
+        createdDate: '2024-01-01',
+        lastLogin: null
+      }];
+      
+      localStorage.setItem('adminUsers', JSON.stringify(defaultAdmin));
+      
+      // Update the global variable
+      adminUsers = defaultAdmin;
+      
+      console.log('✅ Admin credentials reset to default');
+      console.log('📋 New adminUsers:', adminUsers);
+      
+      alert('✅ Admin credentials reset!\n\nUsername: admin\nPassword: Sbhahle2025\n\nPlease try logging in again.');
     }
 
     function loginMember() {
