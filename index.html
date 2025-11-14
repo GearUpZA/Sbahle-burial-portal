@@ -1340,9 +1340,9 @@
         console.warn('⚠️ Payouts is not an array, will use empty array');
       }
       
-      // Version check (lenient - allow old versions)
-      if (data.version && !data.version.startsWith('2.')) {
-        console.warn(`⚠️ Old data version detected: ${data.version}, will attempt to load anyway`);
+      // Version check (lenient - just log, don't warn)
+      if (data.version) {
+        console.log(`📋 Data version: ${data.version}`);
       }
       
       return {
