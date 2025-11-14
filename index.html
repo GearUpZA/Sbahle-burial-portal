@@ -1182,8 +1182,15 @@
           // File doesn't exist yet, that's OK
         }
         
-        // Prepare the data
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+        // Prepare the data (CSP-safe method)
+        const jsonString = JSON.stringify(data, null, 2);
+        const encoder = new TextEncoder();
+        const dataBytes = encoder.encode(jsonString);
+        let binaryString = '';
+        for (let i = 0; i < dataBytes.length; i++) {
+          binaryString += String.fromCharCode(dataBytes[i]);
+        }
+        const content = btoa(binaryString);
         
         const payload = {
           message: `Update burial society data - ${new Date().toLocaleString()}`,
@@ -2141,8 +2148,14 @@
             
             if (response.ok) {
               const fileData = await response.json();
-              // Decode base64 content
-              const decodedContent = decodeURIComponent(escape(atob(fileData.content)));
+              // Decode base64 content (CSP-safe method)
+              const base64Content = fileData.content.replace(/\n/g, '');
+              const binaryString = atob(base64Content);
+              const bytes = new Uint8Array(binaryString.length);
+              for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              const decodedContent = new TextDecoder().decode(bytes);
               cloudData = JSON.parse(decodedContent);
               
               console.log('✅ Data loaded from GitHub storage:', {
@@ -2276,8 +2289,14 @@
         
         if (response.ok) {
           const fileData = await response.json();
-          // Decode base64 content
-          const decodedContent = decodeURIComponent(escape(atob(fileData.content)));
+          // Decode base64 content (CSP-safe method)
+          const base64Content = fileData.content.replace(/\n/g, '');
+          const binaryString = atob(base64Content);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const decodedContent = new TextDecoder().decode(bytes);
           const cloudData = JSON.parse(decodedContent);
           
           // Only update if cloud data exists and is newer than local
