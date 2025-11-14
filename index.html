@@ -1063,17 +1063,14 @@
     detectStaleCache();
     
     // ===== CLOUD STORAGE CONFIGURATION =====
-    // Using GitHub as cloud storage - FREE and UNLIMITED!
+    // Using JSONBin.io with smart rate limiting to stay within free tier
     const CLOUD_STORAGE = {
       enabled: true, // ✅ ENABLED - Cloud sync active!
-      type: 'github', // Using GitHub storage
-      owner: 'GearUpZA', // Your GitHub username
-      repo: 'Sbahle-burial-portal', // Your repository name
-      branch: 'main',
-      dataFile: 'data/burial-society-data.json', // File path in repo
-      token: 'ghp_replacewithyourtoken', // GitHub Personal Access Token (will be replaced)
-      endpoint: 'https://api.github.com',
-      syncInterval: 10000 // Check for updates every 10 seconds (GitHub recommended)
+      type: 'jsonbin', // Using JSONBin storage
+      binId: '69032dadd0ea881f40c6cfd5', // Your JSONBin storage
+      apiKey: '$2a$10$LUKvn7ZMDSlDEbqAM45V7ub0iXv2sLBAIH9bqLD7IvyGNJvwFWAne', // Your API key
+      endpoint: 'https://api.jsonbin.io/v3/b',
+      syncInterval: 600000 // Check for updates every 10 minutes (100 free requests/month = ~3 per day = every 8 hours safe, 10 min for testing)
     };
     
     let cloudStorageAvailable = false;
@@ -1096,133 +1093,71 @@
     // Test cloud storage availability with enhanced health check
     async function initCloudStorage() {
       try {
-        console.log('🔄 Initializing GitHub cloud storage connection...');
-        
-        // For GitHub, we'll use the public repo API (no token needed for public repos)
-        const apiUrl = `${CLOUD_STORAGE.endpoint}/repos/${CLOUD_STORAGE.owner}/${CLOUD_STORAGE.repo}/contents/${CLOUD_STORAGE.dataFile}`;
-        
+        console.log('🔄 Initializing JSONBin cloud storage connection...');
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
         
-        const headers = {
-          'Accept': 'application/vnd.github.v3+json'
-        };
-        
-        // Only add token if it's not the placeholder
-        if (CLOUD_STORAGE.token && CLOUD_STORAGE.token !== 'ghp_replacewithyourtoken') {
-          headers['Authorization'] = `token ${CLOUD_STORAGE.token}`;
-        }
-        
-        const response = await fetch(apiUrl, {
-          headers: headers,
+        const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
+          headers: {
+            'X-Access-Key': CLOUD_STORAGE.apiKey
+          },
           signal: controller.signal
         });
         
         clearTimeout(timeoutId);
-        cloudStorageAvailable = response.ok || response.status === 404; // 404 is OK, means file doesn't exist yet
-        
+        cloudStorageAvailable = response.ok;
         if (cloudStorageAvailable) {
-          console.log('✅ GitHub cloud storage connected - data will sync across all browsers');
-          console.log('📁 Storage location:', `${CLOUD_STORAGE.owner}/${CLOUD_STORAGE.repo}/${CLOUD_STORAGE.dataFile}`);
+          console.log('✅ Cloud storage connected - data will sync across all browsers');
+          console.log('� Sync interval: Every', CLOUD_STORAGE.syncInterval / 60000, 'minutes (smart rate limiting)');
           SYNC_HEALTH.lastSuccessfulSync = Date.now();
           SYNC_HEALTH.consecutiveFailures = 0;
           updateSyncStatus('default');
           startCloudSync();
-          
-          // If file doesn't exist, create it with initial data
-          if (response.status === 404) {
-            console.log('📝 Creating initial data file in GitHub...');
-            await saveDataToGitHub({
-              members: [],
-              beneficiaries: [],
-              payouts: [],
-              penalties: [],
-              meetingMinutes: [],
-              paymentProofs: [],
-              lastSaved: new Date().toISOString(),
-              version: '1.0'
-            });
-          }
         } else {
-          console.log('⚠ GitHub storage unavailable (Status: ' + response.status + ') - using localStorage only');
+          console.log('⚠ Cloud storage unavailable (Status: ' + response.status + ') - using localStorage only');
           cloudStorageAvailable = false;
           updateSyncStatus('offline');
         }
       } catch (error) {
-        console.log('⚠ GitHub storage initialization failed:', error.message);
+        console.log('⚠ Cloud storage initialization failed:', error.message);
         console.log('💡 Using localStorage only - data won\'t sync across browsers');
         cloudStorageAvailable = false;
         updateSyncStatus('offline');
         // Retry connection after 30 seconds
         setTimeout(() => {
-          console.log('🔄 Retrying GitHub storage connection...');
+          console.log('🔄 Retrying cloud storage connection...');
           initCloudStorage();
         }, 30000);
       }
     }
     
-    // Save data to GitHub repository
-    async function saveDataToGitHub(data) {
+    // Save data to JSONBin cloud storage
+    async function saveDataToCloud(data) {
       try {
-        const apiUrl = `${CLOUD_STORAGE.endpoint}/repos/${CLOUD_STORAGE.owner}/${CLOUD_STORAGE.repo}/contents/${CLOUD_STORAGE.dataFile}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
         
-        // First, get the current file SHA (needed for updates)
-        let fileSha = null;
-        try {
-          const getResponse = await fetch(apiUrl, {
-            headers: {
-              'Accept': 'application/vnd.github.v3+json'
-            }
-          });
-          if (getResponse.ok) {
-            const fileData = await getResponse.json();
-            fileSha = fileData.sha;
-          }
-        } catch (e) {
-          // File doesn't exist yet, that's OK
-        }
-        
-        // Prepare the data (CSP-safe method)
-        const jsonString = JSON.stringify(data, null, 2);
-        const encoder = new TextEncoder();
-        const dataBytes = encoder.encode(jsonString);
-        let binaryString = '';
-        for (let i = 0; i < dataBytes.length; i++) {
-          binaryString += String.fromCharCode(dataBytes[i]);
-        }
-        const content = btoa(binaryString);
-        
-        const payload = {
-          message: `Update burial society data - ${new Date().toLocaleString()}`,
-          content: content,
-          branch: CLOUD_STORAGE.branch
-        };
-        
-        if (fileSha) {
-          payload.sha = fileSha; // Required for updates
-        }
-        
-        // Note: This works for public repos without auth
-        // For private repos, you'd need to add: 'Authorization': `token ${CLOUD_STORAGE.token}`
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}`, {
           method: 'PUT',
           headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-Access-Key': CLOUD_STORAGE.apiKey
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(data),
+          signal: controller.signal
         });
         
+        clearTimeout(timeoutId);
+        
         if (response.ok) {
-          console.log('✅ Data saved to GitHub successfully');
+          console.log('✅ Data saved to cloud successfully');
           return true;
         } else {
-          const error = await response.json();
-          console.warn('⚠️ GitHub save failed:', error.message);
+          console.warn('⚠️ Cloud save failed:', response.status);
           return false;
         }
       } catch (error) {
-        console.warn('⚠️ GitHub save error:', error.message);
+        console.warn('⚠️ Cloud save error:', error.message);
         return false;
       }
     }
@@ -1965,8 +1900,8 @@
               
               lastSyncAttempt = Date.now();
               
-              // Use GitHub save function
-              cloudSaveSuccess = await saveDataToGitHub(data);
+              // Use JSONBin save function
+              cloudSaveSuccess = await saveDataToCloud(data);
               
               if (cloudSaveSuccess) {
                 const syncTime = performance.now() - syncStartTime;
@@ -2131,15 +2066,14 @@
         // Try loading from cloud storage first
         if (cloudStorageAvailable && CLOUD_STORAGE.enabled) {
           try {
-            console.log('🔄 Fetching data from GitHub storage...');
-            const apiUrl = `${CLOUD_STORAGE.endpoint}/repos/${CLOUD_STORAGE.owner}/${CLOUD_STORAGE.repo}/contents/${CLOUD_STORAGE.dataFile}`;
+            console.log('🔄 Fetching data from JSONBin storage...');
             
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
             
-            const response = await fetch(apiUrl, {
+            const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
               headers: {
-                'Accept': 'application/vnd.github.v3+json'
+                'X-Access-Key': CLOUD_STORAGE.apiKey
               },
               signal: controller.signal
             });
@@ -2147,18 +2081,10 @@
             clearTimeout(timeoutId);
             
             if (response.ok) {
-              const fileData = await response.json();
-              // Decode base64 content (CSP-safe method)
-              const base64Content = fileData.content.replace(/\n/g, '');
-              const binaryString = atob(base64Content);
-              const bytes = new Uint8Array(binaryString.length);
-              for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-              }
-              const decodedContent = new TextDecoder().decode(bytes);
-              cloudData = JSON.parse(decodedContent);
+              const result = await response.json();
+              cloudData = result.record; // JSONBin wraps data in 'record' property
               
-              console.log('✅ Data loaded from GitHub storage:', {
+              console.log('✅ Data loaded from JSONBin storage:', {
                 members: cloudData.members?.length || 0,
                 lastSaved: cloudData.lastSaved,
                 version: cloudData.version
@@ -2279,25 +2205,15 @@
       if (!cloudStorageAvailable || !CLOUD_STORAGE.enabled) return;
       
       try {
-        const apiUrl = `${CLOUD_STORAGE.endpoint}/repos/${CLOUD_STORAGE.owner}/${CLOUD_STORAGE.repo}/contents/${CLOUD_STORAGE.dataFile}`;
-        
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
           headers: {
-            'Accept': 'application/vnd.github.v3+json'
+            'X-Access-Key': CLOUD_STORAGE.apiKey
           }
         });
         
         if (response.ok) {
-          const fileData = await response.json();
-          // Decode base64 content (CSP-safe method)
-          const base64Content = fileData.content.replace(/\n/g, '');
-          const binaryString = atob(base64Content);
-          const bytes = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-          }
-          const decodedContent = new TextDecoder().decode(bytes);
-          const cloudData = JSON.parse(decodedContent);
+          const result = await response.json();
+          const cloudData = result.record; // JSONBin wraps data in 'record' property
           
           // Only update if cloud data exists and is newer than local
           if (cloudData && cloudData.lastSaved) {
@@ -2305,7 +2221,7 @@
             const localTime = lastCloudSync;
             
             if (cloudTime > localTime) {
-              console.log('🔄 NEW DATA DETECTED - Syncing from GitHub...', {
+              console.log('🔄 NEW DATA DETECTED - Syncing from JSONBin...', {
                 cloudMembers: cloudData.members?.length || 0,
                 cloudMinutes: cloudData.meetingMinutes?.length || 0,
                 cloudSignatures: (cloudData.members || []).filter(m => m.signature).length,
@@ -2383,10 +2299,10 @@
     function startCloudSync() {
       if (syncTimer) clearInterval(syncTimer);
       syncTimer = setInterval(checkCloudUpdates, CLOUD_STORAGE.syncInterval);
-      console.log('✅ REAL-TIME GITHUB SYNC ACTIVE');
-      console.log('📡 Syncing every', CLOUD_STORAGE.syncInterval / 1000, 'seconds across ALL browsers and devices');
-      console.log('👥 All members and admin will see updates within', CLOUD_STORAGE.syncInterval / 1000, 'seconds');
-      console.log('🆓 Using GitHub storage - FREE and UNLIMITED!');
+      console.log('✅ REAL-TIME JSONBIN SYNC ACTIVE');
+      console.log('📡 Syncing every', CLOUD_STORAGE.syncInterval / 60000, 'minutes across ALL browsers and devices');
+      console.log('👥 All members and admin will see updates within', CLOUD_STORAGE.syncInterval / 60000, 'minutes');
+      console.log('🆓 Using JSONBin storage with rate limiting');
     }
     
     // Stop cloud sync
