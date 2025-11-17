@@ -1925,7 +1925,6 @@
                 syncRetryCount = 0;
                 syncFailCount = 0;
                 updateSyncStatus('synced');
-                cloudSaveSuccess = true;
                 
                 // Clear sync queue on success
                 if (syncQueue.length > 0) {
@@ -1933,51 +1932,22 @@
                   syncQueue.length = 0;
                 }
               } else {
-                const errorText = await response.text();
                 SYNC_HEALTH.totalFailures++;
                 SYNC_HEALTH.consecutiveFailures++;
                 
-                console.error('❌ CLOUD SAVE ERROR:', {
-                  status: response.status,
-                  statusText: response.statusText,
-                  error: errorText,
+                console.error('❌ CLOUD SAVE FAILED:', {
                   consecutiveFailures: SYNC_HEALTH.consecutiveFailures
                 });
                 
-                // Specific error handling with exponential backoff
-                if (response.status === 429) {
-                  const retryDelay = Math.min(2000 * Math.pow(2, SYNC_HEALTH.consecutiveFailures), 30000);
-                  console.warn(`⚠️ Rate limit reached - retrying in ${retryDelay/1000}s`);
-                  updateSyncStatus('error');
-                  queueSyncOperation(() => saveDataToStorage(true));
-                  setTimeout(() => processSyncQueue(), retryDelay);
-                } else if (response.status === 413) {
-                  console.error('❌ Data too large for cloud storage');
-                  updateSyncStatus('error');
-                  showAlert('adminAlert', '⚠️ Data size too large. Consider archiving old records.', 'error');
-                } else if (response.status === 401 || response.status === 403) {
-                  console.error('❌ Cloud storage authentication failed');
-                  updateSyncStatus('error');
-                  showAlert('adminAlert', '⚠️ Cloud authentication error. Please check configuration.', 'error');
-                  cloudStorageAvailable = false;
-                  // Retry connection after 60 seconds
-                  setTimeout(() => initCloudStorage(), 60000);
-                } else if (response.status >= 500) {
-                  console.error('❌ Cloud storage server error');
-                  updateSyncStatus('error');
-                  // Queue for retry with exponential backoff
+                updateSyncStatus('error');
+                
+                // Queue for retry with exponential backoff
+                if (SYNC_HEALTH.consecutiveFailures < 5) {
                   const retryDelay = Math.min(5000 * Math.pow(2, SYNC_HEALTH.consecutiveFailures), 60000);
-                  console.warn(`⚠️ Server error - retrying in ${retryDelay/1000}s`);
+                  console.warn(`⚠️ Will retry in ${retryDelay/1000}s`);
                   queueSyncOperation(() => saveDataToStorage(true));
                   setTimeout(() => processSyncQueue(), retryDelay);
-                } else {
-                  updateSyncStatus('error');
-                  console.error('Cloud save failed but will retry on next save');
-                  if (SYNC_HEALTH.consecutiveFailures < 3) {
-                    queueSyncOperation(() => saveDataToStorage(true));
-                  }
                 }
-                cloudSaveSuccess = false;
               }
             } catch (error) {
               SYNC_HEALTH.totalFailures++;
@@ -2903,6 +2873,12 @@
         await loadDataFromStorage();
         
         console.log('✓ System initialized with', members.length, 'members');
+        
+        // Force immediate sync to cloud after loading
+        if (cloudStorageAvailable && members.length > 0) {
+          console.log('🔄 Triggering immediate sync to cloud...');
+          setTimeout(() => saveDataToStorage(true), 2000); // Give system 2 seconds to settle
+        }
         
         // Check if critical members exist (like MEM007 - Mlungisi Maqashela)
         const mem007 = members.find(m => m.id === 'MEM007');
