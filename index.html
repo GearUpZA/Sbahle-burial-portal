@@ -540,8 +540,9 @@
               </div>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <button class="btn btn-primary" onclick="forceSyncNow()" style="flex: 1;">🔄 Force Sync Now</button>
-              <button class="btn btn-secondary" onclick="displaySyncHealth()" style="flex: 1;">📊 Refresh Stats</button>
+              <button class="btn btn-primary" onclick="forceSyncNow()" style="flex: 1;">🔄 Upload to Cloud</button>
+              <button class="btn btn-success" onclick="checkCloudUpdates()" style="flex: 1;">⬇️ Download Updates</button>
+              <button class="btn btn-secondary" onclick="displaySyncHealth()" style="flex: 1;">📊 Stats</button>
             </div>
           </div>
           
@@ -1078,7 +1079,7 @@
       binId: '69032dadd0ea881f40c6cfd5', // Your JSONBin storage
       apiKey: '$2a$10$LUKvn7ZMDSlDEbqAM45V7ub0iXv2sLBAIH9bqLD7IvyGNJvwFWAne', // Your API key
       endpoint: 'https://api.jsonbin.io/v3/b',
-      syncInterval: 120000 // Check for updates every 2 minutes (reasonable for 100 requests/month)
+      syncInterval: 30000 // Check for updates every 30 seconds for real-time feel
     };
     
     let cloudStorageAvailable = false;
@@ -2240,6 +2241,31 @@
                 localTime: new Date(localTime).toLocaleString()
               });
               
+              // Show update notification BEFORE applying changes
+              const changesMade = [];
+              if (cloudData.members.length !== members.length) {
+                changesMade.push(`Members: ${members.length} → ${cloudData.members.length}`);
+              }
+              if (cloudData.beneficiaries.length !== beneficiaries.length) {
+                changesMade.push(`Beneficiaries: ${beneficiaries.length} → ${cloudData.beneficiaries.length}`);
+              }
+              if (cloudData.payouts.length !== payouts.length) {
+                changesMade.push(`Payouts: ${payouts.length} → ${cloudData.payouts.length}`);
+              }
+              
+              if (changesMade.length > 0) {
+                const updateMsg = '🔄 Updates from another device:\n' + changesMade.join(', ');
+                console.log(updateMsg);
+                
+                // Show banner notification
+                const successDiv = document.getElementById('syncSuccessNotice');
+                if (successDiv) {
+                  successDiv.style.display = 'block';
+                  successDiv.innerHTML = `<p style="margin: 0; font-size: 14px; color: #065f46;"><strong>🔄 Updates received from another device!</strong><br>${changesMade.join(' • ')}</p>`;
+                  setTimeout(() => successDiv.style.display = 'none', 8000);
+                }
+              }
+              
               // ALWAYS use cloud data as authoritative source
               members = cloudData.members || [];
               beneficiaries = cloudData.beneficiaries || [];
@@ -2310,9 +2336,9 @@
       if (syncTimer) clearInterval(syncTimer);
       syncTimer = setInterval(checkCloudUpdates, CLOUD_STORAGE.syncInterval);
       console.log('✅ REAL-TIME JSONBIN SYNC ACTIVE');
-      console.log('📡 Syncing every', CLOUD_STORAGE.syncInterval / 60000, 'minutes across ALL browsers and devices');
-      console.log('👥 All members and admin will see updates within', CLOUD_STORAGE.syncInterval / 60000, 'minutes');
-      console.log('🆓 Using JSONBin storage with rate limiting');
+      console.log('📡 Checking for updates every', CLOUD_STORAGE.syncInterval / 1000, 'seconds across ALL browsers');
+      console.log('👥 All members and admin will see updates within', CLOUD_STORAGE.syncInterval / 1000, 'seconds');
+      console.log('🆓 Using JSONBin storage - automatic sync enabled');
     }
     
     // Stop cloud sync
