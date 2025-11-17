@@ -155,6 +155,14 @@
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
       </div>
       <div id="adminAlert"></div>
+      
+      <!-- Sync Status Notifications -->
+      <div id="syncSuccessNotice" style="display: none; background: #d1fae5; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #10b981;">
+        <p style="margin: 0; font-size: 14px; color: #065f46;">✅ Cloud sync successful</p>
+      </div>
+      <div id="syncErrorNotice" style="display: none; background: #fee2e2; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #ef4444;">
+        <p style="margin: 0; font-size: 14px; color: #991b1b;">⚠️ Sync failed - data saved locally only</p>
+      </div>
 
       <div id="overviewTab">
         <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
@@ -1063,14 +1071,14 @@
     detectStaleCache();
     
     // ===== CLOUD STORAGE CONFIGURATION =====
-    // Using JSONBin.io with smart rate limiting to stay within free tier
+    // Using JSONBin.io for cross-device sync
     const CLOUD_STORAGE = {
       enabled: true, // ✅ ENABLED - Cloud sync active!
       type: 'jsonbin', // Using JSONBin storage
       binId: '69032dadd0ea881f40c6cfd5', // Your JSONBin storage
       apiKey: '$2a$10$LUKvn7ZMDSlDEbqAM45V7ub0iXv2sLBAIH9bqLD7IvyGNJvwFWAne', // Your API key
       endpoint: 'https://api.jsonbin.io/v3/b',
-      syncInterval: 600000 // Check for updates every 10 minutes (100 free requests/month = ~3 per day = every 8 hours safe, 10 min for testing)
+      syncInterval: 120000 // Check for updates every 2 minutes (reasonable for 100 requests/month)
     };
     
     let cloudStorageAvailable = false;
@@ -1134,6 +1142,7 @@
     // Save data to JSONBin cloud storage
     async function saveDataToCloud(data) {
       try {
+        console.log('📤 Attempting cloud save...');
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
         
@@ -1150,14 +1159,45 @@
         clearTimeout(timeoutId);
         
         if (response.ok) {
-          console.log('✅ Data saved to cloud successfully');
+          const result = await response.json();
+          console.log('✅ Data saved to cloud successfully:', {
+            members: data.members?.length || 0,
+            beneficiaries: data.beneficiaries?.length || 0,
+            recordId: result.record?.id || 'unknown'
+          });
+          
+          // Show success notification
+          const successDiv = document.getElementById('syncSuccessNotice');
+          if (successDiv) {
+            successDiv.style.display = 'block';
+            successDiv.textContent = `✅ Synced: ${data.members?.length || 0} members, ${data.beneficiaries?.length || 0} beneficiaries`;
+            setTimeout(() => successDiv.style.display = 'none', 5000);
+          }
+          
           return true;
         } else {
-          console.warn('⚠️ Cloud save failed:', response.status);
+          const errorText = await response.text();
+          console.error('❌ Cloud save failed:', response.status, errorText);
+          
+          // Show error notification
+          const errorDiv = document.getElementById('syncErrorNotice');
+          if (errorDiv) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = `⚠️ Sync failed (${response.status}). Data saved locally only.`;
+          }
+          
           return false;
         }
       } catch (error) {
-        console.warn('⚠️ Cloud save error:', error.message);
+        console.error('❌ Cloud save error:', error.message);
+        
+        // Show error notification
+        const errorDiv = document.getElementById('syncErrorNotice');
+        if (errorDiv) {
+          errorDiv.style.display = 'block';
+          errorDiv.textContent = `⚠️ Sync error: ${error.message}. Data saved locally.`;
+        }
+        
         return false;
       }
     }
