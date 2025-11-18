@@ -1120,39 +1120,28 @@
     // Test cloud storage availability with enhanced health check
     async function initCloudStorage() {
       try {
-        console.log('🔄 Initializing JSONBin cloud storage connection...');
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        console.log('� Initializing Firebase Realtime Database...');
         
-        const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
-          headers: {
-            'X-Access-Key': CLOUD_STORAGE.apiKey
-          },
-          signal: controller.signal
-        });
+        const snapshot = await dataRef.once('value');
+        cloudStorageAvailable = true;
         
-        clearTimeout(timeoutId);
-        cloudStorageAvailable = response.ok;
-        if (cloudStorageAvailable) {
-          console.log('✅ Cloud storage connected - data will sync across all browsers');
-          console.log('� Sync interval: Every', CLOUD_STORAGE.syncInterval / 60000, 'minutes (smart rate limiting)');
-          SYNC_HEALTH.lastSuccessfulSync = Date.now();
-          SYNC_HEALTH.consecutiveFailures = 0;
-          updateSyncStatus('default');
-          startCloudSync();
-        } else {
-          console.log('⚠ Cloud storage unavailable (Status: ' + response.status + ') - using localStorage only');
-          cloudStorageAvailable = false;
-          updateSyncStatus('offline');
+        console.log('✅ Firebase connected - real-time sync active');
+        SYNC_HEALTH.lastSuccessfulSync = Date.now();
+        SYNC_HEALTH.consecutiveFailures = 0;
+        updateSyncStatus('default');
+        startCloudSync();
+        
+        if (!snapshot.val() && members.length > 0) {
+          console.log('📤 Uploading local data to Firebase...');
+          await saveDataToStorage(true);
         }
       } catch (error) {
-        console.log('⚠ Cloud storage initialization failed:', error.message);
+        console.log('⚠ Firebase initialization failed:', error.message);
         console.log('💡 Using localStorage only - data won\'t sync across browsers');
         cloudStorageAvailable = false;
         updateSyncStatus('offline');
-        // Retry connection after 30 seconds
         setTimeout(() => {
-          console.log('🔄 Retrying cloud storage connection...');
+          console.log('🔄 Retrying Firebase connection...');
           initCloudStorage();
         }, 30000);
       }
