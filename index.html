@@ -16,7 +16,26 @@
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.65); /* White overlay, adjust opacity for lighter/darker */
+      z-index: 0;
+      pointer-events: none;
+    }
+    .container, .card, #mainContent, #adminForm, #memberForm, #dashboard, #adminPage, #memberPage {
+      position: relative;
+      z-index: 1;
+    }
     .container { max-width: 1200px; margin: 0 auto; }
     .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .hidden { display: none !important; }
@@ -73,6 +92,18 @@
 </head>
 <body>
   <div class="container">
+    /* Overlay and stacking for login page */
+    #loginPage { position: relative; z-index: 1; }
+    #loginPage::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.65);
+      z-index: 0;
+      pointer-events: none;
+    }
+    #loginPage * { position: relative; z-index: 1; }
+    #adminForm .btn-warning[onclick="resetAdminCredentials()"] { display: none !important; }
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
       <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
@@ -88,7 +119,7 @@
         <div class="form-group"><label>Username</label><input type="text" id="adminEmail" placeholder="Enter your username"></div>
         <div class="form-group"><label>Password</label><input type="password" id="adminPassword" placeholder="Enter your password"></div>
         <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
-        <button class="btn btn-warning" onclick="resetAdminCredentials()" style="margin-top: 10px; font-size: 12px;">🔧 Reset Admin Credentials</button>
+  <button class="btn btn-warning" onclick="resetAdminCredentials()" style="margin-top: 10px; font-size: 12px; display: none;">🔧 Reset Admin Credentials</button>
       </div>
 
       <div id="memberForm" class="hidden">
