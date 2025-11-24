@@ -53,15 +53,57 @@
     .file-input { margin-bottom: 10px; }
     .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #667eea; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; }
     .file-label:hover { background: #cbd5e0; }
-    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } }
+    /* Batch-converted classes for inline styles */
+    .d-none { display: none !important; }
+    .bg-f0f9ff { background: #f0f9ff !important; }
+    .bg-edf2f7 { background: #edf2f7 !important; }
+    .bg-f7fafc { background: #f7fafc !important; }
+    .bg-fff4e6 { background: #fff4e6 !important; }
+    .border-radius-8 { border-radius: 8px !important; }
+    .border-radius-5 { border-radius: 5px !important; }
+    .border-left-4-667eea { border-left: 4px solid #667eea !important; }
+    .border-2-ddd { border: 2px solid #ddd !important; }
+    .border-2-48bb78 { border: 2px solid #48bb78 !important; }
+    .border-1-ddd { border: 1px solid #ddd !important; }
+    .border-1-ed8936 { border: 1px solid #ed8936 !important; }
+    .color-4a5568 { color: #4a5568 !important; }
+    .color-666 { color: #666 !important; }
+    .color-48bb78 { color: #48bb78 !important; }
+    .margin-0 { margin: 0 !important; }
+    .margin-top-10 { margin-top: 10px !important; }
+    .margin-bottom-10 { margin-bottom: 10px !important; }
+    .margin-bottom-15 { margin-bottom: 15px !important; }
+    .margin-bottom-20 { margin-bottom: 20px !important; }
+    .margin-top-15 { margin-top: 15px !important; }
+    .margin-top-20 { margin-top: 20px !important; }
+    .padding-15 { padding: 15px !important; }
+    .padding-24 { padding: 24px !important; }
+    .padding-12-24 { padding: 12px 24px !important; }
+    .gap-10 { gap: 10px !important; }
+    .gap-15 { gap: 15px !important; }
+    .text-center { text-align: center !important; }
+    .font-size-13 { font-size: 13px !important; }
+    .font-size-16 { font-size: 16px !important; }
+    .font-weight-bold { font-weight: bold !important; }
+    .width-100 { width: 100% !important; }
+    .width-auto { width: auto !important; }
+    .max-width-100 { max-width: 100% !important; }
+    .max-height-150 { max-height: 150px !important; }
+    .overflow-x-auto { overflow-x: auto !important; }
+    .overflow-y-auto { overflow-y: auto !important; }
+    .display-flex { display: flex !important; }
+    .justify-content-center { justify-content: center !important; }
+    .justify-content-between { justify-content: space-between !important; }
+    .align-items-center { align-items: center !important; }
+    .flex-wrap { flex-wrap: wrap !important; }
   </style>
 </head>
 <body>
   <div class="container">
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
-      <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
-      <div class="tabs" style="justify-content: center;">
+      <h1 class="text-center">🏛️ Sbahle Burial Society</h1>
+      <div class="tabs justify-content-center">
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
@@ -109,7 +151,6 @@
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
       </div>
-      <div id="adminAlert"></div>
 
       <div id="overviewTab">
         <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
@@ -136,7 +177,7 @@
             <option value="">-- Select --</option>
           </select>
         </div>
-        <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
+        <button class="btn btn-success d-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
         <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
       </div>
 
@@ -158,25 +199,26 @@
 
       <div id="attendanceTab" class="hidden">
         <h2>Meeting Attendance</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <div class="bg-f0f9ff padding-15 border-radius-8 margin-bottom-20">
           <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
-          <p style="margin-top: 10px; color: #4a5568;">Track attendance, manage meetings, and generate reports</p>
+          <p class="margin-top-10 color-4a5568">Track attendance, manage meetings, and generate reports</p>
         </div>
 
         <!-- Meeting Details Section -->
-        <div class="grid-2" style="gap: 15px;">
-          <div class="form-group" style="margin: 0;">
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
             <label>Meeting Date</label>
             <input type="date" id="meetingDate" onchange="showAttendanceList()">
           </div>
-          <div class="form-group" style="margin: 0;">
+      <!DOCTYPE html>
+          <div class="form-group margin-0">
             <label>Meeting Time</label>
             <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
           </div>
         </div>
       
-        <div class="grid-2" style="gap: 15px; margin-top: 15px;">
-          <div class="form-group" style="margin: 0;">
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
             <label>Meeting Type</label>
             <select id="meetingType" onchange="updateMeetingDetails()">
               <option value="general">General Meeting</option>
@@ -185,7 +227,7 @@
               <option value="emergency">Emergency Meeting</option>
             </select>
           </div>
-          <div class="form-group" style="margin: 0;">
+          <div class="form-group margin-0">
             <label>Meeting Description</label>
             <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
                       placeholder="Brief description of meeting agenda/purpose"></textarea>
@@ -193,21 +235,21 @@
         </div>
 
         <!-- Search and Filter Section -->
-        <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
-          <div class="grid-2" style="gap: 15px;">
-            <div class="form-group" style="margin: 0;">
+        <div class="bg-edf2f7 padding-15 border-radius-8" style="margin: 20px 0;">
+          <div class="grid-2 gap-15">
+            <div class="form-group margin-0">
               <input type="text" id="memberSearch" 
-                     placeholder="Search members..." 
-                     onkeyup="filterAttendanceMembers()"
-                     style="margin: 0;">
+                placeholder="Search members..." 
+                onkeyup="filterAttendanceMembers()"
+                class="margin-0">
             </div>
-            <div style="display: flex; gap: 10px;">
-              <select id="statusFilter" onchange="filterAttendanceMembers()" style="width: auto;">
+            <div class="display-flex gap-10">
+              <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
                 <option value="all">All Status</option>
                 <option value="present">Present Only</option>
                 <option value="absent">Absent Only</option>
               </select>
-              <select id="sortBy" onchange="filterAttendanceMembers()" style="width: auto;">
+              <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
                 <option value="name">Sort by Name</option>
                 <option value="time">Sort by Time In</option>
                 <option value="status">Sort by Status</option>
@@ -217,18 +259,18 @@
         </div>
 
         <!-- Attendance Stats -->
-        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div class="bg-f7fafc padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content-between align-items-center flex-wrap gap-10">
             <div>
-              <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
-              <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
+              <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span> <!-- TODO: Add margin-right class if needed -->
+              <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span> <!-- TODO: Add margin-right class if needed -->
               <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
             </div>
             <div>
               <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
               <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
               <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
-                <span style="margin-right: 5px;">📥</span> Download Register
+                <span style="margin-right: 5px;">📥</span> Download Register <!-- TODO: Add margin-right class if needed -->
               </button>
             </div>
           </div>
@@ -383,11 +425,11 @@
 
       <div id="memberBeneficiariesTab" class="hidden">
         <h2>My Beneficiaries</h2>
-        <p style="color: #666; margin-bottom: 15px;">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
+        <p class="color-666 margin-bottom-15">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
         <button class="btn btn-success" id="addBenMemBtn" onclick="addBenMemModal()">+ Add Beneficiary</button>
         <button class="btn btn-primary hidden" id="saveBenMemBtn" onclick="saveBenMem()">Save & Lock</button>
         
-        <table style="margin-top: 20px;">
+        <table class="margin-top-20">
           <thead>
             <tr>
               <th>Name</th>
@@ -398,7 +440,7 @@
             </tr>
           </thead>
           <tbody id="memBenTableBody">
-            <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+            <tr><td colspan="5" class="text-center color-999">No beneficiaries added yet</td></tr>
           </tbody>
         </table>
       </div>
@@ -422,20 +464,20 @@
 
       <div id="signatureTab" class="hidden">
         <h2>Digital Signature</h2>
-        <p style="font-size: 13px; color: #666;">Draw your signature below:</p>
-        <canvas id="sigCanvas" width="500" height="150" style="border: 2px solid #ddd; border-radius: 8px; background: white;"></canvas>
-        <div style="margin-top: 10px;">
+        <p class="font-size-13 color-666">Draw your signature below:</p>
+        <canvas id="sigCanvas" width="500" height="150" class="border-2-ddd border-radius-8 bg-white"></canvas>
+        <div class="margin-top-10">
           <button class="btn btn-secondary" onclick="clearSig()">Clear</button>
           <button class="btn btn-success" onclick="saveSig()">Save Signature</button>
         </div>
         
         <!-- Display saved signature -->
-        <div id="savedSignaturePreview" style="margin-top: 20px; display: none;">
-          <h3 style="font-size: 16px; margin-bottom: 10px;">Saved Signature:</h3>
-          <div style="border: 2px solid #48bb78; border-radius: 8px; padding: 15px; background: #f0fff4;">
-            <img id="savedSignatureImg" src="" style="max-width: 100%; height: auto; max-height: 150px;">
+        <div id="savedSignaturePreview" class="margin-top-20 d-none">
+          <h3 class="font-size-16 margin-bottom-10">Saved Signature:</h3>
+          <div class="border-2-48bb78 border-radius-8 padding-15 bg-f0fff4">
+            <img id="savedSignatureImg" src="" class="max-width-100 max-height-150">
           </div>
-          <p style="color: #48bb78; margin-top: 10px;">✓ This signature will appear in attendance records</p>
+          <p class="color-48bb78 margin-top-10">✓ This signature will appear in attendance records</p>
         </div>
       </div>
 
