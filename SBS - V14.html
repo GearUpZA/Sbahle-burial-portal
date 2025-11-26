@@ -42,8 +42,76 @@
         .center-text { text-align: center; }
         .justify-center { justify-content: center; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #4B4FA3; min-height: 100vh; padding: 20px; }
-    .container { max-width: 1200px; margin: 0 auto; }
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      padding: 0;
+      background: linear-gradient(120deg, #2563eb 0%, #1e3a8a 100%);
+      background-attachment: fixed;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Focus login card in center with shadow */
+    #loginPage.card {
+      background: rgba(255,255,255,0.97);
+      border-radius: 18px;
+      box-shadow: 0 8px 40px 0 rgba(30,58,138,0.18), 0 1.5px 8px 0 rgba(30,58,138,0.10);
+      max-width: 400px;
+      margin: 48px auto;
+      padding: 40px 32px 32px 32px;
+      position: relative;
+      z-index: 2;
+    }
+    /* Blue accent for login tabs */
+    .tabs .tab {
+      background: #e0e7ff;
+      color: #1e3a8a;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      margin: 0 2px;
+      padding: 10px 24px;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tabs .tab.active, .tabs .tab:focus {
+      background: #2563eb;
+      color: #fff;
+    }
+    /* Subtle background overlay for depth */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(30,58,138,0.08);
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Optional: Add a subtle overlay for depth */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.07);
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Optional: Add a subtle overlay for depth */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.07);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
     .card { background: #fff; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .hidden { display: none !important; }
     
@@ -187,7 +255,6 @@
   <div id="loadingSpinner" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;display:none;background:rgba(255,255,255,0.8);padding:40px 60px;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.15);font-size:22px;">
     <span style="font-size:32px;">⏳</span> <span id="spinnerText">Loading...</span>
   </div>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
   <div class="container">
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
@@ -598,7 +665,6 @@
         <button class="tab" onclick="memberTab('contributions', event)" aria-label="Show Contributions Tab" tabindex="0">Contributions</button>
         <button class="tab" onclick="memberTab('beneficiaries', event)" aria-label="Show Beneficiaries Tab" tabindex="0">Beneficiaries</button>
         <button class="tab" onclick="memberTab('documents', event)" aria-label="Show Documents Tab" tabindex="0">Documents</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
       <div id="memberAlert"></div>
 
@@ -1267,27 +1333,7 @@
       let html = '';
       (window.members || []).forEach(m => {
         html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.id}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.name}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.email}</td>
-          <td style="display: table-cell; padding:  12px; border: 1px solid #ddd;"><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.missedPayments}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
-            <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
-            ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
-            <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
-          </td>
-        </tr>`;
-      });
-      
-      const tableElement = document.getElementById('memTable');
-      if (tableElement) {
-        tableElement.innerHTML = html;
-      }
-    }
-
-    function displayPayouts() {
-      let html = '';
+          <td style="display
       (window.payouts || []).forEach(p => {
         html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
           <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.memberName}</td>
