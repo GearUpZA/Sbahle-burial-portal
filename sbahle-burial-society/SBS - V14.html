@@ -5,46 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Sbahle Burial Society</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="sbs-init.js"></script>
-  <!-- <script src="firebase-init.js"></script> -->
+  <!-- External scripts disabled to prevent conflicts -->
+  <!-- <script src="init-attendance.js"></script> -->
+  <!-- <script src="sbs-init.js"></script> -->
   <style>
-        /* Moved from inline styles */
-        #cloudSyncStatus {
-          position: fixed;
-          top: 10px;
-          right: 10px;
-          z-index: 9999;
-          background: #e2e8f0;
-          padding: 8px 16px;
-          border-radius: 6px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-          font-size: 14px;
-          display: none;
-          align-items: center;
-          gap: 8px;
-        }
-        #loadingSpinner {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 10000;
-          display: none;
-          background: rgba(255,255,255,0.8);
-          padding: 40px 60px;
-          border-radius: 12px;
-          box-shadow: 0 2px 16px rgba(0,0,0,0.15);
-          font-size: 22px;
-        }
-        #loadingSpinner span:first-child {
-          font-size: 32px;
-        }
-        .center-text { text-align: center; }
-        .justify-center { justify-content: center; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #4B4FA3; min-height: 100vh; padding: 20px; }
+    body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
     .container { max-width: 1200px; margin: 0 auto; }
-    .card { background: #fff; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .hidden { display: none !important; }
     
     /* Tab visibility fixes - override hidden class when tabs should be visible */
@@ -88,19 +56,13 @@
     h2 { color: #333; margin: 15px 0; font-size: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
-<<<<<<< HEAD
     .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; }
     .tab.active { background: #667eea; color: white; }
-=======
-    .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; color: #222; }
-    .tab.active { background: #2B3674; color: #fff; }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .form-group { margin-bottom: 12px; }
     label { display: block; margin-bottom: 3px; color: #333; font-weight: bold; font-size: 14px; }
     input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
     input:disabled { background: #f0f0f0; }
     .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; margin-right: 5px; margin-bottom: 5px; font-size: 13px; }
-<<<<<<< HEAD
     .btn-primary { background: #667eea; color: white; }
     .btn-success { background: #48bb78; color: white; }
     .btn-danger { background: #f56565; color: white; }
@@ -120,27 +82,6 @@
     .badge-pending { background: #feebc8; color: #744210; }
     .badge-approved { background: #bee3f8; color: #2c5282; }
     .stat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
-=======
-    .btn-primary { background: #2B3674; color: #fff; }
-    .btn-success { background: #217A3B; color: #fff; }
-    .btn-danger { background: #B91C1C; color: #fff; }
-    .btn-warning { background: #B45309; color: #fff; }
-    .btn-sm { padding: 5px 10px; font-size: 12px; }
-    .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; }
-    .alert-success { background: #E6F4EA; color: #14532D; border-left: 4px solid #217A3B; }
-    .alert-error { background: #FDE2E1; color: #7F1D1D; border-left: 4px solid #B91C1C; }
-    .alert-warning { background: #FFF7E6; color: #78350F; border-left: 4px solid #B45309; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    thead { background: #2B3674; color: #fff; }
-    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
-    tbody tr:hover { background: #f7f7f7; }
-    .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block; }
-    .badge-active { background: #E6F4EA; color: #14532D; }
-    .badge-suspended { background: #FDE2E1; color: #7F1D1D; }
-    .badge-pending { background: #FFF7E6; color: #78350F; }
-    .badge-approved { background: #E0E7FF; color: #3730A3; }
-    .stat { background: linear-gradient(135deg, #2B3674 0%, #764ba2 100%); color: #fff; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .stat h3 { font-size: 12px; margin-bottom: 8px; }
     .stat .value { font-size: 24px; font-weight: bold; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
@@ -152,61 +93,24 @@
     .ben-card { background: #f7f7f7; padding: 10px; border-radius: 5px; margin-bottom: 8px; border-left: 3px solid #667eea; display: block !important; visibility: visible !important; }
     canvas { border: 1px solid #ccc; border-radius: 5px; display: block; margin-bottom: 10px; cursor: crosshair; }
     .file-input { margin-bottom: 10px; }
-<<<<<<< HEAD
     .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #667eea; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; }
     .file-label:hover { background: #cbd5e0; }
     @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } }
   </style>
 </head>
 <body>
-=======
-    .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #2B3674; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; color: #222; }
-    .file-label:hover { background: #cbd5e0; }
-    @media (max-width: 768px) {
-      .grid-2 { grid-template-columns: 1fr !important; }
-      .header { flex-direction: column !important; align-items: flex-start !important; gap: 10px; }
-      .container { padding: 5px !important; }
-      .card { padding: 10px !important; border-radius: 6px !important; }
-      h1, h2 { font-size: 18px !important; }
-      .tabs { flex-direction: column !important; gap: 2px !important; }
-      .tab, .btn { width: 100% !important; font-size: 15px !important; margin-right: 0 !important; margin-bottom: 8px !important; }
-      table, th, td { font-size: 12px !important; }
-      .form-group { margin-bottom: 8px !important; }
-      .modal-content { max-width: 98vw !important; padding: 10px !important; }
-      .file-label { font-size: 12px !important; }
-      .stat { font-size: 13px !important; }
-      .badge { font-size: 10px !important; }
-      #cloudSyncStatus, #loadingSpinner { left: 50% !important; right: auto !important; transform: translate(-50%, 0) !important; min-width: 180px !important; font-size: 13px !important; }
-    }
-  </style>
-</head>
-<body>
-  <div id="cloudSyncStatus" style="position:fixed;top:10px;right:10px;z-index:9999;background:#e2e8f0;padding:8px 16px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);font-size:14px;display:none;align-items:center;gap:8px;">
-    <span id="cloudSyncIcon">☁️</span> <span id="cloudSyncText">Syncing...</span>
-  </div>
-  <div id="loadingSpinner" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;display:none;background:rgba(255,255,255,0.8);padding:40px 60px;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.15);font-size:22px;">
-    <span style="font-size:32px;">⏳</span> <span id="spinnerText">Loading...</span>
-  </div>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
   <div class="container">
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
       <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
       <div class="tabs" style="justify-content: center;">
-<<<<<<< HEAD
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
-=======
-        <button class="tab active" onclick="showLoginForm('admin')" aria-label="Show Admin Login Form" tabindex="0">Admin</button>
-        <button class="tab" onclick="showLoginForm('member')" aria-label="Show Member Login Form" tabindex="0">Member</button>
-        <button class="tab" onclick="showLoginForm('register')" aria-label="Show Register Form" tabindex="0">Register</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
       <div id="alertMsg"></div>
 
       <div id="adminForm">
-<<<<<<< HEAD
         <h2>Admin Login</h2>
         <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin"></div>
         <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123"></div>
@@ -226,34 +130,12 @@
         <div class="form-group"><label>Phone</label><input type="text" id="regPhone"></div>
         <div class="form-group"><label>ID Number</label><input type="text" id="regId"></div>
         <button class="btn btn-success" onclick="registerMember()">Register</button>
-=======
-        <h2 id="adminLoginHeading">Admin Login</h2>
-        <div class="form-group"><label for="adminEmail">Email</label><input type="text" id="adminEmail" value="admin" aria-labelledby="adminLoginHeading adminEmailLabel"></div>
-        <div class="form-group"><label for="adminPassword">Password</label><input type="password" id="adminPassword" value="admin123" aria-labelledby="adminLoginHeading adminPasswordLabel"></div>
-        <button class="btn btn-primary" onclick="loginAdmin()" aria-label="Login as Admin" tabindex="0">Login</button>
-      </div>
-
-      <div id="memberForm" class="hidden">
-        <h2 id="memberLoginHeading">Member Login</h2>
-        <div class="form-group"><label for="memberEmail">Email</label><input type="text" id="memberEmail" value="member@test.com" aria-labelledby="memberLoginHeading memberEmailLabel"></div>
-        <button class="btn btn-primary" onclick="loginMember()" aria-label="Login as Member" tabindex="0">Login</button>
-      </div>
-
-      <div id="registerForm" class="hidden">
-        <h2 id="registerHeading">Register Member</h2>
-        <div class="form-group"><label for="regName">Name</label><input type="text" id="regName" aria-labelledby="registerHeading regNameLabel"></div>
-        <div class="form-group"><label for="regEmail">Email</label><input type="text" id="regEmail" aria-labelledby="registerHeading regEmailLabel"></div>
-        <div class="form-group"><label for="regPhone">Phone</label><input type="text" id="regPhone" aria-labelledby="registerHeading regPhoneLabel"></div>
-        <div class="form-group"><label for="regId">ID Number</label><input type="text" id="regId" aria-labelledby="registerHeading regIdLabel"></div>
-        <button class="btn btn-success" onclick="registerMember()" aria-label="Register Member" tabindex="0">Register</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
     </div>
 
     <!-- ADMIN DASHBOARD -->
     <div id="adminPage" class="card hidden">
       <div class="header">
-<<<<<<< HEAD
         <h1>Admin Dashboard</h1>
         <button class="btn btn-danger" onclick="logout()">Logout</button>
       </div>
@@ -265,19 +147,6 @@
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
-=======
-        <h1 id="adminDashboardHeading">Admin Dashboard</h1>
-        <button class="btn btn-danger" onclick="logout()" aria-label="Logout from Admin Dashboard" tabindex="0">Logout</button>
-      </div>
-      <div class="tabs">
-        <button class="tab active" onclick="adminTab('overview', event)" aria-label="Show Overview Tab" tabindex="0">Overview</button>
-        <button class="tab" onclick="adminTab('members', event)" aria-label="Show Members Tab" tabindex="0">Members</button>
-        <button class="tab" onclick="adminTab('beneficiaries', event)" aria-label="Show Beneficiaries Tab" tabindex="0">Beneficiaries</button>
-        <button class="tab" onclick="adminTab('attendance', event)" aria-label="Show Attendance Tab" tabindex="0">Attendance</button>
-        <button class="tab" onclick="adminTab('payouts', event)" aria-label="Show Payouts Tab" tabindex="0">Payouts</button>
-        <button class="tab" onclick="adminTab('penalties', event)" aria-label="Show Penalties Tab" tabindex="0">Penalties</button>
-        <button class="tab" onclick="adminTab('data', event)" aria-label="Show Data Management Tab" tabindex="0">Data Management</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
       <div id="adminAlert"></div>
 
@@ -285,13 +154,8 @@
         <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
         <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
         <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
-<<<<<<< HEAD
         <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
         <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
-=======
-        <button class="btn btn-warning" onclick="checkMissed()" aria-label="Check Missed Payments" tabindex="0">Check Missed Payments</button>
-        <button class="btn btn-warning" onclick="applyPen()" aria-label="Apply R30 Penalties" tabindex="0">Apply R30 Penalties</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
 
       <!-- Attendance Tab -->
@@ -589,16 +453,15 @@
     <!-- MEMBER DASHBOARD -->
     <div id="memberPage" class="card hidden">
       <div class="header">
-        <h1 id="memberDashboardHeading">Member Dashboard</h1>
-        <button class="btn btn-danger" onclick="logout()" aria-label="Logout from Member Dashboard" tabindex="0">Logout</button>
+        <h1>Member Dashboard</h1>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
       </div>
       <div class="tabs">
-        <button class="tab active" onclick="memberTab('profile', event)" aria-label="Show Profile Tab" tabindex="0">Profile</button>
-        <button class="tab" onclick="memberTab('signature', event)" aria-label="Show Signature Tab" tabindex="0">Signature</button>
-        <button class="tab" onclick="memberTab('contributions', event)" aria-label="Show Contributions Tab" tabindex="0">Contributions</button>
-        <button class="tab" onclick="memberTab('beneficiaries', event)" aria-label="Show Beneficiaries Tab" tabindex="0">Beneficiaries</button>
-        <button class="tab" onclick="memberTab('documents', event)" aria-label="Show Documents Tab" tabindex="0">Documents</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
+        <button class="tab active" onclick="memberTab('profile', event)">Profile</button>
+        <button class="tab" onclick="memberTab('signature', event)">Signature</button>
+        <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
+        <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
+        <button class="tab" onclick="memberTab('documents', event)">Documents</button>
       </div>
       <div id="memberAlert"></div>
 
@@ -694,20 +557,20 @@
       </div>
 
       <div id="documentsTab" class="hidden">
-        <h2 id="uploadDocsHeading">Upload Documents</h2>
+        <h2>Upload Documents</h2>
         <div class="file-input">
-          <label for="payFile">Proof of Payment (PDF/JPEG)</label>
-          <input type="file" id="payFile" accept=".pdf,.jpg,.jpeg" aria-labelledby="uploadDocsHeading payFileLabel">
+          <label>Proof of Payment (PDF/JPEG)</label>
+          <input type="file" id="payFile" accept=".pdf,.jpg,.jpeg">
         </div>
         <div class="file-input">
-          <label for="deathFile">Death Certificate (PDF/JPEG)</label>
-          <input type="file" id="deathFile" accept=".pdf,.jpg,.jpeg" aria-labelledby="uploadDocsHeading deathFileLabel">
+          <label>Death Certificate (PDF/JPEG)</label>
+          <input type="file" id="deathFile" accept=".pdf,.jpg,.jpeg">
         </div>
         <div class="file-input">
-          <label for="suppFile">Supporting Documents (PDF/JPEG)</label>
-          <input type="file" id="suppFile" accept=".pdf,.jpg,.jpeg" aria-labelledby="uploadDocsHeading suppFileLabel">
+          <label>Supporting Documents (PDF/JPEG)</label>
+          <input type="file" id="suppFile" accept=".pdf,.jpg,.jpeg">
         </div>
-        <button class="btn btn-success" onclick="saveDocs()" aria-label="Save Uploaded Documents" tabindex="0">Save Documents</button>
+        <button class="btn btn-success" onclick="saveDocs()">Save Documents</button>
       </div>
 
       <div id="signatureTab" class="hidden">
@@ -731,85 +594,13 @@
 
   <!-- MODAL -->
   <div id="modal" class="modal">
-<<<<<<< HEAD
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
-=======
-    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <span class="close" onclick="closeModal()" aria-label="Close Modal" tabindex="0">&times;</span>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       <div id="modContent"></div>
     </div>
   </div>
 
   <script>
-<<<<<<< HEAD
-=======
-            // --- Keyboard Navigation for Tabs and Modal ---
-            document.addEventListener('DOMContentLoaded', function() {
-              // Tab navigation (left/right arrows)
-              function handleTabKeydown(e) {
-                if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-                  const tabs = Array.from(e.currentTarget.parentNode.querySelectorAll('.tab'));
-                  const idx = tabs.indexOf(e.currentTarget);
-                  let nextIdx = e.key === 'ArrowRight' ? idx + 1 : idx - 1;
-                  if (nextIdx < 0) nextIdx = tabs.length - 1;
-                  if (nextIdx >= tabs.length) nextIdx = 0;
-                  tabs[nextIdx].focus();
-                  e.preventDefault();
-                }
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.currentTarget.click();
-                }
-              }
-              document.querySelectorAll('.tab').forEach(tab => {
-                tab.setAttribute('tabindex', '0');
-                tab.addEventListener('keydown', handleTabKeydown);
-              });
-
-              // Modal close with Escape key
-              document.addEventListener('keydown', function(e) {
-                const modal = document.getElementById('modal');
-                if (modal && modal.classList.contains('show') && e.key === 'Escape') {
-                  closeModal();
-                }
-              });
-
-              // Modal close button keyboard
-              const closeBtn = document.querySelector('.modal .close');
-              if (closeBtn) {
-                closeBtn.setAttribute('tabindex', '0');
-                closeBtn.addEventListener('keydown', function(e) {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    closeModal();
-                  }
-                });
-              }
-
-              // Main action buttons: Enter/Space triggers click
-              document.querySelectorAll('button, [role="button"]').forEach(btn => {
-                btn.setAttribute('tabindex', '0');
-                btn.addEventListener('keydown', function(e) {
-                  if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) {
-                    e.preventDefault();
-                    btn.click();
-                  }
-                });
-              });
-            });
-        // --- Loading Spinner ---
-        function showSpinner(msg) {
-          const el = document.getElementById('loadingSpinner');
-          const text = document.getElementById('spinnerText');
-          if (!el || !text) return;
-          text.textContent = msg || 'Loading...';
-          el.style.display = 'block';
-        }
-        function hideSpinner() {
-          const el = document.getElementById('loadingSpinner');
-          if (el) el.style.display = 'none';
-        }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     // ===== DATA STORAGE SYSTEM =====
     const STORAGE_KEY = 'sbahle_burial_society_data';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' }; // In production, hash this!
@@ -926,7 +717,6 @@
     
     // Export data to JSON file
     function exportData() {
-<<<<<<< HEAD
       try {
         const data = {
           members,
@@ -952,42 +742,10 @@
         console.error('Export error:', e);
         showAlert('adminAlert', '⚠ Failed to export data', 'error');
       }
-=======
-      showSpinner('Exporting data...');
-      setTimeout(() => {
-        try {
-          const data = {
-            members,
-            beneficiaries,
-            payouts,
-            penalties,
-            memberIdCounter,
-            exportDate: new Date().toISOString(),
-            version: '1.0'
-          };
-          const jsonStr = JSON.stringify(data, null, 2);
-          const blob = new Blob([jsonStr], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `sbahle_backup_${new Date().toISOString().split('T')[0]}.json`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          showAlert('adminAlert', '✓ Data exported successfully!', 'success');
-        } catch (e) {
-          console.error('Export error:', e);
-          showAlert('adminAlert', '⚠ Failed to export data', 'error');
-        }
-        hideSpinner();
-      }, 600);
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
     
     // Import data from JSON file
     function importData(file) {
-<<<<<<< HEAD
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
@@ -1006,30 +764,6 @@
           console.error('Import error:', err);
           showAlert('adminAlert', '⚠ Invalid data file', 'error');
         }
-=======
-      showSpinner('Importing data...');
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        setTimeout(() => {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (confirm('This will replace all current data. Are you sure?')) {
-              window.members = data.members || [];
-              window.beneficiaries = data.beneficiaries || [];
-              window.payouts = data.payouts || [];
-              window.penalties = data.penalties || [];
-              window.memberIdCounter = data.memberIdCounter || 4;
-              saveDataToStorage();
-              updateAdmin();
-              showAlert('adminAlert', '✓ Data imported successfully!', 'success');
-            }
-          } catch (err) {
-            console.error('Import error:', err);
-            showAlert('adminAlert', '⚠ Invalid data file', 'error');
-          }
-          hideSpinner();
-        }, 600);
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       };
       reader.readAsText(file);
     }
@@ -1038,17 +772,8 @@
     function clearAllData() {
       if (confirm('⚠ WARNING: This will delete ALL data permanently. Are you sure?')) {
         if (confirm('This action cannot be undone. Continue?')) {
-<<<<<<< HEAD
           localStorage.removeItem(STORAGE_KEY);
           location.reload();
-=======
-          showSpinner('Clearing all data...');
-          setTimeout(() => {
-            localStorage.removeItem(STORAGE_KEY);
-            hideSpinner();
-            location.reload();
-          }, 800);
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
         }
       }
     }
@@ -1114,20 +839,7 @@
     }
 
     function saveSig() {
-      const signature = signatureCanvas.toDataURL();
-      if (!currentUser) return;
-      
-      // Save signature to user data
-      const member = members.find(m => m.id === currentUser.id);
-      if (member) {
-        member.signature = signature;
-        saveDataToStorage();
-        showAlert('memberAlert', '✓ Signature saved successfully!', 'success');
-        
-        // Display current signature
-        document.getElementById('currentSignature').style.display = 'block';
-        document.getElementById('savedSignature').src = signature;
-      }
+      showAlert('memberAlert', '✓ Signature saved!', 'success');
     }
 
     // LOGIN
@@ -1270,7 +982,7 @@
           <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.id}</td>
           <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.name}</td>
           <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.email}</td>
-          <td style="display: table-cell; padding:  12px; border: 1px solid #ddd;"><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td>
           <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.missedPayments}</td>
           <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
             <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
@@ -1458,33 +1170,14 @@
       m.email = document.getElementById('editMEmail').value;
       m.phone = document.getElementById('editMPhone').value;
       m.status = document.getElementById('editMStatus').value;
-<<<<<<< HEAD
       saveDataToStorage(); // Auto-save
       closeModal();
       displayMem();
       showAlert('adminAlert', '✓ Updated!', 'success');
-=======
-      showSyncStatus('Updating cloud...');
-      window.firebaseUpdateMember(m)
-        .then(() => {
-          closeModal();
-          displayMem();
-          showAlert('adminAlert', '✓ Updated (cloud sync)!', 'success');
-          showSyncStatus('Cloud synced', true);
-        })
-        .catch(err => {
-          showAlert('adminAlert', 'Cloud sync failed, saving locally.', 'error');
-          saveDataToStorage();
-          closeModal();
-          displayMem();
-          showSyncStatus('Saved locally', false);
-        });
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
 
     function delMem(id) {
       if (confirm('Delete member?')) {
-<<<<<<< HEAD
         window.members = members.filter(m => m.id !== id);
         window.beneficiaries = beneficiaries.filter(b => b.memberId !== id);
         window.payouts = payouts.filter(p => p.memberId !== id);
@@ -1492,26 +1185,6 @@
         displayMem();
         updateAdmin();
         showAlert('adminAlert', '✓ Deleted!', 'success');
-=======
-        showSyncStatus('Deleting from cloud...');
-        window.firebaseDeleteMember(id)
-          .then(() => {
-            displayMem();
-            updateAdmin();
-            showAlert('adminAlert', '✓ Deleted (cloud sync)!', 'success');
-            showSyncStatus('Cloud synced', true);
-          })
-          .catch(err => {
-            showAlert('adminAlert', 'Cloud sync failed, deleting locally.', 'error');
-            window.members = members.filter(m => m.id !== id);
-            window.beneficiaries = beneficiaries.filter(b => b.memberId !== id);
-            window.payouts = payouts.filter(p => p.memberId !== id);
-            saveDataToStorage();
-            displayMem();
-            updateAdmin();
-            showSyncStatus('Deleted locally', false);
-          });
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       }
     }
 
@@ -1520,41 +1193,11 @@
       if (m) {
         m.status = 'Active';
         m.missedPayments = 0;
-<<<<<<< HEAD
         saveDataToStorage(); // Auto-save
         displayMem();
         updateAdmin();
         showAlert('adminAlert', '✓ Reactivated!', 'success');
       }
-=======
-        showSyncStatus('Reactivating in cloud...');
-        window.firebaseUpdateMember(m)
-          .then(() => {
-            displayMem();
-            updateAdmin();
-            showAlert('adminAlert', '✓ Reactivated (cloud sync)!', 'success');
-            showSyncStatus('Cloud synced', true);
-          })
-          .catch(err => {
-            showAlert('adminAlert', 'Cloud sync failed, saving locally.', 'error');
-            saveDataToStorage();
-            displayMem();
-            updateAdmin();
-            showSyncStatus('Saved locally', false);
-          });
-      }
-        // --- Cloud Sync Status Indicator ---
-        function showSyncStatus(msg, ok) {
-          const el = document.getElementById('cloudSyncStatus');
-          const icon = document.getElementById('cloudSyncIcon');
-          const text = document.getElementById('cloudSyncText');
-          if (!el || !icon || !text) return;
-          el.style.display = 'flex';
-          text.textContent = msg;
-          icon.textContent = ok === undefined ? '☁️' : (ok ? '✅' : '⚠️');
-          setTimeout(() => { el.style.display = 'none'; }, 2000);
-        }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
 
     function addBenModal() {
@@ -1566,6 +1209,7 @@
         <h2>Add Beneficiary for ${m.name}</h2>
         <div class="form-group"><label>Name</label><input type="text" id="benName"></div>
         <div class="form-group"><label>Relationship</label><select id="benRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+        <div class="form-group"><label>ID Number</label><input type="text" id="benId"></div>
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="benPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="saveBen('${memId}')">Save</button>
       `);
@@ -1717,6 +1361,7 @@
         <h2>Add Beneficiary</h2>
         <div class="form-group"><label>Name</label><input type="text" id="memBenName"></div>
         <div class="form-group"><label>Relationship</label><select id="memBenRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+        <div class="form-group"><label>ID Number</label><input type="text" id="memBenId"></div>
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="memBenPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="addMemBen()">Add</button>
       `);
@@ -1980,8 +1625,8 @@
 
       filteredMembers.forEach((member, index) => {
         const isPresent = attendance[date].present.includes(member.id);
-        const timeIn = attendance[date].timeIn[member.id] || '';
-        const remarks = attendance[date].remarks[member.id] || '';
+        const timeIn = attendance[date].timeIn?.[member.id] || '';
+        const remarks = attendance[date].remarks?.[member.id] || '';
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -2145,162 +1790,86 @@
         return;
       }
 
-      showSpinner('Syncing attendance...');
-      window.firebaseGetAttendance(date)
-        .then(attendance => {
-          hideSpinner();
-          if (!attendance) {
-            attendance = {
-              date: date,
-              time: document.getElementById('meetingTime').value || '09:00',
-              type: document.getElementById('meetingType').value || 'general',
-              description: document.getElementById('meetingDesc').value || '',
-              present: [],
-              timeIn: {},
-              remarks: {}
-            };
-          }
-          
-          // Show attendance table
-          const tbody = document.getElementById('attendanceTableBody');
-          tbody.innerHTML = '';
+      // Get or create attendance record for the date
+      if (!localStorage.getItem('attendance')) {
+        localStorage.setItem('attendance', JSON.stringify({}));
+      }
+      const attendance = JSON.parse(localStorage.getItem('attendance'));
+      
+      if (!attendance[date]) {
+        attendance[date] = {
+          date: date,
+          time: document.getElementById('meetingTime').value || '09:00',
+          type: document.getElementById('meetingType').value || 'general',
+          description: document.getElementById('meetingDesc').value || '',
+          present: [],
+          timeIn: {},
+          remarks: {}
+        };
+      }
 
-          // Sort members by name
-          const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
+      // Show attendance table
+      const tbody = document.getElementById('attendanceTableBody');
+      tbody.innerHTML = '';
 
-          sortedMembers.forEach((member, index) => {
-            const isPresent = attendance.present.includes(member.id);
-            const timeIn = attendance.timeIn?.[member.id] || '';
-            const remarks = attendance.remarks?.[member.id] || '';
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${index + 1}</td>
-              <td>${member.name}</td>
-              <td>
-                <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'}" 
-                        onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
-                        style="width: 100px;">
-                  ${isPresent ? '✓ Present' : '✗ Absent'}
-                </button>
-              </td>
-              <td>${isPresent ? 
-                `<input type="time" value="${timeIn}" 
-                        onchange="updateTimeIn('${member.id}', '${date}', this.value)">` : 
-                '-'}
-              </td>
-              <td>
-                ${isPresent ? 
-                  `<input type="text" placeholder="Add remarks" value="${remarks}"
-                          onchange="updateRemarks('${member.id}', '${date}', this.value)">` : 
-                  '-'}
-              </td>
-              <td>
-                ${member.signature ? 
-                  `<img src="${member.signature}" style="max-height: 50px;">` : 
-                  isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
-              </td>
-            `;
-            tbody.appendChild(row);
-          });
+      // Sort members by name
+      const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
 
-          // Update counts
-          const presentCount = attendance.present.length;
-          const absentCount = members.length - presentCount;
-          const attendanceRate = Math.round((presentCount / members.length) * 100);
-          
-          document.getElementById('presentCount').textContent = `Present: ${presentCount}`;
-          document.getElementById('absentCount').textContent = `Absent: ${absentCount}`;
-          document.getElementById('attendanceRate').textContent = `Attendance Rate: ${attendanceRate}%`;
+      sortedMembers.forEach((member, index) => {
+        const isPresent = attendance[date].present.includes(member.id);
+        const timeIn = attendance[date].timeIn[member.id] || '';
+        const remarks = attendance[date].remarks[member.id] || '';
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${member.name}</td>
+          <td>
+            <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'}" 
+                    onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
+                    style="width: 100px;">
+              ${isPresent ? '✓ Present' : '✗ Absent'}
+            </button>
+          </td>
+          <td>${isPresent ? 
+            `<input type="time" value="${timeIn}" 
+                    onchange="updateTimeIn('${member.id}', '${date}', this.value)">` : 
+            '-'}
+          </td>
+          <td>
+            ${isPresent ? 
+              `<input type="text" placeholder="Add remarks" value="${remarks}"
+                      onchange="updateRemarks('${member.id}', '${date}', this.value)">` : 
+              '-'}
+          </td>
+          <td>
+            ${member.signature ? 
+              `<img src="${member.signature}" style="max-height: 50px;">` : 
+              isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
+          </td>
+        </tr>`;
+        tbody.appendChild(row);
+      });
 
-          // Update meeting details fields
-          document.getElementById('meetingTime').value = attendance.time || '';
-          document.getElementById('meetingType').value = attendance.type || 'general';
-          document.getElementById('meetingDesc').value = attendance.description || '';
+      // Update counts
+      const presentCount = attendance[date].present.length;
+      const absentCount = members.length - presentCount;
+      const attendanceRate = Math.round((presentCount / members.length) * 100);
+      
+      document.getElementById('presentCount').textContent = `Present: ${presentCount}`;
+      document.getElementById('absentCount').textContent = `Absent: ${absentCount}`;
+      document.getElementById('attendanceRate').textContent = `Attendance Rate: ${attendanceRate}%`;
 
-          // Show meeting history
-          showMeetingHistory();
+      // Update meeting details fields
+      document.getElementById('meetingTime').value = attendance[date].time || '';
+      document.getElementById('meetingType').value = attendance[date].type || 'general';
+      document.getElementById('meetingDesc').value = attendance[date].description || '';
 
-          // Save data
-          localStorage.setItem('attendance', JSON.stringify(attendance));
-        })
-        .catch(err => {
-          hideSpinner();
-          showAlert('adminAlert', 'Cloud sync failed, loading local data.', 'error');
-          // fallback to local
-          const attendance = JSON.parse(localStorage.getItem('attendance'));
-          if (!attendance[date]) {
-            attendance[date] = {
-              date: date,
-              time: document.getElementById('meetingTime').value || '09:00',
-              type: document.getElementById('meetingType').value || 'general',
-              description: document.getElementById('meetingDesc').value || '',
-              present: [],
-              timeIn: {},
-              remarks: {}
-            };
-          }
+      // Show meeting history
+      showMeetingHistory();
 
-          // Show attendance table
-          const tbody = document.getElementById('attendanceTableBody');
-          tbody.innerHTML = '';
-
-          // Sort members by name
-          const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
-
-          sortedMembers.forEach((member, index) => {
-            const isPresent = attendance[date].present.includes(member.id);
-            const timeIn = attendance[date].timeIn?.[member.id] || '';
-            const remarks = attendance[date].remarks?.[member.id] || '';
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${index + 1}</td>
-              <td>${member.name}</td>
-              <td>
-                <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'}" 
-                        onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
-                        style="width: 100px;">
-                  ${isPresent ? '✓ Present' : '✗ Absent'}
-                </button>
-              </td>
-              <td>${isPresent ? 
-                `<input type="time" value="${timeIn}" 
-                        onchange="updateTimeIn('${member.id}', '${date}', this.value)">` : 
-                '-'}
-              </td>
-              <td>
-                ${isPresent ? 
-                  `<input type="text" placeholder="Add remarks" value="${remarks}"
-                          onchange="updateRemarks('${member.id}', '${date}', this.value)">` : 
-                  '-'}
-              </td>
-              <td>
-                ${member.signature ? 
-                  `<img src="${member.signature}" style="max-height: 50px;">` : 
-                  isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
-              </td>
-            `;
-            tbody.appendChild(row);
-          });
-
-          // Update counts
-          const presentCount = attendance[date].present.length;
-          const absentCount = members.length - presentCount;
-          const attendanceRate = Math.round((presentCount / members.length) * 100);
-          
-          document.getElementById('presentCount').textContent = `Present: ${presentCount}`;
-          document.getElementById('absentCount').textContent = `Absent: ${absentCount}`;
-          document.getElementById('attendanceRate').textContent = `Attendance Rate: ${attendanceRate}%`;
-
-          // Update meeting details fields
-          document.getElementById('meetingTime').value = attendance[date].time || '';
-          document.getElementById('meetingType').value = attendance[date].type || 'general';
-          document.getElementById('meetingDesc').value = attendance[date].description || '';
-
-          // Show meeting history
-          showMeetingHistory();
-        });
+      // Save data
+      localStorage.setItem('attendance', JSON.stringify(attendance));
     }
 
     function updateTimeIn(memberId, date, time) {

@@ -3,104 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Sbahle Burial Society</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="sbs-init.js"></script>
-  <!-- <script src="firebase-init.js"></script> -->
+  <title>Sbahle Burial Society</title>
   <style>
-        /* Moved from inline styles */
-        #cloudSyncStatus {
-          position: fixed;
-          top: 10px;
-          right: 10px;
-          z-index: 9999;
-          background: #e2e8f0;
-          padding: 8px 16px;
-          border-radius: 6px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-          font-size: 14px;
-          display: none;
-          align-items: center;
-          gap: 8px;
-        }
-        #loadingSpinner {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 10000;
-          display: none;
-          background: rgba(255,255,255,0.8);
-          padding: 40px 60px;
-          border-radius: 12px;
-          box-shadow: 0 2px 16px rgba(0,0,0,0.15);
-          font-size: 22px;
-        }
-        #loadingSpinner span:first-child {
-          font-size: 32px;
-        }
-        .center-text { text-align: center; }
-        .justify-center { justify-content: center; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #4B4FA3; min-height: 100vh; padding: 20px; }
+    body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
     .container { max-width: 1200px; margin: 0 auto; }
-    .card { background: #fff; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .hidden { display: none !important; }
-    
-    /* Tab visibility fixes - override hidden class when tabs should be visible */
-    #membersTab:not(.hidden), #beneficiariesTab:not(.hidden), #payoutsTab:not(.hidden), #penaltiesTab:not(.hidden) {
-      display: block !important;
-      min-height: 500px !important;
-      padding: 20px !important;
-      background: white !important;
-      border: 1px solid #ddd !important;
-      margin-top: 10px !important;
-      overflow: visible !important;
-    }
-    
-    /* Force table layout */
-    #membersTab table, #beneficiariesTab table, #payoutsTab table, #penaltiesTab table {
-      display: table !important;
-      width: 100% !important;
-      table-layout: fixed !important;
-      border-collapse: collapse !important;
-    }
-    
-    #membersTab tbody, #beneficiariesTab tbody, #payoutsTab tbody, #penaltiesTab tbody {
-      display: table-row-group !important;
-    }
-    
-    #membersTab tr, #beneficiariesTab tr, #payoutsTab tr, #penaltiesTab tr {
-      display: table-row !important;
-      height: 45px !important;
-      border-bottom: 1px solid #ddd !important;
-    }
-    
-    #membersTab td, #beneficiariesTab td, #payoutsTab td, #penaltiesTab td,
-    #membersTab th, #beneficiariesTab th, #payoutsTab th, #penaltiesTab th {
-      display: table-cell !important;
-      padding: 12px 8px !important;
-      vertical-align: middle !important;
-      border: 1px solid #ddd !important;
-      background: white !important;
-    }
     h1 { color: #333; margin-bottom: 20px; }
     h2 { color: #333; margin: 15px 0; font-size: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
-<<<<<<< HEAD
     .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; }
     .tab.active { background: #667eea; color: white; }
-=======
-    .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; color: #222; }
-    .tab.active { background: #2B3674; color: #fff; }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .form-group { margin-bottom: 12px; }
     label { display: block; margin-bottom: 3px; color: #333; font-weight: bold; font-size: 14px; }
     input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
     input:disabled { background: #f0f0f0; }
     .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; margin-right: 5px; margin-bottom: 5px; font-size: 13px; }
-<<<<<<< HEAD
     .btn-primary { background: #667eea; color: white; }
     .btn-success { background: #48bb78; color: white; }
     .btn-danger { background: #f56565; color: white; }
@@ -120,27 +40,6 @@
     .badge-pending { background: #feebc8; color: #744210; }
     .badge-approved { background: #bee3f8; color: #2c5282; }
     .stat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
-=======
-    .btn-primary { background: #2B3674; color: #fff; }
-    .btn-success { background: #217A3B; color: #fff; }
-    .btn-danger { background: #B91C1C; color: #fff; }
-    .btn-warning { background: #B45309; color: #fff; }
-    .btn-sm { padding: 5px 10px; font-size: 12px; }
-    .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; }
-    .alert-success { background: #E6F4EA; color: #14532D; border-left: 4px solid #217A3B; }
-    .alert-error { background: #FDE2E1; color: #7F1D1D; border-left: 4px solid #B91C1C; }
-    .alert-warning { background: #FFF7E6; color: #78350F; border-left: 4px solid #B45309; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    thead { background: #2B3674; color: #fff; }
-    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
-    tbody tr:hover { background: #f7f7f7; }
-    .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block; }
-    .badge-active { background: #E6F4EA; color: #14532D; }
-    .badge-suspended { background: #FDE2E1; color: #7F1D1D; }
-    .badge-pending { background: #FFF7E6; color: #78350F; }
-    .badge-approved { background: #E0E7FF; color: #3730A3; }
-    .stat { background: linear-gradient(135deg, #2B3674 0%, #764ba2 100%); color: #fff; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .stat h3 { font-size: 12px; margin-bottom: 8px; }
     .stat .value { font-size: 24px; font-weight: bold; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
@@ -152,61 +51,24 @@
     .ben-card { background: #f7f7f7; padding: 10px; border-radius: 5px; margin-bottom: 8px; border-left: 3px solid #667eea; display: block !important; visibility: visible !important; }
     canvas { border: 1px solid #ccc; border-radius: 5px; display: block; margin-bottom: 10px; cursor: crosshair; }
     .file-input { margin-bottom: 10px; }
-<<<<<<< HEAD
     .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #667eea; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; }
     .file-label:hover { background: #cbd5e0; }
     @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } }
   </style>
 </head>
 <body>
-=======
-    .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #2B3674; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; color: #222; }
-    .file-label:hover { background: #cbd5e0; }
-    @media (max-width: 768px) {
-      .grid-2 { grid-template-columns: 1fr !important; }
-      .header { flex-direction: column !important; align-items: flex-start !important; gap: 10px; }
-      .container { padding: 5px !important; }
-      .card { padding: 10px !important; border-radius: 6px !important; }
-      h1, h2 { font-size: 18px !important; }
-      .tabs { flex-direction: column !important; gap: 2px !important; }
-      .tab, .btn { width: 100% !important; font-size: 15px !important; margin-right: 0 !important; margin-bottom: 8px !important; }
-      table, th, td { font-size: 12px !important; }
-      .form-group { margin-bottom: 8px !important; }
-      .modal-content { max-width: 98vw !important; padding: 10px !important; }
-      .file-label { font-size: 12px !important; }
-      .stat { font-size: 13px !important; }
-      .badge { font-size: 10px !important; }
-      #cloudSyncStatus, #loadingSpinner { left: 50% !important; right: auto !important; transform: translate(-50%, 0) !important; min-width: 180px !important; font-size: 13px !important; }
-    }
-  </style>
-</head>
-<body>
-  <div id="cloudSyncStatus" style="position:fixed;top:10px;right:10px;z-index:9999;background:#e2e8f0;padding:8px 16px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);font-size:14px;display:none;align-items:center;gap:8px;">
-    <span id="cloudSyncIcon">☁️</span> <span id="cloudSyncText">Syncing...</span>
-  </div>
-  <div id="loadingSpinner" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;display:none;background:rgba(255,255,255,0.8);padding:40px 60px;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.15);font-size:22px;">
-    <span style="font-size:32px;">⏳</span> <span id="spinnerText">Loading...</span>
-  </div>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
   <div class="container">
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
       <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
       <div class="tabs" style="justify-content: center;">
-<<<<<<< HEAD
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
-=======
-        <button class="tab active" onclick="showLoginForm('admin')" aria-label="Show Admin Login Form" tabindex="0">Admin</button>
-        <button class="tab" onclick="showLoginForm('member')" aria-label="Show Member Login Form" tabindex="0">Member</button>
-        <button class="tab" onclick="showLoginForm('register')" aria-label="Show Register Form" tabindex="0">Register</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
       <div id="alertMsg"></div>
 
       <div id="adminForm">
-<<<<<<< HEAD
         <h2>Admin Login</h2>
         <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin"></div>
         <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123"></div>
@@ -226,34 +88,12 @@
         <div class="form-group"><label>Phone</label><input type="text" id="regPhone"></div>
         <div class="form-group"><label>ID Number</label><input type="text" id="regId"></div>
         <button class="btn btn-success" onclick="registerMember()">Register</button>
-=======
-        <h2 id="adminLoginHeading">Admin Login</h2>
-        <div class="form-group"><label for="adminEmail">Email</label><input type="text" id="adminEmail" value="admin" aria-labelledby="adminLoginHeading adminEmailLabel"></div>
-        <div class="form-group"><label for="adminPassword">Password</label><input type="password" id="adminPassword" value="admin123" aria-labelledby="adminLoginHeading adminPasswordLabel"></div>
-        <button class="btn btn-primary" onclick="loginAdmin()" aria-label="Login as Admin" tabindex="0">Login</button>
-      </div>
-
-      <div id="memberForm" class="hidden">
-        <h2 id="memberLoginHeading">Member Login</h2>
-        <div class="form-group"><label for="memberEmail">Email</label><input type="text" id="memberEmail" value="member@test.com" aria-labelledby="memberLoginHeading memberEmailLabel"></div>
-        <button class="btn btn-primary" onclick="loginMember()" aria-label="Login as Member" tabindex="0">Login</button>
-      </div>
-
-      <div id="registerForm" class="hidden">
-        <h2 id="registerHeading">Register Member</h2>
-        <div class="form-group"><label for="regName">Name</label><input type="text" id="regName" aria-labelledby="registerHeading regNameLabel"></div>
-        <div class="form-group"><label for="regEmail">Email</label><input type="text" id="regEmail" aria-labelledby="registerHeading regEmailLabel"></div>
-        <div class="form-group"><label for="regPhone">Phone</label><input type="text" id="regPhone" aria-labelledby="registerHeading regPhoneLabel"></div>
-        <div class="form-group"><label for="regId">ID Number</label><input type="text" id="regId" aria-labelledby="registerHeading regIdLabel"></div>
-        <button class="btn btn-success" onclick="registerMember()" aria-label="Register Member" tabindex="0">Register</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
     </div>
 
     <!-- ADMIN DASHBOARD -->
     <div id="adminPage" class="card hidden">
       <div class="header">
-<<<<<<< HEAD
         <h1>Admin Dashboard</h1>
         <button class="btn btn-danger" onclick="logout()">Logout</button>
       </div>
@@ -265,19 +105,6 @@
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
-=======
-        <h1 id="adminDashboardHeading">Admin Dashboard</h1>
-        <button class="btn btn-danger" onclick="logout()" aria-label="Logout from Admin Dashboard" tabindex="0">Logout</button>
-      </div>
-      <div class="tabs">
-        <button class="tab active" onclick="adminTab('overview', event)" aria-label="Show Overview Tab" tabindex="0">Overview</button>
-        <button class="tab" onclick="adminTab('members', event)" aria-label="Show Members Tab" tabindex="0">Members</button>
-        <button class="tab" onclick="adminTab('beneficiaries', event)" aria-label="Show Beneficiaries Tab" tabindex="0">Beneficiaries</button>
-        <button class="tab" onclick="adminTab('attendance', event)" aria-label="Show Attendance Tab" tabindex="0">Attendance</button>
-        <button class="tab" onclick="adminTab('payouts', event)" aria-label="Show Payouts Tab" tabindex="0">Payouts</button>
-        <button class="tab" onclick="adminTab('penalties', event)" aria-label="Show Penalties Tab" tabindex="0">Penalties</button>
-        <button class="tab" onclick="adminTab('data', event)" aria-label="Show Data Management Tab" tabindex="0">Data Management</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
       <div id="adminAlert"></div>
 
@@ -285,133 +112,20 @@
         <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
         <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
         <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
-<<<<<<< HEAD
         <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
         <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
-=======
-        <button class="btn btn-warning" onclick="checkMissed()" aria-label="Check Missed Payments" tabindex="0">Check Missed Payments</button>
-        <button class="btn btn-warning" onclick="applyPen()" aria-label="Apply R30 Penalties" tabindex="0">Apply R30 Penalties</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
 
-      <!-- Attendance Tab -->
-      <div id="attendanceTab" class="hidden">
-        <h2>Meeting Attendance</h2>
-          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
-            <p style="margin-top: 10px; color: #4a5568;">Track attendance, manage meetings, and generate reports</p>
-          </div>
-
-          <!-- Meeting Details Section -->
-          <div class="grid-2" style="gap: 15px;">
-            <div class="form-group" style="margin: 0;">
-              <label>Meeting Date</label>
-              <input type="date" id="meetingDate" onchange="showAttendanceList()">
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label>Meeting Time</label>
-              <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
-            </div>
-          </div>
-        
-          <div class="grid-2" style="gap: 15px; margin-top: 15px;">
-            <div class="form-group" style="margin: 0;">
-              <label>Meeting Type</label>
-              <select id="meetingType" onchange="updateMeetingDetails()">
-                <option value="general">General Meeting</option>
-                <option value="committee">Committee Meeting</option>
-                <option value="special">Special Meeting</option>
-                <option value="emergency">Emergency Meeting</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label>Meeting Description</label>
-              <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
-                        placeholder="Brief description of meeting agenda/purpose"></textarea>
-            </div>
-          </div>
-
-          <!-- Search and Filter Section -->
-          <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <div class="grid-2" style="gap: 15px;">
-              <div class="form-group" style="margin: 0;">
-                <input type="text" id="memberSearch" 
-                       placeholder="Search members..." 
-                       onkeyup="filterMembers()"
-                       style="margin: 0;">
-              </div>
-              <div style="display: flex; gap: 10px;">
-                <select id="statusFilter" onchange="filterMembers()" style="width: auto;">
-                  <option value="all">All Status</option>
-                  <option value="present">Present Only</option>
-                  <option value="absent">Absent Only</option>
-                  <option value="nosig">No Signature</option>
-                </select>
-                <select id="sortBy" onchange="filterMembers()" style="width: auto;">
-                  <option value="name">Sort by Name</option>
-                  <option value="time">Sort by Time In</option>
-                  <option value="status">Sort by Status</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Attendance Stats -->
-          <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
-                <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
-                <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
-              </div>
-              <div>
-                <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
-                <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
-                <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
-                  <span style="margin-right: 5px;">📥</span> Download Register
-                </button>
-              </div>
-            </div>
-        </div>
-
-        <!-- Attendance List -->
-        <div class="table-container" style="margin-top: 20px;">
-          <table class="table" style="width: 100%;">
-            <thead>
-              <tr>
-                <th>Member Name</th>
-                <th>Status</th>
-                  <th>Time</th>
-                  <th>Signature</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="attendanceList">
-            </tbody>
-          </table>
-      </div>
-
-      <div id="membersTab" class="hidden" style="min-height: 400px;">
+      <div id="membersTab" class="hidden">
         <h2>Members</h2>
         <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
-        <div style="overflow-x: auto; margin-top: 20px; min-height: 300px;">
-          <table style="width: 100%; border-collapse: collapse; display: table; background: white;">
-            <thead style="display: table-header-group; background: #667eea; color: white;">
-              <tr style="display: table-row;">
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">ID</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Name</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Email</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Missed</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="memTable" style="display: table-row-group; background: white;"></tbody>
-          </table>
-        </div>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
       </div>
 
-      <div id="beneficiariesTab" class="hidden" style="min-height: 400px;">
+      <div id="beneficiariesTab" class="hidden">
         <h2>Beneficiaries</h2>
         <div class="form-group">
           <label>Select Member</label>
@@ -420,59 +134,98 @@
           </select>
         </div>
         <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
-        <div style="overflow-x: auto; margin-top: 20px;">
-          <table id="benTable" style="width: 100%; border-collapse: collapse; display: table;">
-            <thead style="display: table-header-group; background: #667eea; color: white;">
-              <tr style="display: table-row;">
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Name</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Relationship</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">ID</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">%</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="benTableBody" style="display: table-row-group;"></tbody>
-          </table>
-        </div>
+        <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
       </div>
 
-      <div id="payoutsTab" class="hidden" style="min-height: 400px;">
+      <div id="payoutsTab" class="hidden">
         <h2>Payouts</h2>
-        <div style="overflow-x: auto; margin-top: 20px;">
-          <table style="width: 100%; border-collapse: collapse; display: table;">
-            <thead style="display: table-header-group; background: #667eea; color: white;">
-              <tr style="display: table-row;">
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Member</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Amount</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Reason</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="payTable" style="display: table-row-group;"></tbody>
-          </table>
-        </div>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="payTable"></tbody>
+        </table>
       </div>
 
-      <div id="penaltiesTab" class="hidden" style="min-height: 400px;">
+      <div id="penaltiesTab" class="hidden">
         <h2>Penalties</h2>
-        <div style="overflow-x: auto; margin-top: 20px;">
-          <table style="width: 100%; border-collapse: collapse; display: table;">
-            <thead style="display: table-header-group; background: #667eea; color: white;">
-              <tr style="display: table-row;">
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Member</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Amount</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Date</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="penTable" style="display: table-row-group;"></tbody>
-          </table>
-        </div>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
       </div>
 
-        <div id="dataTab" class="hidden">
+      <div id="attendanceTab" class="hidden">
+        <h2>Attendance Register</h2>
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+        </div>
+        
+        <!-- Meeting Details Section -->
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group">
+            <label>Meeting Time</label>
+            <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Meeting Type</label>
+          <select id="meetingType" onchange="updateMeetingDetails()">
+            <option value="general">General Meeting</option>
+            <option value="committee">Committee Meeting</option>
+            <option value="special">Special Meeting</option>
+            <option value="emergency">Emergency Meeting</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Meeting Description</label>
+          <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+                    placeholder="Brief description of meeting agenda/purpose"></textarea>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <div class="grid-2" style="gap: 15px;">
+            <div class="form-group" style="margin: 0;">
+              <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterMembers()"
+                     style="margin: 0;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <select id="statusFilter" onchange="filterMembers()" style="width: auto;">
+                <option value="all">All Status</option>
+                <option value="present">Present Only</option>
+                <option value="absent">Absent Only</option>
+                <option value="nosig">No Signature</option>
+              </select>
+              <select id="sortBy" onchange="filterMembers()" style="width: auto;">
+                <option value="name">Sort by Name</option>
+                <option value="time">Sort by Time In</option>
+                <option value="status">Sort by Status</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Stats -->
+        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div>
+              <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
+              <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+            </div>
+            <div>
+              <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+              <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+              <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+                <span style="margin-right: 5px;">📥</span> Download Register
+              </button>
+            </div>
+          </div>
           
           <!-- Location and Device Info -->
           <div style="display: flex; gap: 10px; font-size: 12px; color: #666;">
@@ -589,16 +342,15 @@
     <!-- MEMBER DASHBOARD -->
     <div id="memberPage" class="card hidden">
       <div class="header">
-        <h1 id="memberDashboardHeading">Member Dashboard</h1>
-        <button class="btn btn-danger" onclick="logout()" aria-label="Logout from Member Dashboard" tabindex="0">Logout</button>
+        <h1>Member Dashboard</h1>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
       </div>
       <div class="tabs">
-        <button class="tab active" onclick="memberTab('profile', event)" aria-label="Show Profile Tab" tabindex="0">Profile</button>
-        <button class="tab" onclick="memberTab('signature', event)" aria-label="Show Signature Tab" tabindex="0">Signature</button>
-        <button class="tab" onclick="memberTab('contributions', event)" aria-label="Show Contributions Tab" tabindex="0">Contributions</button>
-        <button class="tab" onclick="memberTab('beneficiaries', event)" aria-label="Show Beneficiaries Tab" tabindex="0">Beneficiaries</button>
-        <button class="tab" onclick="memberTab('documents', event)" aria-label="Show Documents Tab" tabindex="0">Documents</button>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
+        <button class="tab active" onclick="memberTab('profile', event)">Profile</button>
+        <button class="tab" onclick="memberTab('signature', event)">Signature</button>
+        <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
+        <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
+        <button class="tab" onclick="memberTab('documents', event)">Documents</button>
       </div>
       <div id="memberAlert"></div>
 
@@ -694,20 +446,20 @@
       </div>
 
       <div id="documentsTab" class="hidden">
-        <h2 id="uploadDocsHeading">Upload Documents</h2>
+        <h2>Upload Documents</h2>
         <div class="file-input">
-          <label for="payFile">Proof of Payment (PDF/JPEG)</label>
-          <input type="file" id="payFile" accept=".pdf,.jpg,.jpeg" aria-labelledby="uploadDocsHeading payFileLabel">
+          <label>Proof of Payment (PDF/JPEG)</label>
+          <input type="file" id="payFile" accept=".pdf,.jpg,.jpeg">
         </div>
         <div class="file-input">
-          <label for="deathFile">Death Certificate (PDF/JPEG)</label>
-          <input type="file" id="deathFile" accept=".pdf,.jpg,.jpeg" aria-labelledby="uploadDocsHeading deathFileLabel">
+          <label>Death Certificate (PDF/JPEG)</label>
+          <input type="file" id="deathFile" accept=".pdf,.jpg,.jpeg">
         </div>
         <div class="file-input">
-          <label for="suppFile">Supporting Documents (PDF/JPEG)</label>
-          <input type="file" id="suppFile" accept=".pdf,.jpg,.jpeg" aria-labelledby="uploadDocsHeading suppFileLabel">
+          <label>Supporting Documents (PDF/JPEG)</label>
+          <input type="file" id="suppFile" accept=".pdf,.jpg,.jpeg">
         </div>
-        <button class="btn btn-success" onclick="saveDocs()" aria-label="Save Uploaded Documents" tabindex="0">Save Documents</button>
+        <button class="btn btn-success" onclick="saveDocs()">Save Documents</button>
       </div>
 
       <div id="signatureTab" class="hidden">
@@ -731,128 +483,16 @@
 
   <!-- MODAL -->
   <div id="modal" class="modal">
-<<<<<<< HEAD
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
-=======
-    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <span class="close" onclick="closeModal()" aria-label="Close Modal" tabindex="0">&times;</span>
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       <div id="modContent"></div>
     </div>
   </div>
 
   <script>
-<<<<<<< HEAD
-=======
-            // --- Keyboard Navigation for Tabs and Modal ---
-            document.addEventListener('DOMContentLoaded', function() {
-              // Tab navigation (left/right arrows)
-              function handleTabKeydown(e) {
-                if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-                  const tabs = Array.from(e.currentTarget.parentNode.querySelectorAll('.tab'));
-                  const idx = tabs.indexOf(e.currentTarget);
-                  let nextIdx = e.key === 'ArrowRight' ? idx + 1 : idx - 1;
-                  if (nextIdx < 0) nextIdx = tabs.length - 1;
-                  if (nextIdx >= tabs.length) nextIdx = 0;
-                  tabs[nextIdx].focus();
-                  e.preventDefault();
-                }
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.currentTarget.click();
-                }
-              }
-              document.querySelectorAll('.tab').forEach(tab => {
-                tab.setAttribute('tabindex', '0');
-                tab.addEventListener('keydown', handleTabKeydown);
-              });
-
-              // Modal close with Escape key
-              document.addEventListener('keydown', function(e) {
-                const modal = document.getElementById('modal');
-                if (modal && modal.classList.contains('show') && e.key === 'Escape') {
-                  closeModal();
-                }
-              });
-
-              // Modal close button keyboard
-              const closeBtn = document.querySelector('.modal .close');
-              if (closeBtn) {
-                closeBtn.setAttribute('tabindex', '0');
-                closeBtn.addEventListener('keydown', function(e) {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    closeModal();
-                  }
-                });
-              }
-
-              // Main action buttons: Enter/Space triggers click
-              document.querySelectorAll('button, [role="button"]').forEach(btn => {
-                btn.setAttribute('tabindex', '0');
-                btn.addEventListener('keydown', function(e) {
-                  if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) {
-                    e.preventDefault();
-                    btn.click();
-                  }
-                });
-              });
-            });
-        // --- Loading Spinner ---
-        function showSpinner(msg) {
-          const el = document.getElementById('loadingSpinner');
-          const text = document.getElementById('spinnerText');
-          if (!el || !text) return;
-          text.textContent = msg || 'Loading...';
-          el.style.display = 'block';
-        }
-        function hideSpinner() {
-          const el = document.getElementById('loadingSpinner');
-          if (el) el.style.display = 'none';
-        }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     // ===== DATA STORAGE SYSTEM =====
     const STORAGE_KEY = 'sbahle_burial_society_data';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' }; // In production, hash this!
-    
-    // Global variables
-    window.members = [];
-    window.currentUser = null;
-    
-    // Initialize demo data
-    function initializeDemoData() {
-      // Initialize demo members if not exists
-      if (!localStorage.getItem('members')) {
-        const demoMembers = [
-          { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
-          { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
-          { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', phone: '0741234567', idNum: '7812345678901', status: 'Suspended', missedPayments: 3 }
-        ];
-        localStorage.setItem('members', JSON.stringify(demoMembers));
-      }
-      
-      // Load members from localStorage
-      window.members = JSON.parse(localStorage.getItem('members')) || [];
-      
-      // Initialize other data arrays
-      window.beneficiaries = [
-        { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
-        { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 }
-      ];
-      window.payouts = [
-        { id: 'PO1', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 5000, reason: 'Funeral', status: 'Pending' }
-      ];
-      window.penalties = [
-        { id: 'PEN1', memberId: 'MEM002', memberName: 'Nomsa Dlamini', amount: 30, date: '2025-03-10', status: 'Pending' }
-      ];
-      window.tempBeneficiaries = [];
-      window.isDrawing = false;
-      window.memberIdCounter = 4;
-      
-      // Initialize attendance storage
-      if (!localStorage.getItem('attendance')) {
-        localStorage.setItem('attendance', JSON.stringify({}));
-      }
-    }
     
     // Simple encryption/decryption (for basic security - use proper encryption in production)
     function encryptData(data) {
@@ -879,11 +519,11 @@
     function saveDataToStorage() {
       try {
         const data = {
-          members: window.members || [],
-          beneficiaries: window.beneficiaries || [],
-          payouts: window.payouts || [],
-          penalties: window.penalties || [],
-          memberIdCounter: window.memberIdCounter || 4,
+          members,
+          beneficiaries,
+          payouts,
+          penalties,
+          memberIdCounter,
           lastSaved: new Date().toISOString()
         };
         const encrypted = encryptData(data);
@@ -904,29 +544,25 @@
         if (encrypted) {
           const data = decryptData(encrypted);
           if (data) {
-            window.members = data.members || [];
-            window.beneficiaries = data.beneficiaries || [];
-            window.payouts = data.payouts || [];
-            window.penalties = data.penalties || [];
-            window.memberIdCounter = data.memberIdCounter || 4;
+            members = data.members || [];
+            beneficiaries = data.beneficiaries || [];
+            payouts = data.payouts || [];
+            penalties = data.penalties || [];
+            memberIdCounter = data.memberIdCounter || 4;
             console.log('✓ Data loaded from storage. Last saved:', data.lastSaved);
             return true;
           }
         }
-        console.log('No saved data found, initializing demo data');
-        initializeDemoData();
+        console.log('No saved data found, using default data');
         return false;
       } catch (e) {
         console.error('Failed to load data:', e);
-        console.log('Error loading data, initializing demo data');
-        initializeDemoData();
         return false;
       }
     }
     
     // Export data to JSON file
     function exportData() {
-<<<<<<< HEAD
       try {
         const data = {
           members,
@@ -952,52 +588,20 @@
         console.error('Export error:', e);
         showAlert('adminAlert', '⚠ Failed to export data', 'error');
       }
-=======
-      showSpinner('Exporting data...');
-      setTimeout(() => {
-        try {
-          const data = {
-            members,
-            beneficiaries,
-            payouts,
-            penalties,
-            memberIdCounter,
-            exportDate: new Date().toISOString(),
-            version: '1.0'
-          };
-          const jsonStr = JSON.stringify(data, null, 2);
-          const blob = new Blob([jsonStr], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `sbahle_backup_${new Date().toISOString().split('T')[0]}.json`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          showAlert('adminAlert', '✓ Data exported successfully!', 'success');
-        } catch (e) {
-          console.error('Export error:', e);
-          showAlert('adminAlert', '⚠ Failed to export data', 'error');
-        }
-        hideSpinner();
-      }, 600);
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
     
     // Import data from JSON file
     function importData(file) {
-<<<<<<< HEAD
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
           const data = JSON.parse(e.target.result);
           if (confirm('This will replace all current data. Are you sure?')) {
-            window.members = data.members || [];
-            window.beneficiaries = data.beneficiaries || [];
-            window.payouts = data.payouts || [];
-            window.penalties = data.penalties || [];
-            window.memberIdCounter = data.memberIdCounter || 4;
+            members = data.members || [];
+            beneficiaries = data.beneficiaries || [];
+            payouts = data.payouts || [];
+            penalties = data.penalties || [];
+            memberIdCounter = data.memberIdCounter || 4;
             saveDataToStorage();
             updateAdmin();
             showAlert('adminAlert', '✓ Data imported successfully!', 'success');
@@ -1006,30 +610,6 @@
           console.error('Import error:', err);
           showAlert('adminAlert', '⚠ Invalid data file', 'error');
         }
-=======
-      showSpinner('Importing data...');
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        setTimeout(() => {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (confirm('This will replace all current data. Are you sure?')) {
-              window.members = data.members || [];
-              window.beneficiaries = data.beneficiaries || [];
-              window.payouts = data.payouts || [];
-              window.penalties = data.penalties || [];
-              window.memberIdCounter = data.memberIdCounter || 4;
-              saveDataToStorage();
-              updateAdmin();
-              showAlert('adminAlert', '✓ Data imported successfully!', 'success');
-            }
-          } catch (err) {
-            console.error('Import error:', err);
-            showAlert('adminAlert', '⚠ Invalid data file', 'error');
-          }
-          hideSpinner();
-        }, 600);
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       };
       reader.readAsText(file);
     }
@@ -1038,29 +618,38 @@
     function clearAllData() {
       if (confirm('⚠ WARNING: This will delete ALL data permanently. Are you sure?')) {
         if (confirm('This action cannot be undone. Continue?')) {
-<<<<<<< HEAD
           localStorage.removeItem(STORAGE_KEY);
           location.reload();
-=======
-          showSpinner('Clearing all data...');
-          setTimeout(() => {
-            localStorage.removeItem(STORAGE_KEY);
-            hideSpinner();
-            location.reload();
-          }, 800);
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
         }
       }
     }
     
-    // Initialize data immediately and also on page load
-    initializeDemoData();
+    // Default/initial data
+    let members = [
+      { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
+      { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
+      { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', phone: '0741234567', idNum: '7812345678901', status: 'Suspended', missedPayments: 3 }
+    ];
+    let beneficiaries = [
+      { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
+      { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 }
+    ];
+    let payouts = [
+      { id: 'PO1', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 5000, reason: 'Funeral', status: 'Pending' }
+    ];
+    let penalties = [
+      { id: 'PEN1', memberId: 'MEM002', memberName: 'Nomsa Dlamini', amount: 30, date: '2025-03-10', status: 'Pending' }
+    ];
+    let currentUser = null;
+    let tempBeneficiaries = [];
+    let isDrawing = false;
+    let memberIdCounter = 4; // Start from 4 since we have MEM001, MEM002, MEM003
     
+    // Load saved data on page load
+    loadDataFromStorage();
+
     // CANVAS
     window.addEventListener('load', function() {
-      // Initialize demo data first
-      initializeDemoData();
-      
       const canvas = document.getElementById('sigCanvas');
       if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -1114,20 +703,7 @@
     }
 
     function saveSig() {
-      const signature = signatureCanvas.toDataURL();
-      if (!currentUser) return;
-      
-      // Save signature to user data
-      const member = members.find(m => m.id === currentUser.id);
-      if (member) {
-        member.signature = signature;
-        saveDataToStorage();
-        showAlert('memberAlert', '✓ Signature saved successfully!', 'success');
-        
-        // Display current signature
-        document.getElementById('currentSignature').style.display = 'block';
-        document.getElementById('savedSignature').src = signature;
-      }
+      showAlert('memberAlert', '✓ Signature saved!', 'success');
     }
 
     // LOGIN
@@ -1148,13 +724,13 @@
     }
 
     function loginMember() {
-      const m = (window.members || []).find(x => x.email === document.getElementById('memberEmail').value);
+      const m = members.find(x => x.email === document.getElementById('memberEmail').value);
       if (m) {
-        window.currentUser = m;
+        currentUser = m;
         // Load beneficiaries for this member from the main beneficiaries array
-        window.tempBeneficiaries = JSON.parse(JSON.stringify((window.beneficiaries || []).filter(b => b.memberId === m.id)));
+        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === m.id)));
         console.log('Member logged in:', m.id);
-        console.log('Filtered beneficiaries:', window.tempBeneficiaries);
+        console.log('Filtered beneficiaries:', tempBeneficiaries);
         show('memberPage');
         updateMember();
       } else alert('Not found');
@@ -1186,34 +762,26 @@
     }
 
     function adminTab(t, e) {
-      // Hide all tabs
       document.getElementById('overviewTab').classList.toggle('hidden', t !== 'overview');
       document.getElementById('membersTab').classList.toggle('hidden', t !== 'members');
       document.getElementById('beneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
-      document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
       document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
       document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
-      
-      // Update active tab button
       document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
-      
-      // Load content for active tab
-      if (t === 'overview') { updateAdmin(); }
       if (t === 'members') { displayMem(); }
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
-      if (t === 'attendance') { showAttendanceList(); }
-      if (t === 'payouts') { displayPayouts(); }
-      if (t === 'penalties') { displayPenalties(); }
+      if (t === 'payouts') displayPayouts();
+      if (t === 'penalties') displayPenalties();
       if (t === 'data') { updateStorageInfo(); }
     }
     
     function updateStorageInfo() {
-      document.getElementById('storageMembers').textContent = window.members ? window.members.length : 0;
-      document.getElementById('storageBeneficiaries').textContent = window.beneficiaries ? window.beneficiaries.length : 0;
-      document.getElementById('storagPayouts').textContent = window.payouts ? window.payouts.length : 0;
-      document.getElementById('storagePenalties').textContent = window.penalties ? window.penalties.length : 0;
+      document.getElementById('storageMembers').textContent = members.length;
+      document.getElementById('storageBeneficiaries').textContent = beneficiaries.length;
+      document.getElementById('storagePayouts').textContent = payouts.length;
+      document.getElementById('storagePenalties').textContent = penalties.length;
     }
 
     function memberTab(t, e) {
@@ -1225,11 +793,9 @@
       document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
-      if (t === 'profile') { updateMember(); }
-      if (t === 'contributions') { /* Contributions tab - static content */ }
       if (t === 'beneficiaries') {
         // Refresh tempBeneficiaries from the main beneficiaries array
-        window.tempBeneficiaries = JSON.parse(JSON.stringify((window.beneficiaries || []).filter(b => b.memberId === currentUser.id)));
+        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
         console.log('Beneficiaries tab clicked, count:', tempBeneficiaries.length);
         console.log('Beneficiaries data:', tempBeneficiaries);
         // Wait for the tab to be visible before rendering
@@ -1242,10 +808,9 @@
     }
 
     function updateAdmin() {
-      const membersList = window.members || [];
-      document.getElementById('totalMem').textContent = membersList.length;
-      document.getElementById('activeMem').textContent = membersList.filter(m => m.status === 'Active').length;
-      document.getElementById('suspMem').textContent = membersList.filter(m => m.status === 'Suspended').length;
+      document.getElementById('totalMem').textContent = members.length;
+      document.getElementById('activeMem').textContent = members.filter(m => m.status === 'Active').length;
+      document.getElementById('suspMem').textContent = members.filter(m => m.status === 'Suspended').length;
     }
 
     function updateMember() {
@@ -1257,77 +822,54 @@
       badge.textContent = currentUser.status;
       badge.className = `badge badge-${currentUser.status === 'Active' ? 'active' : 'suspended'}`;
       // Make sure tempBeneficiaries is loaded from the main beneficiaries array
-      if (!window.tempBeneficiaries || window.tempBeneficiaries.length === 0) {
-        window.tempBeneficiaries = JSON.parse(JSON.stringify((window.beneficiaries || []).filter(b => b.memberId === currentUser.id)));
-        console.log('updateMember: loaded', window.tempBeneficiaries.length, 'beneficiaries');
+      if (!tempBeneficiaries || tempBeneficiaries.length === 0) {
+        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
+        console.log('updateMember: loaded', tempBeneficiaries.length, 'beneficiaries');
       }
     }
 
     function displayMem() {
       let html = '';
-      (window.members || []).forEach(m => {
-        html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.id}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.name}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.email}</td>
-          <td style="display: table-cell; padding:  12px; border: 1px solid #ddd;"><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.missedPayments}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
-            <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
-            ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
-            <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
-          </td>
-        </tr>`;
+      members.forEach(m => {
+        html += `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
+          <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
+          ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
+          <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
+        </td></tr>`;
       });
-      
-      const tableElement = document.getElementById('memTable');
-      if (tableElement) {
-        tableElement.innerHTML = html;
-      }
+      document.getElementById('memTable').innerHTML = html;
     }
 
     function displayPayouts() {
       let html = '';
-      (window.payouts || []).forEach(p => {
-        html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.memberName}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">R ${p.amount}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.reason}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
-            ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
-          </td>
-        </tr>`;
+      payouts.forEach(p => {
+        html += `<tr><td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
+          ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
+        </td></tr>`;
       });
       document.getElementById('payTable').innerHTML = html;
     }
 
     function displayPenalties() {
       let html = '';
-      (window.penalties || []).forEach(p => {
-        html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.memberName}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">R ${p.amount}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.date}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
-            <button class="btn btn-success btn-sm" onclick="payPen('${p.id}')">Mark Paid</button>
-          </td>
-        </tr>`;
+      penalties.forEach(p => {
+        html += `<tr><td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.date}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
+          <button class="btn btn-success btn-sm" onclick="payPen('${p.id}')">Mark Paid</button>
+        </td></tr>`;
       });
       document.getElementById('penTable').innerHTML = html;
     }
 
     function populateBenSelect() {
       let opts = '<option value="">-- Select --</option>';
-      (window.members || []).forEach(m => opts += `<option value="${m.id}">${m.name}</option>`);
+      members.forEach(m => opts += `<option value="${m.id}">${m.name}</option>`);
       document.getElementById('memSelectBen').innerHTML = opts;
     }
 
     function loadBeneficiaries() {
       const id = document.getElementById('memSelectBen').value;
       document.getElementById('addBenBtn').style.display = id ? 'block' : 'none';
-      const bens = (window.beneficiaries || []).filter(b => b.memberId === id);
+      const bens = beneficiaries.filter(b => b.memberId === id);
       let html = '';
       if (bens.length > 0) {
         bens.forEach(b => {
@@ -1345,15 +887,20 @@
     }
 
     function displayMemBen() {
-      const tempBens = window.tempBeneficiaries || [];
+      console.log('displayMemBen called with', tempBeneficiaries.length, 'beneficiaries');
+      console.log('Beneficiaries data:', JSON.stringify(tempBeneficiaries));
+      
       const tbody = document.getElementById('memBenTableBody');
       
-      if (!tbody) return;
+      if (!tbody) {
+        console.error('Table body not found!');
+        return;
+      }
       
       let html = '';
       
-      if (tempBens && tempBens.length > 0) {
-        tempBens.forEach((b, i) => {
+      if (tempBeneficiaries && tempBeneficiaries.length > 0) {
+        tempBeneficiaries.forEach((b, i) => {
           html += '<tr>';
           html += '<td>' + (b.name || 'N/A') + '</td>';
           html += '<td>' + (b.relationship || 'N/A') + '</td>';
@@ -1366,7 +913,10 @@
         html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>';
       }
       
+      console.log('Generated HTML:', html.substring(0, 200));
       tbody.innerHTML = html;
+      console.log('Table updated with', tempBeneficiaries.length, 'rows');
+      console.log('Table body HTML after update:', tbody.innerHTML.substring(0, 200));
       
       // Update button visibility
       const addBtn = document.getElementById('addBenMemBtn');
@@ -1397,7 +947,7 @@
 
     function displayMemPayouts() {
       let html = '';
-      (window.payouts || []).filter(p => p.memberId === currentUser.id).forEach(p => {
+      payouts.filter(p => p.memberId === currentUser.id).forEach(p => {
         html += `<tr><td>${p.date || 'N/A'}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td></tr>`;
       });
       document.getElementById('memPayTable').innerHTML = html || '<tr><td colspan="4">No payouts</td></tr>';
@@ -1458,60 +1008,21 @@
       m.email = document.getElementById('editMEmail').value;
       m.phone = document.getElementById('editMPhone').value;
       m.status = document.getElementById('editMStatus').value;
-<<<<<<< HEAD
       saveDataToStorage(); // Auto-save
       closeModal();
       displayMem();
       showAlert('adminAlert', '✓ Updated!', 'success');
-=======
-      showSyncStatus('Updating cloud...');
-      window.firebaseUpdateMember(m)
-        .then(() => {
-          closeModal();
-          displayMem();
-          showAlert('adminAlert', '✓ Updated (cloud sync)!', 'success');
-          showSyncStatus('Cloud synced', true);
-        })
-        .catch(err => {
-          showAlert('adminAlert', 'Cloud sync failed, saving locally.', 'error');
-          saveDataToStorage();
-          closeModal();
-          displayMem();
-          showSyncStatus('Saved locally', false);
-        });
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
 
     function delMem(id) {
       if (confirm('Delete member?')) {
-<<<<<<< HEAD
-        window.members = members.filter(m => m.id !== id);
-        window.beneficiaries = beneficiaries.filter(b => b.memberId !== id);
-        window.payouts = payouts.filter(p => p.memberId !== id);
+        members = members.filter(m => m.id !== id);
+        beneficiaries = beneficiaries.filter(b => b.memberId !== id);
+        payouts = payouts.filter(p => p.memberId !== id);
         saveDataToStorage(); // Auto-save
         displayMem();
         updateAdmin();
         showAlert('adminAlert', '✓ Deleted!', 'success');
-=======
-        showSyncStatus('Deleting from cloud...');
-        window.firebaseDeleteMember(id)
-          .then(() => {
-            displayMem();
-            updateAdmin();
-            showAlert('adminAlert', '✓ Deleted (cloud sync)!', 'success');
-            showSyncStatus('Cloud synced', true);
-          })
-          .catch(err => {
-            showAlert('adminAlert', 'Cloud sync failed, deleting locally.', 'error');
-            window.members = members.filter(m => m.id !== id);
-            window.beneficiaries = beneficiaries.filter(b => b.memberId !== id);
-            window.payouts = payouts.filter(p => p.memberId !== id);
-            saveDataToStorage();
-            displayMem();
-            updateAdmin();
-            showSyncStatus('Deleted locally', false);
-          });
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
       }
     }
 
@@ -1520,41 +1031,11 @@
       if (m) {
         m.status = 'Active';
         m.missedPayments = 0;
-<<<<<<< HEAD
         saveDataToStorage(); // Auto-save
         displayMem();
         updateAdmin();
         showAlert('adminAlert', '✓ Reactivated!', 'success');
       }
-=======
-        showSyncStatus('Reactivating in cloud...');
-        window.firebaseUpdateMember(m)
-          .then(() => {
-            displayMem();
-            updateAdmin();
-            showAlert('adminAlert', '✓ Reactivated (cloud sync)!', 'success');
-            showSyncStatus('Cloud synced', true);
-          })
-          .catch(err => {
-            showAlert('adminAlert', 'Cloud sync failed, saving locally.', 'error');
-            saveDataToStorage();
-            displayMem();
-            updateAdmin();
-            showSyncStatus('Saved locally', false);
-          });
-      }
-        // --- Cloud Sync Status Indicator ---
-        function showSyncStatus(msg, ok) {
-          const el = document.getElementById('cloudSyncStatus');
-          const icon = document.getElementById('cloudSyncIcon');
-          const text = document.getElementById('cloudSyncText');
-          if (!el || !icon || !text) return;
-          el.style.display = 'flex';
-          text.textContent = msg;
-          icon.textContent = ok === undefined ? '☁️' : (ok ? '✅' : '⚠️');
-          setTimeout(() => { el.style.display = 'none'; }, 2000);
-        }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
 
     function addBenModal() {
@@ -1566,6 +1047,7 @@
         <h2>Add Beneficiary for ${m.name}</h2>
         <div class="form-group"><label>Name</label><input type="text" id="benName"></div>
         <div class="form-group"><label>Relationship</label><select id="benRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+        <div class="form-group"><label>ID Number</label><input type="text" id="benId"></div>
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="benPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="saveBen('${memId}')">Save</button>
       `);
@@ -1717,6 +1199,7 @@
         <h2>Add Beneficiary</h2>
         <div class="form-group"><label>Name</label><input type="text" id="memBenName"></div>
         <div class="form-group"><label>Relationship</label><select id="memBenRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+        <div class="form-group"><label>ID Number</label><input type="text" id="memBenId"></div>
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="memBenPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="addMemBen()">Add</button>
       `);
@@ -1759,6 +1242,76 @@
       document.getElementById('addBenMemBtn').classList.add('hidden');
       showAlert('memberAlert', '✓ Beneficiaries locked! Cannot modify', 'success');
     }
+
+    // Initialize demo data
+    function initializeDemoData() {
+      // Initialize members if not exists
+      if (!localStorage.getItem('members')) {
+        const demoMembers = [
+          {
+            id: 'M001',
+            name: 'John Smith',
+            email: 'john@example.com',
+            phone: '0123456789',
+            status: 'Active',
+            missedPayments: 0,
+            signature: null
+          },
+          {
+            id: 'M002',
+            name: 'Sarah Johnson',
+            email: 'sarah@example.com',
+            phone: '0123456790',
+            status: 'Active',
+            missedPayments: 0,
+            signature: null
+          },
+          {
+            id: 'M003',
+            name: 'Michael Brown',
+            email: 'michael@example.com',
+            phone: '0123456791',
+            status: 'Active',
+            missedPayments: 0,
+            signature: null
+          },
+          {
+            id: 'M004',
+            name: 'Emily Davis',
+            email: 'emily@example.com',
+            phone: '0123456792',
+            status: 'Active',
+            missedPayments: 0,
+            signature: null
+          },
+          {
+            id: 'M005',
+            name: 'David Wilson',
+            email: 'david@example.com',
+            phone: '0123456793',
+            status: 'Active',
+            missedPayments: 0,
+            signature: null
+          }
+        ];
+        localStorage.setItem('members', JSON.stringify(demoMembers));
+        members = demoMembers;
+      } else {
+        members = JSON.parse(localStorage.getItem('members'));
+      }
+
+      // Initialize attendance if not exists
+      if (!localStorage.getItem('attendance')) {
+        localStorage.setItem('attendance', JSON.stringify({}));
+      }
+
+      updateAdmin();
+    }
+
+    // Initialize on load
+    window.addEventListener('load', () => {
+      initializeDemoData();
+    });
 
     function saveDocs() {
       const payFile = document.getElementById('payFile').files[0];
@@ -1980,8 +1533,8 @@
 
       filteredMembers.forEach((member, index) => {
         const isPresent = attendance[date].present.includes(member.id);
-        const timeIn = attendance[date].timeIn[member.id] || '';
-        const remarks = attendance[date].remarks[member.id] || '';
+        const timeIn = attendance[date].timeIn?.[member.id] || '';
+        const remarks = attendance[date].remarks?.[member.id] || '';
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -2145,162 +1698,86 @@
         return;
       }
 
-      showSpinner('Syncing attendance...');
-      window.firebaseGetAttendance(date)
-        .then(attendance => {
-          hideSpinner();
-          if (!attendance) {
-            attendance = {
-              date: date,
-              time: document.getElementById('meetingTime').value || '09:00',
-              type: document.getElementById('meetingType').value || 'general',
-              description: document.getElementById('meetingDesc').value || '',
-              present: [],
-              timeIn: {},
-              remarks: {}
-            };
-          }
-          
-          // Show attendance table
-          const tbody = document.getElementById('attendanceTableBody');
-          tbody.innerHTML = '';
+      // Get or create attendance record for the date
+      if (!localStorage.getItem('attendance')) {
+        localStorage.setItem('attendance', JSON.stringify({}));
+      }
+      const attendance = JSON.parse(localStorage.getItem('attendance'));
+      
+      if (!attendance[date]) {
+        attendance[date] = {
+          date: date,
+          time: document.getElementById('meetingTime').value || '09:00',
+          type: document.getElementById('meetingType').value || 'general',
+          description: document.getElementById('meetingDesc').value || '',
+          present: [],
+          timeIn: {},
+          remarks: {}
+        };
+      }
 
-          // Sort members by name
-          const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
+      // Show attendance table
+      const tbody = document.getElementById('attendanceTableBody');
+      tbody.innerHTML = '';
 
-          sortedMembers.forEach((member, index) => {
-            const isPresent = attendance.present.includes(member.id);
-            const timeIn = attendance.timeIn?.[member.id] || '';
-            const remarks = attendance.remarks?.[member.id] || '';
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${index + 1}</td>
-              <td>${member.name}</td>
-              <td>
-                <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'}" 
-                        onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
-                        style="width: 100px;">
-                  ${isPresent ? '✓ Present' : '✗ Absent'}
-                </button>
-              </td>
-              <td>${isPresent ? 
-                `<input type="time" value="${timeIn}" 
-                        onchange="updateTimeIn('${member.id}', '${date}', this.value)">` : 
-                '-'}
-              </td>
-              <td>
-                ${isPresent ? 
-                  `<input type="text" placeholder="Add remarks" value="${remarks}"
-                          onchange="updateRemarks('${member.id}', '${date}', this.value)">` : 
-                  '-'}
-              </td>
-              <td>
-                ${member.signature ? 
-                  `<img src="${member.signature}" style="max-height: 50px;">` : 
-                  isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
-              </td>
-            `;
-            tbody.appendChild(row);
-          });
+      // Sort members by name
+      const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
 
-          // Update counts
-          const presentCount = attendance.present.length;
-          const absentCount = members.length - presentCount;
-          const attendanceRate = Math.round((presentCount / members.length) * 100);
-          
-          document.getElementById('presentCount').textContent = `Present: ${presentCount}`;
-          document.getElementById('absentCount').textContent = `Absent: ${absentCount}`;
-          document.getElementById('attendanceRate').textContent = `Attendance Rate: ${attendanceRate}%`;
+      sortedMembers.forEach((member, index) => {
+        const isPresent = attendance[date].present.includes(member.id);
+        const timeIn = attendance[date].timeIn[member.id] || '';
+        const remarks = attendance[date].remarks[member.id] || '';
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${member.name}</td>
+          <td>
+            <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'}" 
+                    onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
+                    style="width: 100px;">
+              ${isPresent ? '✓ Present' : '✗ Absent'}
+            </button>
+          </td>
+          <td>${isPresent ? 
+            `<input type="time" value="${timeIn}" 
+                    onchange="updateTimeIn('${member.id}', '${date}', this.value)">` : 
+            '-'}
+          </td>
+          <td>
+            ${isPresent ? 
+              `<input type="text" placeholder="Add remarks" value="${remarks}"
+                      onchange="updateRemarks('${member.id}', '${date}', this.value)">` : 
+              '-'}
+          </td>
+          <td>
+            ${member.signature ? 
+              `<img src="${member.signature}" style="max-height: 50px;">` : 
+              isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
+          </td>
+        </tr>`;
+        tbody.appendChild(row);
+      });
 
-          // Update meeting details fields
-          document.getElementById('meetingTime').value = attendance.time || '';
-          document.getElementById('meetingType').value = attendance.type || 'general';
-          document.getElementById('meetingDesc').value = attendance.description || '';
+      // Update counts
+      const presentCount = attendance[date].present.length;
+      const absentCount = members.length - presentCount;
+      const attendanceRate = Math.round((presentCount / members.length) * 100);
+      
+      document.getElementById('presentCount').textContent = `Present: ${presentCount}`;
+      document.getElementById('absentCount').textContent = `Absent: ${absentCount}`;
+      document.getElementById('attendanceRate').textContent = `Attendance Rate: ${attendanceRate}%`;
 
-          // Show meeting history
-          showMeetingHistory();
+      // Update meeting details fields
+      document.getElementById('meetingTime').value = attendance[date].time || '';
+      document.getElementById('meetingType').value = attendance[date].type || 'general';
+      document.getElementById('meetingDesc').value = attendance[date].description || '';
 
-          // Save data
-          localStorage.setItem('attendance', JSON.stringify(attendance));
-        })
-        .catch(err => {
-          hideSpinner();
-          showAlert('adminAlert', 'Cloud sync failed, loading local data.', 'error');
-          // fallback to local
-          const attendance = JSON.parse(localStorage.getItem('attendance'));
-          if (!attendance[date]) {
-            attendance[date] = {
-              date: date,
-              time: document.getElementById('meetingTime').value || '09:00',
-              type: document.getElementById('meetingType').value || 'general',
-              description: document.getElementById('meetingDesc').value || '',
-              present: [],
-              timeIn: {},
-              remarks: {}
-            };
-          }
+      // Show meeting history
+      showMeetingHistory();
 
-          // Show attendance table
-          const tbody = document.getElementById('attendanceTableBody');
-          tbody.innerHTML = '';
-
-          // Sort members by name
-          const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
-
-          sortedMembers.forEach((member, index) => {
-            const isPresent = attendance[date].present.includes(member.id);
-            const timeIn = attendance[date].timeIn?.[member.id] || '';
-            const remarks = attendance[date].remarks?.[member.id] || '';
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${index + 1}</td>
-              <td>${member.name}</td>
-              <td>
-                <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'}" 
-                        onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
-                        style="width: 100px;">
-                  ${isPresent ? '✓ Present' : '✗ Absent'}
-                </button>
-              </td>
-              <td>${isPresent ? 
-                `<input type="time" value="${timeIn}" 
-                        onchange="updateTimeIn('${member.id}', '${date}', this.value)">` : 
-                '-'}
-              </td>
-              <td>
-                ${isPresent ? 
-                  `<input type="text" placeholder="Add remarks" value="${remarks}"
-                          onchange="updateRemarks('${member.id}', '${date}', this.value)">` : 
-                  '-'}
-              </td>
-              <td>
-                ${member.signature ? 
-                  `<img src="${member.signature}" style="max-height: 50px;">` : 
-                  isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
-              </td>
-            `;
-            tbody.appendChild(row);
-          });
-
-          // Update counts
-          const presentCount = attendance[date].present.length;
-          const absentCount = members.length - presentCount;
-          const attendanceRate = Math.round((presentCount / members.length) * 100);
-          
-          document.getElementById('presentCount').textContent = `Present: ${presentCount}`;
-          document.getElementById('absentCount').textContent = `Absent: ${absentCount}`;
-          document.getElementById('attendanceRate').textContent = `Attendance Rate: ${attendanceRate}%`;
-
-          // Update meeting details fields
-          document.getElementById('meetingTime').value = attendance[date].time || '';
-          document.getElementById('meetingType').value = attendance[date].type || 'general';
-          document.getElementById('meetingDesc').value = attendance[date].description || '';
-
-          // Show meeting history
-          showMeetingHistory();
-        });
+      // Save data
+      localStorage.setItem('attendance', JSON.stringify(attendance));
     }
 
     function updateTimeIn(memberId, date, time) {
@@ -2554,7 +2031,20 @@
     }
 
     // Remove demo login credentials
+    window.addEventListener('load', () => {
+      const adminEmailInput = document.getElementById('adminEmail');
+      const adminPasswordInput = document.getElementById('adminPassword');
+      const memberEmailInput = document.getElementById('memberEmail');
+      
+      if (adminEmailInput) adminEmailInput.value = '';
+      if (adminPasswordInput) adminPasswordInput.value = '';
+      if (memberEmailInput) memberEmailInput.value = '';
 
+      // Setup signature canvas when member dashboard loads
+      if (document.getElementById('signatureCanvas')) {
+        setupSignatureCanvas();
+      }
+    });
 
   </script>
 </body>
