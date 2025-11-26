@@ -6,7 +6,26 @@
   <title>Welcome to Sbahle Burial Society</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="sbs-init.js"></script>
-  <!-- <script src="firebase-init.js"></script> -->
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <!-- Firebase Analytics -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBih1niP4hscomYJuQ7CW2bOgfmtmYWAUo",
+      authDomain: "sbahle-burial-society.firebaseapp.com",
+      databaseURL: "https://sbahle-burial-society-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "sbahle-burial-society",
+      storageBucket: "sbahle-burial-society.firebasestorage.app",
+      messagingSenderId: "431934828714",
+      appId: "1:431934828714:web:0cc3869eb4bc8c22ec20d3",
+      measurementId: "G-XXVHXPXM58"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
   <style>
         /* Moved from inline styles */
         #cloudSyncStatus {
@@ -465,7 +484,7 @@
           <table style="width: 100%; border-collapse: collapse; display: table; background: white;">
             <thead style="display: table-header-group; background: #667eea; color: white;">
               <tr style="display: table-row;">
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">ID</th>
+                <!-- ID column removed -->
                 <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Name</th>
                 <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Email</th>
                 <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
@@ -748,13 +767,13 @@
             <tr>
               <th>Name</th>
               <th>Relationship</th>
-              <th>ID Number</th>
+              <!-- ID Number column removed -->
               <th>Allocation %</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="memBenTableBody">
-            <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+            <tr><td colspan="4" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
           </tbody>
         </table>
       </div>
@@ -901,8 +920,8 @@
       
       // Initialize other data arrays
       window.beneficiaries = [
-        { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
-        { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 }
+        { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', percentage: 50 },
+        { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', percentage: 50 }
       ];
       window.payouts = [
         { id: 'PO1', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 5000, reason: 'Funeral', status: 'Pending' }
@@ -1620,10 +1639,9 @@
     function saveBen(memId) {
       const name = document.getElementById('benName').value;
       const rel = document.getElementById('benRel').value;
-      const idNum = document.getElementById('benId').value;
       const perc = document.getElementById('benPerc').value;
-      if (!name || !rel || !idNum || !perc) { alert('Fill all'); return; }
-      beneficiaries.push({ id: 'B' + Date.now(), memberId: memId, name, relationship: rel, idNum, percentage: parseInt(perc) });
+      if (!name || !rel || !perc) { alert('Fill all'); return; }
+      beneficiaries.push({ id: 'B' + Date.now(), memberId: memId, name, relationship: rel, percentage: parseInt(perc) });
       saveDataToStorage(); // Auto-save
       closeModal();
       loadBeneficiaries();
@@ -1771,10 +1789,9 @@
     function addMemBen() {
       const name = document.getElementById('memBenName').value;
       const rel = document.getElementById('memBenRel').value;
-      const idNum = document.getElementById('memBenId').value;
       const perc = document.getElementById('memBenPerc').value;
-      if (!name || !rel || !idNum || !perc) { alert('Fill all'); return; }
-      tempBeneficiaries.push({ id: 'BT' + Date.now(), memberId: currentUser.id, name, relationship: rel, idNum, percentage: parseInt(perc) });
+      if (!name || !rel || !perc) { alert('Fill all'); return; }
+      tempBeneficiaries.push({ id: 'BT' + Date.now(), memberId: currentUser.id, name, relationship: rel, percentage: parseInt(perc) });
       closeModal();
       displayMemBen();
       document.getElementById('saveBenMemBtn').classList.remove('hidden');
