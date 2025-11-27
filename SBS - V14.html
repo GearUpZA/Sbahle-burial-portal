@@ -362,10 +362,31 @@
         <button class="tab" onclick="adminTab('attendance', event)" aria-label="Show Attendance Tab" tabindex="0">Attendance</button>
         <button class="tab" onclick="adminTab('payouts', event)" aria-label="Show Payouts Tab" tabindex="0">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)" aria-label="Show Penalties Tab" tabindex="0">Penalties</button>
+        <button class="tab" onclick="adminTab('financials', event)" aria-label="Show Financials Tab" tabindex="0">Financials</button>
         <button class="tab" onclick="adminTab('data', event)" aria-label="Show Data Management Tab" tabindex="0">Data Management</button>
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
+
       <div id="adminAlert"></div>
+
+      <div id="financialsTab" class="hidden" style="min-height: 400px;">
+        <h2>Financials Overview</h2>
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <h3>Total Income from Member Contributions</h3>
+          <div style="font-size: 22px; font-weight: bold; color: #217A3B;">
+            R <span id="totalContribIncome">0.00</span>
+          </div>
+        </div>
+        <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+          <h3>Monthly Contributions Overview</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <thead style="background: #667eea; color: white;">
+              <tr><th>Month</th><th>Total Contributions (R)</th><th>Number of Contributions</th></tr>
+            </thead>
+            <tbody id="monthlyContribOverview"></tbody>
+          </table>
+        </div>
+      </div>
 
       <div id="overviewTab">
         <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
@@ -1394,22 +1415,41 @@
       document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
       document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
+      document.getElementById('financialsTab').classList.toggle('hidden', t !== 'financials');
       document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
-      
       // Update active tab button
       document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
-      
       // Load content for active tab
       if (t === 'overview') { updateAdmin(); }
       if (t === 'members') { displayMem(); }
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
       if (t === 'attendance') { showAttendanceList(); }
-      if (t === 'payouts') { displayPayouts(); }
-        if (t === 'payouts') { renderAdminContributions(); }
+      if (t === 'payouts') { displayPayouts(); renderAdminContributions(); }
       if (t === 'penalties') { displayPenalties(); }
+      if (t === 'financials') { renderFinancials(); }
       if (t === 'data') { updateStorageInfo(); }
     }
+        // Render Financials Tab
+        function renderFinancials() {
+          // Get all approved member contributions
+          let contribs = JSON.parse(localStorage.getItem('memberContributions') || '[]');
+          let approved = contribs.filter(c => c.status === 'Approved');
+          // Total income
+          let total = approved.reduce((sum, c) => sum + (parseFloat(c.amt) || 0), 0);
+          document.getElementById('totalContribIncome').textContent = total.toFixed(2);
+          // Monthly breakdown
+          let monthly = {};
+          approved.forEach(c => {
+            let month = (c.date || '').slice(0,7); // YYYY-MM
+            if (!monthly[month]) monthly[month] = { total: 0, count: 0 };
+            monthly[month].total += parseFloat(c.amt) || 0;
+            monthly[month].count += 1;
+          });
+          let months = Object.keys(monthly).sort().reverse();
+          let tbody = document.getElementById('monthlyContribOverview');
+          tbody.innerHTML = months.length ? months.map(m => `<tr><td>${m}</td><td>R ${monthly[m].total.toFixed(2)}</td><td>${monthly[m].count}</td></tr>`).join('') : '<tr><td colspan="3" style="text-align:center; color:#999;">No approved contributions</td></tr>';
+        }
     
     function updateStorageInfo() {
       document.getElementById('storageMembers').textContent = window.members ? window.members.length : 0;
