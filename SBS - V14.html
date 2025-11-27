@@ -538,6 +538,25 @@
             <tbody id="payTable" style="display: table-row-group;"></tbody>
           </table>
         </div>
+        <div style="margin-top: 40px;">
+          <h2>Member Contributions (Admin Review)</h2>
+          <button class="btn btn-primary" onclick="exportContributionsCSV()">Export Contributions CSV</button>
+          <div style="overflow-x: auto; margin-top: 20px;">
+            <table style="width: 100%; border-collapse: collapse; display: table;">
+              <thead style="display: table-header-group; background: #667eea; color: white;">
+                <tr style="display: table-row;">
+                  <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Date</th>
+                  <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Amount</th>
+                  <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Method</th>
+                  <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Reference</th>
+                  <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
+                  <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminContributionsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div id="penaltiesTab" class="hidden" style="min-height: 400px;">
@@ -747,14 +766,111 @@
 
       <div id="contributionsTab" class="hidden">
         <h2>Contributions - R 170/Month Required</h2>
-        <button class="btn btn-success" onclick="addContribModal()">+ Add Contribution</button>
+        <form id="memberContributionForm" onsubmit="submitMemberContribution(event)" style="margin-bottom: 24px; background: #f8fafc; padding: 18px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(30,58,138,0.06);">
+          <div class="form-group"><label for="contribDate">Date</label><input type="date" id="contribDate" required></div>
+          <div class="form-group"><label for="contribAmt">Amount (R)</label><input type="number" id="contribAmt" min="170" value="170" required></div>
+          <div class="form-group"><label for="contribMeth">Method</label><select id="contribMeth" required><option>Bank Transfer</option><option>EFT</option><option>Cash</option></select></div>
+          <div class="form-group"><label for="contribRef">Reference</label><input type="text" id="contribRef" required></div>
+          <button class="btn btn-success" type="submit">Submit Contribution</button>
+        </form>
         <table>
           <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>2025-03-15</td><td>R 170</td><td>Bank Transfer</td><td><span class="badge badge-approved">Verified</span></td></tr>
+          <tbody id="memberContributionsTableBody">
+            <tr><td colspan="4" style="text-align:center; color:#999;">No contributions yet</td></tr>
           </tbody>
         </table>
       </div>
+    // --- Member Contribution Form Logic ---
+    function submitMemberContribution(e) {
+      e.preventDefault();
+      const date = document.getElementById('contribDate').value;
+      const amt = parseFloat(document.getElementById('contribAmt').value);
+      const meth = document.getElementById('contribMeth').value;
+      const ref = document.getElementById('contribRef').value;
+      if (!date || !amt || amt < 170 || !meth || !ref) {
+        alert('Please fill in all fields and ensure amount is at least R 170.');
+        return;
+      }
+      // Save to localStorage (per member)
+      let contribs = JSON.parse(localStorage.getItem('memberContributions') || '[]');
+      contribs.push({ date, amt, meth, ref, status: 'Pending' });
+      localStorage.setItem('memberContributions', JSON.stringify(contribs));
+      renderMemberContributions();
+      document.getElementById('memberContributionForm').reset();
+      showAlert('memberAlert', '✓ Contribution submitted! Pending verification', 'success');
+    }
+
+    // Admin: Render all member contributions for review
+    function renderAdminContributions() {
+      let contribs = JSON.parse(localStorage.getItem('memberContributions') || '[]');
+      const tbody = document.getElementById('adminContributionsTableBody');
+      if (!tbody) return;
+      if (contribs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999;">No contributions yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = contribs.map((c, i) => `
+        <tr>
+          <td>${c.date}</td>
+          <td>R ${c.amt}</td>
+          <td>${c.meth}</td>
+          <td>${c.ref}</td>
+          <td><span class="badge badge-${c.status === 'Pending' ? 'pending' : 'approved'}">${c.status}</span></td>
+          <td>
+            ${c.status === 'Pending' ? `<button class='btn btn-success btn-sm' onclick='approveContribution(${i})'>Approve</button> <button class='btn btn-danger btn-sm' onclick='rejectContribution(${i})'>Reject</button>` : '-'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function approveContribution(idx) {
+      let contribs = JSON.parse(localStorage.getItem('memberContributions') || '[]');
+      contribs[idx].status = 'Approved';
+      localStorage.setItem('memberContributions', JSON.stringify(contribs));
+      renderAdminContributions();
+      showAlert('adminAlert', '✓ Contribution approved!', 'success');
+    }
+
+    function rejectContribution(idx) {
+      let contribs = JSON.parse(localStorage.getItem('memberContributions') || '[]');
+      contribs[idx].status = 'Rejected';
+      localStorage.setItem('memberContributions', JSON.stringify(contribs));
+      renderAdminContributions();
+      showAlert('adminAlert', '✓ Contribution rejected!', 'success');
+    }
+
+    function exportContributionsCSV() {
+      let contribs = JSON.parse(localStorage.getItem('memberContributions') || '[]');
+      if (contribs.length === 0) { showAlert('adminAlert', 'No contributions to export', 'warning'); return; }
+      let csv = 'Date,Amount,Method,Reference,Status\n';
+      csv += contribs.map(c => `${c.date},${c.amt},${c.meth},${c.ref},${c.status}`).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contributions_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showAlert('adminAlert', '✓ Contributions exported as CSV!', 'success');
+    }
+
+    function renderMemberContributions() {
+      let contribs = JSON.parse(localStorage.getItem('memberContributions') || '[]');
+      const tbody = document.getElementById('memberContributionsTableBody');
+      if (!tbody) return;
+      if (contribs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999;">No contributions yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = contribs.map(c => `<tr><td>${c.date}</td><td>R ${c.amt}</td><td>${c.meth}</td><td><span class="badge badge-pending">${c.status}</span></td></tr>`).join('');
+    }
+
+    // Render contributions on tab show
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMemberContributions();
+    });
 
       <div id="memberBeneficiariesTab" class="hidden">
         <h2>My Beneficiaries</h2>
@@ -1290,6 +1406,7 @@
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
       if (t === 'attendance') { showAttendanceList(); }
       if (t === 'payouts') { displayPayouts(); }
+        if (t === 'payouts') { renderAdminContributions(); }
       if (t === 'penalties') { displayPenalties(); }
       if (t === 'data') { updateStorageInfo(); }
     }
