@@ -14,7 +14,7 @@
   <script>
     // Your web app's Firebase configuration
     var firebaseConfig = {
-      apiKey: "AIzaSyBih1niP4hscomYJuQ7CW2bOgfmtmYWAUo",
+      apiKey: "YOUR_NEW_API_KEY_HERE",
       authDomain: "sbahle-burial-society.firebaseapp.com",
       databaseURL: "https://sbahle-burial-society-default-rtdb.europe-west1.firebasedatabase.app",
       projectId: "sbahle-burial-society",
@@ -154,7 +154,7 @@
 // ...existing code...
 // ...existing code...
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
-        <button class="tab" onclick="showLoginForm('member')">Member</button>
+          <button class="tab" onclick="showLoginForm('member')" aria-label="Show Member Login Form" tabindex="0">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
 // ...existing code...
         <button class="tab active" onclick="showLoginForm('admin')" aria-label="Show Admin Login Form" tabindex="0">Admin</button>
@@ -179,14 +179,14 @@
 
         <div id="adminForm">
           <h2>Admin Login</h2>
-          <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin" placeholder="Enter admin email" title="Admin Email"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="adminEmail" value="admin" placeholder="Enter admin email" title="Admin Email"></div>
           <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123"></div>
           <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
         </div>
 
         <div id="memberForm" class="hidden">
           <h2>Member Login</h2>
-          <div class="form-group"><label>Email</label><input type="text" id="memberEmail" value="member@test.com"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="memberEmail" value="member@test.com"></div>
           <div class="form-group"><label>Password</label><input type="password" id="memberPassword" value="password123"></div>
           <button class="btn btn-primary" onclick="loginMember()">Login</button>
         </div>
