@@ -175,39 +175,13 @@
     h2 { color: #333; margin: 15px 0; font-size: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
-<<<<<<< HEAD
-    .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; }
-    .tab.active { background: #667eea; color: white; }
-=======
     .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; color: #222; }
     .tab.active { background: #2B3674; color: #fff; }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .form-group { margin-bottom: 12px; }
     label { display: block; margin-bottom: 3px; color: #333; font-weight: bold; font-size: 14px; }
     input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
     input:disabled { background: #f0f0f0; }
     .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; margin-right: 5px; margin-bottom: 5px; font-size: 13px; }
-<<<<<<< HEAD
-    .btn-primary { background: #667eea; color: white; }
-    .btn-success { background: #48bb78; color: white; }
-    .btn-danger { background: #f56565; color: white; }
-    .btn-warning { background: #ed8936; color: white; }
-    .btn-sm { padding: 5px 10px; font-size: 12px; }
-    .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; }
-    .alert-success { background: #c6f6d5; color: #22543d; border-left: 4px solid #48bb78; }
-    .alert-error { background: #fed7d7; color: #742a2a; border-left: 4px solid #f56565; }
-    .alert-warning { background: #feebc8; color: #7c2d12; border-left: 4px solid #ed8936; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    thead { background: #667eea; color: white; }
-    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
-    tbody tr:hover { background: #f7f7f7; }
-    .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block; }
-    .badge-active { background: #c6f6d5; color: #22543d; }
-    .badge-suspended { background: #fed7d7; color: #742a2a; }
-    .badge-pending { background: #feebc8; color: #744210; }
-    .badge-approved { background: #bee3f8; color: #2c5282; }
-    .stat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
-=======
     .btn-primary { background: #2B3674; color: #fff; }
     .btn-success { background: #217A3B; color: #fff; }
     .btn-danger { background: #B91C1C; color: #fff; }
@@ -227,7 +201,6 @@
     .badge-pending { background: #FFF7E6; color: #78350F; }
     .badge-approved { background: #E0E7FF; color: #3730A3; }
     .stat { background: linear-gradient(135deg, #2B3674 0%, #764ba2 100%); color: #fff; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .stat h3 { font-size: 12px; margin-bottom: 8px; }
     .stat .value { font-size: 24px; font-weight: bold; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
@@ -314,23 +287,23 @@
         <button class="btn btn-success" onclick="registerMember()">Register</button>
 =======
         <h2 id="adminLoginHeading">Admin Login</h2>
-        <div class="form-group"><label for="adminEmail">Email</label><input type="text" id="adminEmail" value="admin" aria-labelledby="adminLoginHeading adminEmailLabel"></div>
-        <div class="form-group"><label for="adminPassword">Password</label><input type="password" id="adminPassword" value="admin123" aria-labelledby="adminLoginHeading adminPasswordLabel"></div>
+        <div class="form-group"><label for="adminEmailLogin">Email</label><input type="text" id="adminEmailLogin" value="admin" aria-labelledby="adminLoginHeading adminEmailLabel"></div>
+        <div class="form-group"><label for="adminPasswordLogin">Password</label><input type="password" id="adminPasswordLogin" value="admin123" aria-labelledby="adminLoginHeading adminPasswordLabel"></div>
         <button class="btn btn-primary" onclick="loginAdmin()" aria-label="Login as Admin" tabindex="0">Login</button>
       </div>
 
       <div id="memberForm" class="hidden">
         <h2 id="memberLoginHeading">Member Login</h2>
-        <div class="form-group"><label for="memberEmail">Email</label><input type="text" id="memberEmail" value="member@test.com" aria-labelledby="memberLoginHeading memberEmailLabel"></div>
+        <div class="form-group"><label for="memberEmailLogin">Email</label><input type="text" id="memberEmailLogin" value="member@test.com" aria-labelledby="memberLoginHeading memberEmailLabel"></div>
         <button class="btn btn-primary" onclick="loginMember()" aria-label="Login as Member" tabindex="0">Login</button>
       </div>
 
       <div id="registerForm" class="hidden">
         <h2 id="registerHeading">Register Member</h2>
-        <div class="form-group"><label for="regName">Name</label><input type="text" id="regName" aria-labelledby="registerHeading regNameLabel"></div>
-        <div class="form-group"><label for="regEmail">Email</label><input type="text" id="regEmail" aria-labelledby="registerHeading regEmailLabel"></div>
-        <div class="form-group"><label for="regPhone">Phone</label><input type="text" id="regPhone" aria-labelledby="registerHeading regPhoneLabel"></div>
-        <div class="form-group"><label for="regId">ID Number</label><input type="text" id="regId" aria-labelledby="registerHeading regIdLabel"></div>
+        <div class="form-group"><label for="regNameRegister">Name</label><input type="text" id="regNameRegister" aria-labelledby="registerHeading regNameLabel"></div>
+        <div class="form-group"><label for="regEmailRegister">Email</label><input type="text" id="regEmailRegister" aria-labelledby="registerHeading regEmailLabel"></div>
+        <div class="form-group"><label for="regPhoneRegister">Phone</label><input type="text" id="regPhoneRegister" aria-labelledby="registerHeading regPhoneLabel"></div>
+        <div class="form-group"><label for="regIdRegister">ID Number</label><input type="text" id="regIdRegister" aria-labelledby="registerHeading regIdLabel"></div>
         <button class="btn btn-success" onclick="registerMember()" aria-label="Register Member" tabindex="0">Register</button>
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
