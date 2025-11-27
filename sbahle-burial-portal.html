@@ -5,7 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Sbahle Burial Society</title>
   <style>
+ 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+          .bg-blue-light { background: #f0f9ff; }
+          .border-radius-8 { border-radius: 8px; }
+          .margin-bottom-20 { margin-bottom: 20px; }
+          .bg-blue-border { border-left: 4px solid #667eea; }
+          .margin-bottom-15 { margin-bottom: 15px; }
+          .display-none { display: none; }
+          .max-width-100 { max-width: 100%; }
+          .border-1-solid-gray { border: 1px solid #ddd; }
+        .margin-top-20 { margin-top: 20px; }
+        .display-none { display: none; }
+        .font-size-16 { font-size: 16px; }
+        .margin-bottom-10 { margin-bottom: 10px; }
+        .border-2-solid-green { border: 2px solid #48bb78; }
+        .border-radius-8 { border-radius: 8px; }
+        .padding-15 { padding: 15px; }
+        .bg-green-light { background: #f0fff4; }
+        .max-width-100 { max-width: 100%; }
+        .max-height-150 { max-height: 150px; }
+        .color-green { color: #48bb78; }
+        .margin-top-10 { margin-top: 10px; }
+      .display-none { display: none; }
+      .margin-0 { margin: 0; }
+      .font-size-16 { font-size: 16px; }
+      .font-size-13 { font-size: 13px; }
+      .margin-bottom-15 { margin-bottom: 15px; }
+      .border-2-dashed-blue { border: 2px dashed #667eea; }
+      .border-2-solid-green { border: 2px solid #48bb78; }
+      .border-2-solid-gray { border: 2px solid #ddd; }
+      .border-2-solid-orange { border: 2px solid #ed8936; }
+      .bg-green-light { background: #f0fff4; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .center-text { text-align: center; }
+    .justify-center { justify-content: center; }
+    .bg-blue-light { background: #f0f9ff; }
+    .bg-blue-lighter { background: #f7fafc; }
+    .bg-blue-border { border-left: 4px solid #667eea; }
+    .bg-orange-border { border: 1px solid #ed8936; }
+    .bg-orange-light { background: #fff4e6; }
+    .bg-white { background: white; }
+    .border-radius-8 { border-radius: 8px; }
+    .border-radius-5 { border-radius: 5px; }
+    .border-radius-10 { border-radius: 10px; }
+    .border-blue { border: 1px solid #3b82f6; }
+    .border-gray { border: 1px solid #ddd; }
+    .padding-15 { padding: 15px; }
+    .padding-10 { padding: 10px; }
+    .margin-bottom-20 { margin-bottom: 20px; }
+    .margin-bottom-10 { margin-bottom: 10px; }
+    .margin-bottom-0 { margin-bottom: 0; }
+    .margin-top-20 { margin-top: 20px; }
+    .margin-top-10 { margin-top: 10px; }
+    .margin-top-15 { margin-top: 15px; }
+    .margin-20-0 { margin: 20px 0; }
+    .margin-right-10 { margin-right: 10px; }
+    .margin-right-5 { margin-right: 5px; }
+    .overflow-x-auto { overflow-x: auto; }
+    .gap-10 { gap: 10px; }
+    .gap-15 { gap: 15px; }
+    .display-flex { display: flex; }
+    .display-grid { display: grid; }
+    .align-center { align-items: center; }
+    .flex-wrap { flex-wrap: wrap; }
+    .width-auto { width: auto; }
+    .color-gray { color: #666; }
+    .color-blue-dark { color: #4a5568; }
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
     body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
     .container { max-width: 1200px; margin: 0 auto; }
     .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
@@ -60,8 +128,13 @@
   <div class="container">
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
+<<<<<<< HEAD
       <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
       <div class="tabs" style="justify-content: center;">
+=======
+      <h1 class="center-text">🏛️ Sbahle Burial Society</h1>
+      <div class="tabs justify-center">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
@@ -136,8 +209,13 @@
             <option value="">-- Select --</option>
           </select>
         </div>
+<<<<<<< HEAD
         <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
         <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+=======
+        <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+        <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
 
       <div id="payoutsTab" class="hidden">
@@ -158,6 +236,7 @@
 
       <div id="attendanceTab" class="hidden">
         <h2>Meeting Attendance</h2>
+<<<<<<< HEAD
         <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
           <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
           <p style="margin-top: 10px; color: #4a5568;">Track attendance, manage meetings, and generate reports</p>
@@ -170,13 +249,32 @@
             <input type="date" id="meetingDate" onchange="showAttendanceList()">
           </div>
           <div class="form-group" style="margin: 0;">
+=======
+        <div class="bg-blue-light padding-15 border-radius-8 margin-bottom-20">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
             <label>Meeting Time</label>
             <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
           </div>
         </div>
       
+<<<<<<< HEAD
         <div class="grid-2" style="gap: 15px; margin-top: 15px;">
           <div class="form-group" style="margin: 0;">
+=======
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
             <label>Meeting Type</label>
             <select id="meetingType" onchange="updateMeetingDetails()">
               <option value="general">General Meeting</option>
@@ -185,7 +283,11 @@
               <option value="emergency">Emergency Meeting</option>
             </select>
           </div>
+<<<<<<< HEAD
           <div class="form-group" style="margin: 0;">
+=======
+          <div class="form-group margin-0">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
             <label>Meeting Description</label>
             <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
                       placeholder="Brief description of meeting agenda/purpose"></textarea>
@@ -193,6 +295,7 @@
         </div>
 
         <!-- Search and Filter Section -->
+<<<<<<< HEAD
         <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <div class="grid-2" style="gap: 15px;">
             <div class="form-group" style="margin: 0;">
@@ -203,11 +306,26 @@
             </div>
             <div style="display: flex; gap: 10px;">
               <select id="statusFilter" onchange="filterAttendanceMembers()" style="width: auto;">
+=======
+        <div class="padding-15 border-radius-8 margin-20-0" style="background: #edf2f7;">
+          <div class="grid-2 gap-15">
+            <div class="form-group margin-0">
+              <input type="text" id="memberSearch" 
+                placeholder="Search members..." 
+                onkeyup="filterAttendanceMembers()">
+            </div>
+            <div class="display-flex gap-10">
+              <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
                 <option value="all">All Status</option>
                 <option value="present">Present Only</option>
                 <option value="absent">Absent Only</option>
               </select>
+<<<<<<< HEAD
               <select id="sortBy" onchange="filterAttendanceMembers()" style="width: auto;">
+=======
+              <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
                 <option value="name">Sort by Name</option>
                 <option value="time">Sort by Time In</option>
                 <option value="status">Sort by Status</option>
@@ -217,25 +335,41 @@
         </div>
 
         <!-- Attendance Stats -->
+<<<<<<< HEAD
         <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div>
               <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
               <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
+=======
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
               <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
             </div>
             <div>
               <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
               <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
               <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+<<<<<<< HEAD
                 <span style="margin-right: 5px;">📥</span> Download Register
+=======
+                <span class="margin-right-5">📥</span> Download Register
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
               </button>
             </div>
           </div>
         </div>
 
         <!-- Attendance List -->
+<<<<<<< HEAD
         <div class="table-container" style="margin-top: 20px; overflow-x: auto;">
+=======
+        <div class="table-container margin-top-20 overflow-x-auto">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
           <table class="table" style="width: 100%;">
             <thead>
               <tr>
@@ -255,6 +389,7 @@
 
       <div id="dataTab" class="hidden">
         <h2>Data Management</h2>
+<<<<<<< HEAD
         <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
           <p style="margin-bottom: 10px;"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
           <p style="margin-bottom: 0;"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
@@ -308,6 +443,61 @@
             </div>
             <div style="margin-top: 15px; padding: 10px; background: white; border-radius: 5px;">
               <div style="font-size: 13px; color: #666;">
+=======
+        <div class="bg-blue-light padding-15 border-radius-8 margin-bottom-20 bg-blue-border">
+          <p class="margin-bottom-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
+          <p class="margin-bottom-0"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
+        </div>
+        
+        <div class="display-grid gap-15">
+          <div class="bg-white padding-15 border-gray border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+            <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+            <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+          </div>
+          
+          <div class="bg-white padding-15 border-gray border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+            <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+            <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+            <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+          </div>
+          
+          <div class="bg-white padding-15 border-gray border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+            <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+            <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+          </div>
+          
+          <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+            <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+            <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+          </div>
+          
+          <div class="bg-blue-light padding-15 border-blue border-radius-8">
+            <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+            <div class="display-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+              <div class="center-text padding-10 bg-white border-radius-5">
+                <div style="font-size: 24px; font-weight: bold; color: #10b981;" id="totalMembers">0</div>
+                <div class="font-size-13 color-gray">Total Members</div>
+              </div>
+              <div class="center-text padding-10 bg-white border-radius-5">
+                <div style="font-size: 24px; font-weight: bold; color: #3b82f6;" id="totalMeetings">0</div>
+                <div class="font-size-13 color-gray">Total Meetings</div>
+              </div>
+              <div class="center-text padding-10 bg-white border-radius-5">
+                <div style="font-size: 24px; font-weight: bold; color: #8b5cf6;" id="totalBeneficiaries">0</div>
+                <div class="font-size-13 color-gray">Beneficiaries</div>
+              </div>
+              <div class="center-text padding-10 bg-white border-radius-5">
+                <div style="font-size: 24px; font-weight: bold; color: #f59e0b;" id="totalPayouts">0</div>
+                <div class="font-size-13 color-gray">Payouts</div>
+              </div>
+            </div>
+            <div class="margin-top-15 padding-10 bg-white border-radius-5">
+              <div class="font-size-13 color-gray">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
                 <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
                 <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
                 <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
@@ -363,6 +553,7 @@
 
       <div id="memberSignatureTab" class="hidden">
         <h2>Digital Signature</h2>
+<<<<<<< HEAD
         <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
           <p><strong>✍️ Draw your signature below:</strong></p>
         </div>
@@ -374,6 +565,19 @@
         <div id="currentSignature" style="display:none;">
           <h3>Your Current Signature:</h3>
           <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;">
+=======
+        <div class="bg-blue-light padding-15 border-radius-8 margin-bottom-20 bg-blue-border">
+          <p><strong>✍️ Draw your signature below:</strong></p>
+        </div>
+        <canvas id="signatureCanvas" width="600" height="200"></canvas>
+        <div class="margin-bottom-15">
+          <button class="btn btn-warning" onclick="clearSignature()">Clear</button>
+          <button class="btn btn-success" onclick="saveSignature()">Save Signature</button>
+        </div>
+        <div id="currentSignature" class="display-none">
+          <h3>Your Current Signature:</h3>
+          <img id="savedSignature" class="max-width-100 border-1-solid-gray border-radius-8">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         </div>
       </div>
       <div class="header">
@@ -423,7 +627,10 @@
             <tr>
               <th>Name</th>
               <th>Relationship</th>
+<<<<<<< HEAD
               <th>ID Number</th>
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
               <th>Allocation %</th>
               <th>Actions</th>
             </tr>
@@ -461,12 +668,21 @@
         </div>
         
         <!-- Display saved signature -->
+<<<<<<< HEAD
         <div id="savedSignaturePreview" style="margin-top: 20px; display: none;">
           <h3 style="font-size: 16px; margin-bottom: 10px;">Saved Signature:</h3>
           <div style="border: 2px solid #48bb78; border-radius: 8px; padding: 15px; background: #f0fff4;">
             <img id="savedSignatureImg" src="" style="max-width: 100%; height: auto; max-height: 150px;">
           </div>
           <p style="color: #48bb78; margin-top: 10px;">✓ This signature will appear in attendance records</p>
+=======
+        <div id="savedSignaturePreview" class="margin-top-20 display-none">
+          <h3 class="font-size-16 margin-bottom-10">Saved Signature:</h3>
+          <div class="border-2-solid-green border-radius-8 padding-15 bg-green-light">
+            <img id="savedSignatureImg" src="" class="max-width-100 max-height-150">
+          </div>
+          <p class="color-green margin-top-10">✓ This signature will appear in attendance records</p>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         </div>
       </div>
 
@@ -1135,13 +1351,20 @@
           html += '<tr>';
           html += '<td>' + (b.name || 'N/A') + '</td>';
           html += '<td>' + (b.relationship || 'N/A') + '</td>';
+<<<<<<< HEAD
           html += '<td>' + (b.idNum || 'N/A') + '</td>';
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
           html += '<td><strong>' + (b.percentage || 0) + '%</strong></td>';
           html += '<td><button class="btn btn-danger btn-sm" onclick="removeMemBen(' + i + ')">Remove</button></td>';
           html += '</tr>';
         });
       } else {
+<<<<<<< HEAD
         html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>';
+=======
+        html = '<tr><td colspan="4" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>';
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       }
       
       console.log('Generated HTML:', html.substring(0, 200));
@@ -1278,7 +1501,10 @@
         <h2>Add Beneficiary for ${m.name}</h2>
         <div class="form-group"><label>Name</label><input type="text" id="benName"></div>
         <div class="form-group"><label>Relationship</label><select id="benRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+<<<<<<< HEAD
         <div class="form-group"><label>ID Number</label><input type="text" id="benId"></div>
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="benPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="saveBen('${memId}')">Save</button>
       `);
@@ -1287,10 +1513,16 @@
     function saveBen(memId) {
       const name = document.getElementById('benName').value;
       const rel = document.getElementById('benRel').value;
+<<<<<<< HEAD
       const idNum = document.getElementById('benId').value;
       const perc = document.getElementById('benPerc').value;
       if (!name || !rel || !idNum || !perc) { alert('Fill all'); return; }
       beneficiaries.push({ id: 'B' + Date.now(), memberId: memId, name, relationship: rel, idNum, percentage: parseInt(perc) });
+=======
+      const perc = document.getElementById('benPerc').value;
+      if (!name || !rel || !perc) { alert('Fill all'); return; }
+      beneficiaries.push({ id: 'B' + Date.now(), memberId: memId, name, relationship: rel, percentage: parseInt(perc) });
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       saveDataToStorage(); // Auto-save
       closeModal();
       loadBeneficiaries();
@@ -1430,7 +1662,10 @@
         <h2>Add Beneficiary</h2>
         <div class="form-group"><label>Name</label><input type="text" id="memBenName"></div>
         <div class="form-group"><label>Relationship</label><select id="memBenRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+<<<<<<< HEAD
         <div class="form-group"><label>ID Number</label><input type="text" id="memBenId"></div>
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="memBenPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="addMemBen()">Add</button>
       `);
@@ -1439,10 +1674,16 @@
     function addMemBen() {
       const name = document.getElementById('memBenName').value;
       const rel = document.getElementById('memBenRel').value;
+<<<<<<< HEAD
       const idNum = document.getElementById('memBenId').value;
       const perc = document.getElementById('memBenPerc').value;
       if (!name || !rel || !idNum || !perc) { alert('Fill all'); return; }
       tempBeneficiaries.push({ id: 'BT' + Date.now(), memberId: currentUser.id, name, relationship: rel, idNum, percentage: parseInt(perc) });
+=======
+      const perc = document.getElementById('memBenPerc').value;
+      if (!name || !rel || !perc) { alert('Fill all'); return; }
+      tempBeneficiaries.push({ id: 'BT' + Date.now(), memberId: currentUser.id, name, relationship: rel, percentage: parseInt(perc) });
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       closeModal();
       displayMemBen();
       document.getElementById('saveBenMemBtn').classList.remove('hidden');

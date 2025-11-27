@@ -6,6 +6,7 @@
   <title>Welcome to Sbahle Burial Society</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="sbs-init.js"></script>
+ 
   <!-- Firebase App (the core Firebase SDK) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <!-- Firebase Analytics -->
@@ -26,6 +27,9 @@
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
   </script>
+ 
+  <!-- <script src="firebase-init.js"></script> -->
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
   <style>
         /* Moved from inline styles */
         #cloudSyncStatus {
@@ -61,6 +65,7 @@
         .center-text { text-align: center; }
         .justify-center { justify-content: center; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+<<<<<<< HEAD
     body {
       font-family: Arial, sans-serif;
       min-height: 100vh;
@@ -131,6 +136,10 @@
       max-width: 1200px;
       margin: 0 auto;
     }
+=======
+    body { font-family: Arial, sans-serif; background: #4B4FA3; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .card { background: #fff; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .hidden { display: none !important; }
     
@@ -176,8 +185,13 @@
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
 <<<<<<< HEAD
+<<<<<<< HEAD
     .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; }
     .tab.active { background: #667eea; color: white; }
+=======
+    .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; color: #222; }
+    .tab.active { background: #2B3674; color: #fff; }
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
 =======
     .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; color: #222; }
     .tab.active { background: #2B3674; color: #fff; }
@@ -187,6 +201,7 @@
     input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
     input:disabled { background: #f0f0f0; }
     .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; margin-right: 5px; margin-bottom: 5px; font-size: 13px; }
+<<<<<<< HEAD
 <<<<<<< HEAD
     .btn-primary { background: #667eea; color: white; }
     .btn-success { background: #48bb78; color: white; }
@@ -208,6 +223,8 @@
     .badge-approved { background: #bee3f8; color: #2c5282; }
     .stat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .btn-primary { background: #2B3674; color: #fff; }
     .btn-success { background: #217A3B; color: #fff; }
     .btn-danger { background: #B91C1C; color: #fff; }
@@ -227,6 +244,9 @@
     .badge-pending { background: #FFF7E6; color: #78350F; }
     .badge-approved { background: #E0E7FF; color: #3730A3; }
     .stat { background: linear-gradient(135deg, #2B3674 0%, #764ba2 100%); color: #fff; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .stat h3 { font-size: 12px; margin-bottom: 8px; }
     .stat .value { font-size: 24px; font-weight: bold; }
@@ -240,6 +260,7 @@
     canvas { border: 1px solid #ccc; border-radius: 5px; display: block; margin-bottom: 10px; cursor: crosshair; }
     .file-input { margin-bottom: 10px; }
 <<<<<<< HEAD
+<<<<<<< HEAD
     .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #667eea; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; }
     .file-label:hover { background: #cbd5e0; }
     @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } }
@@ -247,6 +268,8 @@
 </head>
 <body>
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
     .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #2B3674; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; color: #222; }
     .file-label:hover { background: #cbd5e0; }
     @media (max-width: 768px) {
@@ -280,9 +303,15 @@
       <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
       <div class="tabs" style="justify-content: center;">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
+=======
+        <button class="tab active" onclick="showLoginForm('admin')" aria-label="Show Admin Login Form" tabindex="0">Admin</button>
+        <button class="tab" onclick="showLoginForm('member')" aria-label="Show Member Login Form" tabindex="0">Member</button>
+        <button class="tab" onclick="showLoginForm('register')" aria-label="Show Register Form" tabindex="0">Register</button>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
 =======
         <button class="tab active" onclick="showLoginForm('admin')" aria-label="Show Admin Login Form" tabindex="0">Admin</button>
         <button class="tab" onclick="showLoginForm('member')" aria-label="Show Member Login Form" tabindex="0">Member</button>
@@ -292,6 +321,7 @@
       <div id="alertMsg"></div>
 
       <div id="adminForm">
+<<<<<<< HEAD
 <<<<<<< HEAD
         <h2>Admin Login</h2>
         <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin"></div>
@@ -313,6 +343,8 @@
         <div class="form-group"><label>ID Number</label><input type="text" id="regId"></div>
         <button class="btn btn-success" onclick="registerMember()">Register</button>
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         <h2 id="adminLoginHeading">Admin Login</h2>
         <div class="form-group"><label for="adminEmail">Email</label><input type="text" id="adminEmail" value="admin" aria-labelledby="adminLoginHeading adminEmailLabel"></div>
         <div class="form-group"><label for="adminPassword">Password</label><input type="password" id="adminPassword" value="admin123" aria-labelledby="adminLoginHeading adminPasswordLabel"></div>
@@ -332,6 +364,9 @@
         <div class="form-group"><label for="regPhone">Phone</label><input type="text" id="regPhone" aria-labelledby="registerHeading regPhoneLabel"></div>
         <div class="form-group"><label for="regId">ID Number</label><input type="text" id="regId" aria-labelledby="registerHeading regIdLabel"></div>
         <button class="btn btn-success" onclick="registerMember()" aria-label="Register Member" tabindex="0">Register</button>
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
     </div>
@@ -339,6 +374,7 @@
     <!-- ADMIN DASHBOARD -->
     <div id="adminPage" class="card hidden">
       <div class="header">
+<<<<<<< HEAD
 <<<<<<< HEAD
         <h1>Admin Dashboard</h1>
         <button class="btn btn-danger" onclick="logout()">Logout</button>
@@ -352,6 +388,8 @@
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         <h1 id="adminDashboardHeading">Admin Dashboard</h1>
         <button class="btn btn-danger" onclick="logout()" aria-label="Logout from Admin Dashboard" tabindex="0">Logout</button>
       </div>
@@ -362,6 +400,7 @@
         <button class="tab" onclick="adminTab('attendance', event)" aria-label="Show Attendance Tab" tabindex="0">Attendance</button>
         <button class="tab" onclick="adminTab('payouts', event)" aria-label="Show Payouts Tab" tabindex="0">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)" aria-label="Show Penalties Tab" tabindex="0">Penalties</button>
+<<<<<<< HEAD
         <button class="tab" onclick="adminTab('financials', event)" aria-label="Show Financials Tab" tabindex="0">Financials</button>
         <button class="tab" onclick="adminTab('data', event)" aria-label="Show Data Management Tab" tabindex="0">Data Management</button>
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
@@ -388,13 +427,24 @@
         </div>
       </div>
 
+=======
+        <button class="tab" onclick="adminTab('data', event)" aria-label="Show Data Management Tab" tabindex="0">Data Management</button>
+      </div>
+      <div id="adminAlert"></div>
+
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       <div id="overviewTab">
         <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
         <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
         <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
         <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+=======
+        <button class="btn btn-warning" onclick="checkMissed()" aria-label="Check Missed Payments" tabindex="0">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()" aria-label="Apply R30 Penalties" tabindex="0">Apply R30 Penalties</button>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
 =======
         <button class="btn btn-warning" onclick="checkMissed()" aria-label="Check Missed Payments" tabindex="0">Check Missed Payments</button>
         <button class="btn btn-warning" onclick="applyPen()" aria-label="Apply R30 Penalties" tabindex="0">Apply R30 Penalties</button>
@@ -505,7 +555,11 @@
           <table style="width: 100%; border-collapse: collapse; display: table; background: white;">
             <thead style="display: table-header-group; background: #667eea; color: white;">
               <tr style="display: table-row;">
+<<<<<<< HEAD
                 <!-- ID column removed -->
+=======
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">ID</th>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
                 <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Name</th>
                 <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Email</th>
                 <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
@@ -559,6 +613,7 @@
             <tbody id="payTable" style="display: table-row-group;"></tbody>
           </table>
         </div>
+<<<<<<< HEAD
         <div style="margin-top: 40px;">
           <h2>Member Contributions (Admin Review)</h2>
           <button class="btn btn-primary" onclick="exportContributionsCSV()">Export Contributions CSV</button>
@@ -578,6 +633,8 @@
             </table>
           </div>
         </div>
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       </div>
 
       <div id="penaltiesTab" class="hidden" style="min-height: 400px;">
@@ -728,6 +785,7 @@
       <div id="memberAlert"></div>
 
       <div id="memberProfileTab">
+<<<<<<< HEAD
         <h2>Profile</h2>
         <div class="form-group">
           <label>Name</label>
@@ -758,6 +816,38 @@
         <div id="currentSignature" style="display:none;">
           <h3>Your Current Signature:</h3>
           <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;">
+=======
+        <h2 id="memberProfileHeading">Profile</h2>
+        <div class="form-group">
+          <label for="profName">Name</label>
+          <input type="text" id="profName" disabled aria-labelledby="memberProfileHeading profNameLabel">
+        </div>
+        <div class="form-group">
+          <label for="profEmail">Email</label>
+          <input type="text" id="profEmail" disabled aria-labelledby="memberProfileHeading profEmailLabel">
+        </div>
+        <div class="form-group">
+          <label for="profPhone">Phone</label>
+          <input type="text" id="profPhone" disabled aria-labelledby="memberProfileHeading profPhoneLabel">
+        </div>
+        <button class="btn btn-warning" onclick="editProf()" aria-label="Edit Profile" tabindex="0">Edit Profile</button>
+        <button class="btn btn-success hidden" id="saveProf" onclick="saveProf()" aria-label="Save Profile" tabindex="0">Save</button>
+      </div>
+
+      <div id="memberSignatureTab" class="hidden">
+        <h2 id="memberSignatureHeading">Digital Signature</h2>
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+          <p><strong>✍️ Draw your signature below:</strong></p>
+        </div>
+        <canvas id="signatureCanvas" width="600" height="200" aria-label="Signature Drawing Area" tabindex="0"></canvas>
+        <div style="margin-bottom: 15px;">
+          <button class="btn btn-warning" onclick="clearSignature()" aria-label="Clear Signature" tabindex="0">Clear</button>
+          <button class="btn btn-success" onclick="saveSignature()" aria-label="Save Signature" tabindex="0">Save Signature</button>
+        </div>
+        <div id="currentSignature" style="display:none;">
+          <h3>Your Current Signature:</h3>
+          <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;" alt="Saved Signature Image">
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         </div>
       </div>
       <div class="header">
@@ -787,6 +877,7 @@
 
       <div id="contributionsTab" class="hidden">
         <h2>Contributions - R 170/Month Required</h2>
+<<<<<<< HEAD
         <form id="memberContributionForm" onsubmit="submitMemberContribution(event)" style="margin-bottom: 24px; background: #f8fafc; padding: 18px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(30,58,138,0.06);">
           <div class="form-group"><label for="contribDate">Date</label><input type="date" id="contribDate" required></div>
           <div class="form-group"><label for="contribAmt">Amount (R)</label><input type="number" id="contribAmt" min="170" value="170" required></div>
@@ -892,6 +983,16 @@
     document.addEventListener('DOMContentLoaded', function() {
       renderMemberContributions();
     });
+=======
+        <button class="btn btn-success" onclick="addContribModal()">+ Add Contribution</button>
+        <table>
+          <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>2025-03-15</td><td>R 170</td><td>Bank Transfer</td><td><span class="badge badge-approved">Verified</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
 
       <div id="memberBeneficiariesTab" class="hidden">
         <h2>My Beneficiaries</h2>
@@ -904,13 +1005,21 @@
             <tr>
               <th>Name</th>
               <th>Relationship</th>
+<<<<<<< HEAD
               <!-- ID Number column removed -->
+=======
+              <th>ID Number</th>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
               <th>Allocation %</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="memBenTableBody">
+<<<<<<< HEAD
             <tr><td colspan="4" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+=======
+            <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
           </tbody>
         </table>
       </div>
@@ -954,8 +1063,13 @@
   <!-- MODAL -->
   <div id="modal" class="modal">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
+=======
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <span class="close" onclick="closeModal()" aria-label="Close Modal" tabindex="0">&times;</span>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
 =======
     <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <span class="close" onclick="closeModal()" aria-label="Close Modal" tabindex="0">&times;</span>
@@ -966,7 +1080,10 @@
 
   <script>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
             // --- Keyboard Navigation for Tabs and Modal ---
             document.addEventListener('DOMContentLoaded', function() {
               // Tab navigation (left/right arrows)
@@ -1031,6 +1148,9 @@
           const el = document.getElementById('loadingSpinner');
           if (el) el.style.display = 'none';
         }
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
     // ===== DATA STORAGE SYSTEM =====
     const STORAGE_KEY = 'sbahle_burial_society_data';
@@ -1057,8 +1177,13 @@
       
       // Initialize other data arrays
       window.beneficiaries = [
+<<<<<<< HEAD
         { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', percentage: 50 },
         { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', percentage: 50 }
+=======
+        { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
+        { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 }
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       ];
       window.payouts = [
         { id: 'PO1', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 5000, reason: 'Funeral', status: 'Pending' }
@@ -1149,6 +1274,7 @@
     // Export data to JSON file
     function exportData() {
 <<<<<<< HEAD
+<<<<<<< HEAD
       try {
         const data = {
           members,
@@ -1175,6 +1301,8 @@
         showAlert('adminAlert', '⚠ Failed to export data', 'error');
       }
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       showSpinner('Exporting data...');
       setTimeout(() => {
         try {
@@ -1204,11 +1332,15 @@
         }
         hideSpinner();
       }, 600);
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
     
     // Import data from JSON file
     function importData(file) {
+<<<<<<< HEAD
 <<<<<<< HEAD
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -1229,6 +1361,8 @@
           showAlert('adminAlert', '⚠ Invalid data file', 'error');
         }
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       showSpinner('Importing data...');
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -1251,6 +1385,9 @@
           }
           hideSpinner();
         }, 600);
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
       };
       reader.readAsText(file);
@@ -1261,15 +1398,21 @@
       if (confirm('⚠ WARNING: This will delete ALL data permanently. Are you sure?')) {
         if (confirm('This action cannot be undone. Continue?')) {
 <<<<<<< HEAD
+<<<<<<< HEAD
           localStorage.removeItem(STORAGE_KEY);
           location.reload();
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
           showSpinner('Clearing all data...');
           setTimeout(() => {
             localStorage.removeItem(STORAGE_KEY);
             hideSpinner();
             location.reload();
           }, 800);
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
         }
       }
@@ -1336,6 +1479,7 @@
     }
 
     function saveSig() {
+<<<<<<< HEAD
       const signature = signatureCanvas.toDataURL();
       if (!currentUser) return;
       
@@ -1350,6 +1494,9 @@
         document.getElementById('currentSignature').style.display = 'block';
         document.getElementById('savedSignature').src = signature;
       }
+=======
+      showAlert('memberAlert', '✓ Signature saved!', 'success');
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
 
     // LOGIN
@@ -1415,16 +1562,26 @@
       document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
       document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
+<<<<<<< HEAD
       document.getElementById('financialsTab').classList.toggle('hidden', t !== 'financials');
       document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
       // Update active tab button
       document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
+=======
+      document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
+      
+      // Update active tab button
+      document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
+      if (e && e.target) e.target.classList.add('active');
+      
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       // Load content for active tab
       if (t === 'overview') { updateAdmin(); }
       if (t === 'members') { displayMem(); }
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
       if (t === 'attendance') { showAttendanceList(); }
+<<<<<<< HEAD
       if (t === 'payouts') { displayPayouts(); renderAdminContributions(); }
       if (t === 'penalties') { displayPenalties(); }
       if (t === 'financials') { renderFinancials(); }
@@ -1450,6 +1607,12 @@
           let tbody = document.getElementById('monthlyContribOverview');
           tbody.innerHTML = months.length ? months.map(m => `<tr><td>${m}</td><td>R ${monthly[m].total.toFixed(2)}</td><td>${monthly[m].count}</td></tr>`).join('') : '<tr><td colspan="3" style="text-align:center; color:#999;">No approved contributions</td></tr>';
         }
+=======
+      if (t === 'payouts') { displayPayouts(); }
+      if (t === 'penalties') { displayPenalties(); }
+      if (t === 'data') { updateStorageInfo(); }
+    }
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
     
     function updateStorageInfo() {
       document.getElementById('storageMembers').textContent = window.members ? window.members.length : 0;
@@ -1509,7 +1672,31 @@
       let html = '';
       (window.members || []).forEach(m => {
         html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
+<<<<<<< HEAD
           <td style="display
+=======
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.id}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.name}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.email}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.missedPayments}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
+            <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
+            ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
+            <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
+          </td>
+        </tr>`;
+      });
+      
+      const tableElement = document.getElementById('memTable');
+      if (tableElement) {
+        tableElement.innerHTML = html;
+      }
+    }
+
+    function displayPayouts() {
+      let html = '';
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       (window.payouts || []).forEach(p => {
         html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
           <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.memberName}</td>
@@ -1652,6 +1839,7 @@
       const phone = document.getElementById('newMPhone').value;
       const idNum = document.getElementById('newMId').value;
       if (!name || !email || !phone || !idNum) { alert('Fill all'); return; }
+<<<<<<< HEAD
       const newId = 'MEM' + String(memberIdCounter).padStart(3, '0');
       memberIdCounter++;
       members.push({ id: newId, name, email, phone, idNum, status: 'Active', missedPayments: 0 });
@@ -1660,6 +1848,29 @@
       displayMem();
       updateAdmin();
       showAlert('adminAlert', '✓ Member added!', 'success');
+=======
+      showSyncStatus('Saving to cloud...');
+      window.firebaseAddMember({ name, email, phone, idNum, status: 'Active', missedPayments: 0 })
+        .then(newId => {
+          closeModal();
+          displayMem();
+          updateAdmin();
+          showAlert('adminAlert', '✓ Member added (cloud sync)!', 'success');
+          showSyncStatus('Cloud synced', true);
+        })
+        .catch(err => {
+          showAlert('adminAlert', 'Cloud sync failed, saving locally.', 'error');
+          // fallback to local
+          const newId = 'MEM' + String(memberIdCounter).padStart(3, '0');
+          memberIdCounter++;
+          members.push({ id: newId, name, email, phone, idNum, status: 'Active', missedPayments: 0 });
+          saveDataToStorage();
+          closeModal();
+          displayMem();
+          updateAdmin();
+          showSyncStatus('Saved locally', false);
+        });
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
 
     function editMemModal(id) {
@@ -1681,11 +1892,14 @@
       m.phone = document.getElementById('editMPhone').value;
       m.status = document.getElementById('editMStatus').value;
 <<<<<<< HEAD
+<<<<<<< HEAD
       saveDataToStorage(); // Auto-save
       closeModal();
       displayMem();
       showAlert('adminAlert', '✓ Updated!', 'success');
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       showSyncStatus('Updating cloud...');
       window.firebaseUpdateMember(m)
         .then(() => {
@@ -1701,11 +1915,15 @@
           displayMem();
           showSyncStatus('Saved locally', false);
         });
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
 
     function delMem(id) {
       if (confirm('Delete member?')) {
+<<<<<<< HEAD
 <<<<<<< HEAD
         window.members = members.filter(m => m.id !== id);
         window.beneficiaries = beneficiaries.filter(b => b.memberId !== id);
@@ -1715,6 +1933,8 @@
         updateAdmin();
         showAlert('adminAlert', '✓ Deleted!', 'success');
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         showSyncStatus('Deleting from cloud...');
         window.firebaseDeleteMember(id)
           .then(() => {
@@ -1733,6 +1953,9 @@
             updateAdmin();
             showSyncStatus('Deleted locally', false);
           });
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
       }
     }
@@ -1743,12 +1966,15 @@
         m.status = 'Active';
         m.missedPayments = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
         saveDataToStorage(); // Auto-save
         displayMem();
         updateAdmin();
         showAlert('adminAlert', '✓ Reactivated!', 'success');
       }
 =======
+=======
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         showSyncStatus('Reactivating in cloud...');
         window.firebaseUpdateMember(m)
           .then(() => {
@@ -1776,6 +2002,9 @@
           icon.textContent = ok === undefined ? '☁️' : (ok ? '✅' : '⚠️');
           setTimeout(() => { el.style.display = 'none'; }, 2000);
         }
+<<<<<<< HEAD
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
+=======
 >>>>>>> d27854a (Allow any ID number length for beneficiaries)
     }
 
@@ -1788,6 +2017,10 @@
         <h2>Add Beneficiary for ${m.name}</h2>
         <div class="form-group"><label>Name</label><input type="text" id="benName"></div>
         <div class="form-group"><label>Relationship</label><select id="benRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+<<<<<<< HEAD
+=======
+        <div class="form-group"><label>ID Number</label><input type="text" id="benId" placeholder="Enter any ID or reference number"></div>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="benPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="saveBen('${memId}')">Save</button>
       `);
@@ -1796,9 +2029,16 @@
     function saveBen(memId) {
       const name = document.getElementById('benName').value;
       const rel = document.getElementById('benRel').value;
+<<<<<<< HEAD
       const perc = document.getElementById('benPerc').value;
       if (!name || !rel || !perc) { alert('Fill all'); return; }
       beneficiaries.push({ id: 'B' + Date.now(), memberId: memId, name, relationship: rel, percentage: parseInt(perc) });
+=======
+      const idNum = document.getElementById('benId').value;
+      const perc = document.getElementById('benPerc').value;
+      if (!name || !rel || !idNum || !perc) { alert('Fill all'); return; }
+      beneficiaries.push({ id: 'B' + Date.now(), memberId: memId, name, relationship: rel, idNum, percentage: parseInt(perc) });
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       saveDataToStorage(); // Auto-save
       closeModal();
       loadBeneficiaries();
@@ -1938,6 +2178,10 @@
         <h2>Add Beneficiary</h2>
         <div class="form-group"><label>Name</label><input type="text" id="memBenName"></div>
         <div class="form-group"><label>Relationship</label><select id="memBenRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+<<<<<<< HEAD
+=======
+        <div class="form-group"><label>ID Number</label><input type="text" id="memBenId" placeholder="Enter any ID or reference number"></div>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="memBenPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="addMemBen()">Add</button>
       `);
@@ -1946,9 +2190,16 @@
     function addMemBen() {
       const name = document.getElementById('memBenName').value;
       const rel = document.getElementById('memBenRel').value;
+<<<<<<< HEAD
       const perc = document.getElementById('memBenPerc').value;
       if (!name || !rel || !perc) { alert('Fill all'); return; }
       tempBeneficiaries.push({ id: 'BT' + Date.now(), memberId: currentUser.id, name, relationship: rel, percentage: parseInt(perc) });
+=======
+      const idNum = document.getElementById('memBenId').value;
+      const perc = document.getElementById('memBenPerc').value;
+      if (!name || !rel || !idNum || !perc) { alert('Fill all'); return; }
+      tempBeneficiaries.push({ id: 'BT' + Date.now(), memberId: currentUser.id, name, relationship: rel, idNum, percentage: parseInt(perc) });
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
       closeModal();
       displayMemBen();
       document.getElementById('saveBenMemBtn').classList.remove('hidden');
@@ -2200,8 +2451,13 @@
 
       filteredMembers.forEach((member, index) => {
         const isPresent = attendance[date].present.includes(member.id);
+<<<<<<< HEAD
         const timeIn = attendance[date].timeIn[member.id] || '';
         const remarks = attendance[date].remarks[member.id] || '';
+=======
+        const timeIn = attendance[date].timeIn?.[member.id] || '';
+        const remarks = attendance[date].remarks?.[member.id] || '';
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -2380,6 +2636,7 @@
               remarks: {}
             };
           }
+<<<<<<< HEAD
           
           // Show attendance table
           const tbody = document.getElementById('attendanceTableBody');
@@ -2443,11 +2700,18 @@
 
           // Save data
           localStorage.setItem('attendance', JSON.stringify(attendance));
+=======
+          // ...existing code to render attendance table and update UI...
+          // (You may need to move the table rendering code here)
+          // Show meeting history
+          showMeetingHistory();
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         })
         .catch(err => {
           hideSpinner();
           showAlert('adminAlert', 'Cloud sync failed, loading local data.', 'error');
           // fallback to local
+<<<<<<< HEAD
           const attendance = JSON.parse(localStorage.getItem('attendance'));
           if (!attendance[date]) {
             attendance[date] = {
@@ -2520,6 +2784,9 @@
 
           // Show meeting history
           showMeetingHistory();
+=======
+          // ...existing code to load from localStorage and render table...
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
         });
     }
 
