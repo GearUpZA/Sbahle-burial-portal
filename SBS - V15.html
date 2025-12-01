@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Sbahle Burial Society</title>
+  <!-- Styles and content copied from sbahle-burial-portal.html for further improvements. -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
@@ -53,11 +54,13 @@
     .file-input { margin-bottom: 10px; }
     .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #667eea; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; }
     .file-label:hover { background: #cbd5e0; }
-    /* Batch-converted classes for inline styles */
-    .d-none { display: none !important; }
-    .bg-f0f9ff { background: #f0f9ff !important; }
-    .bg-edf2f7 { background: #edf2f7 !important; }
-    .bg-f7fafc { background: #f7fafc !important; }
+  </style>
+</head>
+<body>
+  <!-- Content copied from sbahle-burial-portal.html. Further improvements will be made here. -->
+  <!-- ...existing code... -->
+</body>
+</html>
     .bg-fff4e6 { background: #fff4e6 !important; }
     .border-radius-8 { border-radius: 8px !important; }
     .border-radius-5 { border-radius: 5px !important; }
@@ -149,7 +152,65 @@
         <button class="tab" onclick="adminTab('attendance', event)">Attendance</button>
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
+        <button class="tab" onclick="adminTab('documents', event)">Documents</button>
+        <button class="tab" onclick="adminTab('constitution', event)">Constitution</button>
+        <button class="tab" onclick="adminTab('monitoring', event)">Monitoring</button>
+        <button class="tab" onclick="adminTab('financial', event)">Financial</button>
+        <button class="tab" onclick="adminTab('docs', event)">Documentation</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
+                  <!-- Constitution Tab (Admin) -->
+                  <div id="constitutionTab" class="hidden">
+                    <h2>Constitution Document</h2>
+                    <div class="file-input">
+                      <label>Upload Constitution (PDF/DOC/DOCX, max 10MB)</label>
+                      <input type="file" id="constitutionFile" accept=".pdf,.doc,.docx">
+                    </div>
+                    <input type="text" id="constitutionTitle" placeholder="Document Title" class="form-group">
+                    <input type="text" id="constitutionNotes" placeholder="Version/Notes (optional)" class="form-group">
+                    <button class="btn btn-success" onclick="uploadConstitution()">Upload Constitution</button>
+                    <div id="constitutionInfo" class="margin-top-20"></div>
+                  </div>
+
+                  <!-- Monitoring Tab (Admin) -->
+                  <div id="monitoringTab" class="hidden">
+                    <h2>Monitoring & Signature Status</h2>
+                    <button class="btn btn-primary" onclick="showMonitoringDoc('MONITORING-SCHEDULE.md')">Sync Monitoring Schedule</button>
+                    <button class="btn btn-primary" onclick="showMonitoringDoc('MEMBER-SIGNATURE-STATUS.md')">Signature Status Report</button>
+                    <div id="monitoringDocContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
+                  </div>
+
+                  <!-- Documentation Tab (Admin) -->
+                  <div id="docsTab" class="hidden">
+                    <h2>System Documentation</h2>
+                    <ul>
+                      <li><a href="#" onclick="showDoc('CLOUD_STORAGE_SETUP.md')">Cloud Storage Setup Guide</a></li>
+                      <li><a href="#" onclick="showDoc('CLOUD-STORAGE-UPGRADE-ANALYSIS.md')">Cloud Storage Upgrade Analysis</a></li>
+                      <li><a href="#" onclick="showDoc('FINANCIAL-DASHBOARD-DOCS.md')">Financial Dashboard Docs</a></li>
+                      <li><a href="#" onclick="showDoc('FIREBASE_SETUP.md')">Firebase Setup</a></li>
+                      <li><a href="#" onclick="showDoc('FIX_API_KEY.md')">API Key Fix Guide</a></li>
+                      <li><a href="#" onclick="showDoc('MOBILE-SETUP-GUIDE.md')">Mobile Setup Guide</a></li>
+                    </ul>
+                    <div id="docContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
+                  </div>
+            <!-- Admin Documents Tab -->
+            <div id="documentsTab" class="hidden">
+              <h2>Documents Management</h2>
+              <div class="file-input">
+                <label>Upload Document (PDF/JPEG)</label>
+                <input type="file" id="adminDocFile" accept=".pdf,.jpg,.jpeg">
+              </div>
+              <button class="btn btn-success" onclick="uploadAdminDocument()">Upload Document</button>
+              <div id="adminDocumentsList" class="margin-top-20"></div>
+            </div>
+
+            <!-- Admin Financial Tab -->
+            <div id="financialTab" class="hidden">
+              <h2>Financial Overview</h2>
+              <div class="stat"><h3>Total Contributions</h3><div class="value" id="adminTotalContributions">R 0</div></div>
+              <div class="stat"><h3>Total Payouts</h3><div class="value" id="adminTotalPayouts">R 0</div></div>
+              <div class="stat"><h3>Balance</h3><div class="value" id="adminBalance">R 0</div></div>
+              <button class="btn btn-primary" onclick="refreshAdminFinancials()">Refresh</button>
+            </div>
       </div>
 
       <div id="overviewTab">
@@ -351,6 +412,124 @@
         <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
         <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
         <button class="tab" onclick="memberTab('documents', event)">Documents</button>
+        <button class="tab" onclick="memberTab('constitution', event)">Constitution</button>
+        <button class="tab" onclick="memberTab('financial', event)">Financial</button>
+        <button class="tab" onclick="memberTab('docs', event)">Documentation</button>
+      </div>
+            <!-- Constitution Tab (Member) -->
+            <div id="memberConstitutionTab" class="hidden">
+              <h2>Constitution Document</h2>
+              <div id="memberConstitutionInfo" class="margin-top-20"></div>
+            </div>
+
+            <!-- Documentation Tab (Member) -->
+            <div id="memberDocsTab" class="hidden">
+              <h2>System Documentation</h2>
+              <ul>
+                <li><a href="#" onclick="showDoc('CLOUD_STORAGE_SETUP.md')">Cloud Storage Setup Guide</a></li>
+                <li><a href="#" onclick="showDoc('CLOUD-STORAGE-UPGRADE-ANALYSIS.md')">Cloud Storage Upgrade Analysis</a></li>
+                <li><a href="#" onclick="showDoc('FINANCIAL-DASHBOARD-DOCS.md')">Financial Dashboard Docs</a></li>
+                <li><a href="#" onclick="showDoc('FIREBASE_SETUP.md')">Firebase Setup</a></li>
+                <li><a href="#" onclick="showDoc('FIX_API_KEY.md')">API Key Fix Guide</a></li>
+                <li><a href="#" onclick="showDoc('MOBILE-SETUP-GUIDE.md')">Mobile Setup Guide</a></li>
+              </ul>
+              <div id="docContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
+            </div>
+          // Constitution Document Storage
+          const CONSTITUTION_KEY = 'sbahle_constitution_doc';
+          function uploadConstitution() {
+            const fileInput = document.getElementById('constitutionFile');
+            const file = fileInput.files[0];
+            const title = document.getElementById('constitutionTitle').value || 'Constitution';
+            const notes = document.getElementById('constitutionNotes').value || '';
+            if (!file) { showAlert('adminAlert', 'Select a file', 'error'); return; }
+            if (file.size > 10 * 1024 * 1024) { showAlert('adminAlert', 'File too large (max 10MB)', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const doc = {
+                name: file.name,
+                title,
+                notes,
+                type: file.type,
+                data: e.target.result,
+                date: new Date().toISOString(),
+                size: file.size
+              };
+              localStorage.setItem(CONSTITUTION_KEY, JSON.stringify(doc));
+              showAlert('adminAlert', '✓ Constitution uploaded!', 'success');
+              renderConstitutionInfo();
+            };
+            reader.readAsDataURL(file);
+          }
+          function renderConstitutionInfo() {
+            const info = document.getElementById('constitutionInfo');
+            const docStr = localStorage.getItem(CONSTITUTION_KEY);
+            if (!info) return;
+            if (!docStr) {
+              info.innerHTML = '<p style="color:#999;">No constitution uploaded yet.</p>';
+              return;
+            }
+            const doc = JSON.parse(docStr);
+            info.innerHTML = `<div><strong>Title:</strong> ${doc.title}<br>
+              <strong>File:</strong> ${doc.name} (${(doc.size/1024).toFixed(1)} KB)<br>
+              <strong>Type:</strong> ${doc.type}<br>
+              <strong>Date:</strong> ${new Date(doc.date).toLocaleString()}<br>
+              <strong>Notes:</strong> ${doc.notes || '-'}<br>
+              <a href="${doc.data}" download="${doc.name}" class="btn btn-primary btn-sm">Download</a>
+              <button class="btn btn-danger btn-sm" onclick="deleteConstitution()">Delete</button>
+            </div>`;
+          }
+          function deleteConstitution() {
+            localStorage.removeItem(CONSTITUTION_KEY);
+            renderConstitutionInfo();
+            showAlert('adminAlert', '✓ Constitution deleted', 'success');
+          }
+          function renderMemberConstitutionInfo() {
+            const info = document.getElementById('memberConstitutionInfo');
+            const docStr = localStorage.getItem(CONSTITUTION_KEY);
+            if (!info) return;
+            if (!docStr) {
+              info.innerHTML = '<p style="color:#999;">No constitution uploaded yet.</p>';
+              return;
+            }
+            const doc = JSON.parse(docStr);
+            info.innerHTML = `<div><strong>Title:</strong> ${doc.title}<br>
+              <strong>File:</strong> ${doc.name} (${(doc.size/1024).toFixed(1)} KB)<br>
+              <strong>Type:</strong> ${doc.type}<br>
+              <strong>Date:</strong> ${new Date(doc.date).toLocaleString()}<br>
+              <strong>Notes:</strong> ${doc.notes || '-'}<br>
+              <a href="${doc.data}" download="${doc.name}" class="btn btn-primary btn-sm">Download</a>
+              <a href="${doc.data}" target="_blank" class="btn btn-success btn-sm">View</a>
+            </div>`;
+          }
+
+          // Documentation Viewer (loads static markdown as HTML)
+          const DOCS = {
+            'MONITORING-SCHEDULE.md': `# ⏰ SYNC MONITORING SCHEDULE - Version 2.6.0\n...\n(see file for full content)`,
+            'MEMBER-SIGNATURE-STATUS.md': `# Member Signature Status Report\n...\n(see file for full content)`,
+            'CLOUD_STORAGE_SETUP.md': `# Cloud Storage Setup Guide\n...\n(see file for full content)`,
+            'CLOUD-STORAGE-UPGRADE-ANALYSIS.md': `# ☁️ Cloud Storage Upgrade Analysis\n...\n(see file for full content)`,
+            'CONSTITUTION-FEATURE-ADDED.md': `# Constitution Upload Feature - Added Successfully\n...\n(see file for full content)`,
+            'FINANCIAL-DASHBOARD-DOCS.md': `# 📊 Financial Dashboard - Feature Documentation\n...\n(see file for full content)`,
+            'FIREBASE_SETUP.md': `# ☁️ Cloud Storage for Sbahle Burial Society\n...\n(see file for full content)`,
+            'FIX_API_KEY.md': `# 🔧 API Key Permission Issue\n...\n(see file for full content)`,
+            'MOBILE-SETUP-GUIDE.md': `# 📱 Sbahle Burial Society - Mobile Setup Guide\n...\n(see file for full content)`
+          };
+          function showDoc(docName) {
+            const content = DOCS[docName] || 'Document not found.';
+            document.getElementById('docContent').innerHTML = `<pre style="white-space:pre-wrap;">${content}</pre>`;
+          }
+          function showMonitoringDoc(docName) {
+            const content = DOCS[docName] || 'Document not found.';
+            document.getElementById('monitoringDocContent').innerHTML = `<pre style="white-space:pre-wrap;">${content}</pre>`;
+          }
+      <div id="memberFinancialTab" class="hidden">
+        <h2>My Financials</h2>
+        <div class="stat"><h3>Total Contributions</h3><div class="value" id="memberTotalContributions">R 0</div></div>
+        <div class="stat"><h3>Total Payouts</h3><div class="value" id="memberTotalPayouts">R 0</div></div>
+        <div class="stat"><h3>Balance</h3><div class="value" id="memberBalance">R 0</div></div>
+        <button class="btn btn-primary" onclick="refreshMemberFinancials()">Refresh</button>
+      </div>
       </div>
       <div id="memberAlert"></div>
 
@@ -501,6 +680,90 @@
   </div>
 
   <script>
+    // ===== DOCUMENTS STORAGE SYSTEM =====
+    // Store admin and member documents in localStorage as arrays of {id, name, type, data, uploadedBy, date}
+    const ADMIN_DOCS_KEY = 'sbahle_admin_documents';
+    const MEMBER_DOCS_KEY = 'sbahle_member_documents';
+
+    function getAdminDocuments() {
+      return JSON.parse(localStorage.getItem(ADMIN_DOCS_KEY) || '[]');
+    }
+    function setAdminDocuments(docs) {
+      localStorage.setItem(ADMIN_DOCS_KEY, JSON.stringify(docs));
+    }
+    function uploadAdminDocument() {
+      const fileInput = document.getElementById('adminDocFile');
+      const file = fileInput.files[0];
+      if (!file) { showAlert('adminAlert', 'Select a file to upload', 'error'); return; }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const docs = getAdminDocuments();
+        docs.push({
+          id: 'DOC' + Date.now(),
+          name: file.name,
+          type: file.type,
+          data: e.target.result,
+          uploadedBy: 'admin',
+          date: new Date().toISOString()
+        });
+        setAdminDocuments(docs);
+        fileInput.value = '';
+        showAlert('adminAlert', '✓ Document uploaded!', 'success');
+        renderAdminDocuments();
+      };
+      reader.readAsDataURL(file);
+    }
+    function renderAdminDocuments() {
+      const docs = getAdminDocuments();
+      const list = document.getElementById('adminDocumentsList');
+      if (!list) return;
+      if (docs.length === 0) {
+        list.innerHTML = '<p style="color:#999;">No documents uploaded yet.</p>';
+        return;
+      }
+      let html = '<ul style="list-style:none;padding:0;">';
+      docs.forEach(doc => {
+        html += `<li style="margin-bottom:10px;">
+          <strong>${doc.name}</strong> <span style="color:#666;font-size:12px;">(${doc.type})</span>
+          <a href="${doc.data}" download="${doc.name}" class="btn btn-primary btn-sm" style="margin-left:10px;">Download</a>
+          <button class="btn btn-danger btn-sm" onclick="deleteAdminDocument('${doc.id}')">Delete</button>
+          <span style="color:#aaa;font-size:11px;margin-left:10px;">${new Date(doc.date).toLocaleString()}</span>
+        </li>`;
+      });
+      html += '</ul>';
+      list.innerHTML = html;
+    }
+    function deleteAdminDocument(id) {
+      let docs = getAdminDocuments();
+      docs = docs.filter(d => d.id !== id);
+      setAdminDocuments(docs);
+      renderAdminDocuments();
+      showAlert('adminAlert', '✓ Document deleted', 'success');
+    }
+
+    // Member Financials: calculate from payouts and (future) contributions
+    function refreshMemberFinancials() {
+      // For demo, contributions are not tracked per member, so just show payouts
+      const member = currentUser;
+      if (!member) return;
+      let totalContrib = 0; // Placeholder, can be extended
+      let totalPayouts = payouts.filter(p => p.memberId === member.id).reduce((sum, p) => sum + (p.amount || 0), 0);
+      let balance = totalContrib - totalPayouts;
+      document.getElementById('memberTotalContributions').textContent = `R ${totalContrib}`;
+      document.getElementById('memberTotalPayouts').textContent = `R ${totalPayouts}`;
+      document.getElementById('memberBalance').textContent = `R ${balance}`;
+    }
+
+    // Admin Financials: sum all payouts and (future) contributions
+    function refreshAdminFinancials() {
+      // For demo, contributions are not tracked, so just show payouts
+      let totalContrib = 0; // Placeholder, can be extended
+      let totalPayouts = payouts.reduce((sum, p) => sum + (p.amount || 0), 0);
+      let balance = totalContrib - totalPayouts;
+      document.getElementById('adminTotalContributions').textContent = `R ${totalContrib}`;
+      document.getElementById('adminTotalPayouts').textContent = `R ${totalPayouts}`;
+      document.getElementById('adminBalance').textContent = `R ${balance}`;
+    }
     // ===== DATA STORAGE SYSTEM =====
     const STORAGE_KEY = 'sbahle_burial_society_data';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' }; // In production, hash this!
@@ -871,6 +1134,11 @@
       document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
       document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
+      document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
+      document.getElementById('constitutionTab').classList.toggle('hidden', t !== 'constitution');
+      document.getElementById('monitoringTab').classList.toggle('hidden', t !== 'monitoring');
+      document.getElementById('financialTab').classList.toggle('hidden', t !== 'financial');
+      document.getElementById('docsTab').classList.toggle('hidden', t !== 'docs');
       document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
       document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
@@ -879,7 +1147,6 @@
       if (t === 'payouts') displayPayouts();
       if (t === 'penalties') displayPenalties();
       if (t === 'attendance') { 
-        // Set today's date if not already set
         const dateInput = document.getElementById('meetingDate');
         if (!dateInput.value) {
           dateInput.value = new Date().toISOString().split('T')[0];
@@ -887,6 +1154,11 @@
         }
         showAttendanceList(); 
       }
+      if (t === 'documents') { renderAdminDocuments(); }
+      if (t === 'constitution') { renderConstitutionInfo(); }
+      if (t === 'monitoring') { showMonitoringDoc('MONITORING-SCHEDULE.md'); }
+      if (t === 'financial') { refreshAdminFinancials(); showDoc('FINANCIAL-DASHBOARD-DOCS.md'); }
+      if (t === 'docs') { showDoc('CLOUD_STORAGE_SETUP.md'); }
       if (t === 'data') { updateStorageInfo(); }
     }
     
@@ -902,23 +1174,18 @@
       document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
       document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
       document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
+      document.getElementById('memberConstitutionTab').classList.toggle('hidden', t !== 'constitution');
       document.getElementById('signatureTab').classList.toggle('hidden', t !== 'signature');
       document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
+      document.getElementById('memberFinancialTab').classList.toggle('hidden', t !== 'financial');
+      document.getElementById('memberDocsTab').classList.toggle('hidden', t !== 'docs');
       document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
       if (t === 'beneficiaries') {
-        // Refresh tempBeneficiaries from the main beneficiaries array
         tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
-        console.log('Beneficiaries tab clicked, count:', tempBeneficiaries.length);
-        console.log('Beneficiaries data:', tempBeneficiaries);
-        // Wait for the tab to be visible before rendering
-        setTimeout(() => {
-          console.log('Calling displayMemBen after tab is visible');
-          displayMemBen();
-        }, 50);
+        setTimeout(() => { displayMemBen(); }, 50);
       }
       if (t === 'signature') {
-        // Load saved signature if exists
         if (currentUser && currentUser.signature) {
           document.getElementById('savedSignatureImg').src = currentUser.signature;
           document.getElementById('savedSignaturePreview').style.display = 'block';
@@ -926,6 +1193,9 @@
           document.getElementById('savedSignaturePreview').style.display = 'none';
         }
       }
+      if (t === 'constitution') { renderMemberConstitutionInfo(); }
+      if (t === 'financial') { refreshMemberFinancials(); showDoc('FINANCIAL-DASHBOARD-DOCS.md'); }
+      if (t === 'docs') { showDoc('CLOUD_STORAGE_SETUP.md'); }
       if (t === 'payouts') displayMemPayouts();
     }
 

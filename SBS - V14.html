@@ -102,8 +102,8 @@
   <div class="container">
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
-      <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
-      <div class="tabs" style="justify-content: center;">
+      <h1 class="align-center">🏛️ Sbahle Burial Society</h1>
+      <div class="tabs justify-center">
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
@@ -161,25 +161,25 @@
       <!-- Attendance Tab -->
       <div id="attendanceTab" class="hidden">
         <h2>Meeting Attendance</h2>
-          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <div class="bg-blue-50 p-15 rounded-8 mb-20">
             <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
-            <p style="margin-top: 10px; color: #4a5568;">Track attendance, manage meetings, and generate reports</p>
+            <p class="mt-10 text-gray">Track attendance, manage meetings, and generate reports</p>
           </div>
 
           <!-- Meeting Details Section -->
-          <div class="grid-2" style="gap: 15px;">
-            <div class="form-group" style="margin: 0;">
+          <div class="grid-2 grid-gap-15">
+            <div class="form-group m-0">
               <label>Meeting Date</label>
               <input type="date" id="meetingDate" onchange="showAttendanceList()">
             </div>
-            <div class="form-group" style="margin: 0;">
+            <div class="form-group m-0">
               <label>Meeting Time</label>
               <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
             </div>
           </div>
         
-          <div class="grid-2" style="gap: 15px; margin-top: 15px;">
-            <div class="form-group" style="margin: 0;">
+          <div class="grid-2 grid-gap-15 mt-15">
+            <div class="form-group m-0">
               <label>Meeting Type</label>
               <select id="meetingType" onchange="updateMeetingDetails()">
                 <option value="general">General Meeting</option>
@@ -188,7 +188,7 @@
                 <option value="emergency">Emergency Meeting</option>
               </select>
             </div>
-            <div class="form-group" style="margin: 0;">
+            <div class="form-group m-0">
               <label>Meeting Description</label>
               <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
                         placeholder="Brief description of meeting agenda/purpose"></textarea>
@@ -196,22 +196,22 @@
           </div>
 
           <!-- Search and Filter Section -->
-          <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <div class="grid-2" style="gap: 15px;">
-              <div class="form-group" style="margin: 0;">
+          <div class="bg-blue-100 p-15 rounded-8 mt-20 mb-20">
+            <div class="grid-2 grid-gap-15">
+              <div class="form-group m-0">
                 <input type="text" id="memberSearch" 
                        placeholder="Search members..." 
                        onkeyup="filterMembers()"
-                       style="margin: 0;">
+                       class="m-0">
               </div>
-              <div style="display: flex; gap: 10px;">
-                <select id="statusFilter" onchange="filterMembers()" style="width: auto;">
+              <div class="d-flex grid-gap-10">
+                <select id="statusFilter" onchange="filterMembers()" class="w-auto">
                   <option value="all">All Status</option>
                   <option value="present">Present Only</option>
                   <option value="absent">Absent Only</option>
                   <option value="nosig">No Signature</option>
                 </select>
-                <select id="sortBy" onchange="filterMembers()" style="width: auto;">
+                <select id="sortBy" onchange="filterMembers()" class="w-auto">
                   <option value="name">Sort by Name</option>
                   <option value="time">Sort by Time In</option>
                   <option value="status">Sort by Status</option>
@@ -221,26 +221,26 @@
           </div>
 
           <!-- Attendance Stats -->
-          <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="bg-blue-200 p-15 rounded-8 mb-20">
+            <div class="d-flex justify-content-between align-center">
               <div>
-                <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
-                <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
+                <span id="presentCount" class="badge badge-active mr-10">Present: 0</span>
+                <span id="absentCount" class="badge badge-suspended mr-10">Absent: 0</span>
                 <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
               </div>
               <div>
                 <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
                 <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
                 <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
-                  <span style="margin-right: 5px;">📥</span> Download Register
+                  <span class="mr-5">📥</span> Download Register
                 </button>
               </div>
             </div>
         </div>
 
         <!-- Attendance List -->
-        <div class="table-container" style="margin-top: 20px;">
-          <table class="table" style="width: 100%;">
+        <div class="table-container mt-20">
+          <table class="table w-100">
             <thead>
               <tr>
                 <th>Member Name</th>
@@ -283,19 +283,19 @@
             <option value="">-- Select --</option>
           </select>
         </div>
-        <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
-        <div style="overflow-x: auto; margin-top: 20px;">
-          <table id="benTable" style="width: 100%; border-collapse: collapse; display: table;">
-            <thead style="display: table-header-group; background: #667eea; color: white;">
-              <tr style="display: table-row;">
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Name</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Relationship</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">ID</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">%</th>
-                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
+        <button class="btn btn-success d-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+        <div class="overflow-x-auto mt-20">
+          <table id="benTable" class="w-100 table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Relationship</th>
+                <th>ID</th>
+                <th>%</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="benTableBody" style="display: table-row-group;"></tbody>
+            <tbody id="benTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -1001,12 +1001,12 @@
     function displayPayouts() {
       let html = '';
       (window.payouts || []).forEach(p => {
-        html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.memberName}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">R ${p.amount}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.reason}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
+        html += `<tr>
+          <td>${p.memberName}</td>
+          <td>R ${p.amount}</td>
+          <td>${p.reason}</td>
+          <td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td>
+          <td>
             ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
           </td>
         </tr>`;
@@ -1017,12 +1017,12 @@
     function displayPenalties() {
       let html = '';
       (window.penalties || []).forEach(p => {
-        html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.memberName}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">R ${p.amount}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.date}</td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td>
-          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
+        html += `<tr>
+          <td>${p.memberName}</td>
+          <td>R ${p.amount}</td>
+          <td>${p.date}</td>
+          <td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td>
+          <td>
             <button class="btn btn-success btn-sm" onclick="payPen('${p.id}')">Mark Paid</button>
           </td>
         </tr>`;
@@ -1038,7 +1038,14 @@
 
     function loadBeneficiaries() {
       const id = document.getElementById('memSelectBen').value;
-      document.getElementById('addBenBtn').style.display = id ? 'block' : 'none';
+      const addBtn = document.getElementById('addBenBtn');
+      if (addBtn) {
+        if (id) {
+          addBtn.classList.remove('d-none');
+        } else {
+          addBtn.classList.add('d-none');
+        }
+      }
       const bens = (window.beneficiaries || []).filter(b => b.memberId === id);
       let html = '';
       if (bens.length > 0) {
@@ -1049,9 +1056,9 @@
           </td></tr>`;
         });
       } else if (id) {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added for this member</td></tr>';
+        html = '<tr><td colspan="5" class="text-center text-muted">No beneficiaries added for this member</td></tr>';
       } else {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">Please select a member</td></tr>';
+        html = '<tr><td colspan="5" class="text-center text-muted">Please select a member</td></tr>';
       }
       document.getElementById('benTableBody').innerHTML = html;
     }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,8 +70,8 @@
 
       <div id="adminForm">
         <h2>Admin Login</h2>
-        <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123"></div>
+        <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin" placeholder="Enter email" title="Admin email"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123" placeholder="Enter password" title="Admin password"></div>
         <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
       </div>
 
@@ -280,19 +280,19 @@
         </div>
 
         <!-- Meeting Details Section -->
-        <div class="grid-2" style="gap: 15px;">
-          <div class="form-group" style="margin: 0;">
+        <div class="grid-2 grid-gap-15">
+          <div class="form-group m-0">
             <label>Meeting Date</label>
             <input type="date" id="meetingDate" onchange="showAttendanceList()">
           </div>
-          <div class="form-group" style="margin: 0;">
+          <div class="form-group m-0">
             <label>Meeting Time</label>
             <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
           </div>
         </div>
       
-        <div class="grid-2" style="gap: 15px; margin-top: 15px;">
-          <div class="form-group" style="margin: 0;">
+        <div class="grid-2 grid-gap-15 mt-15">
+          <div class="form-group m-0">
             <label>Meeting Type</label>
             <select id="meetingType" onchange="updateMeetingDetails()">
               <option value="general">General Meeting</option>
@@ -301,7 +301,7 @@
               <option value="emergency">Emergency Meeting</option>
             </select>
           </div>
-          <div class="form-group" style="margin: 0;">
+          <div class="form-group m-0">
             <label>Meeting Description</label>
             <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
                       placeholder="Brief description of meeting agenda/purpose"></textarea>
@@ -309,21 +309,21 @@
         </div>
 
         <!-- Search and Filter Section -->
-        <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
-          <div class="grid-2" style="gap: 15px;">
-            <div class="form-group" style="margin: 0;">
+        <div class="bg-blue-100 p-15 rounded-8 mt-20 mb-20">
+          <div class="grid-2 grid-gap-15">
+            <div class="form-group m-0">
               <input type="text" id="memberSearch" 
                      placeholder="Search members..." 
                      onkeyup="filterAttendanceMembers()"
-                     style="margin: 0;">
+                     class="m-0">
             </div>
-            <div style="display: flex; gap: 10px;">
-              <select id="statusFilter" onchange="filterAttendanceMembers()" style="width: auto;">
+            <div class="d-flex grid-gap-10">
+              <select id="statusFilter" onchange="filterAttendanceMembers()" class="w-auto">
                 <option value="all">All Status</option>
                 <option value="present">Present Only</option>
                 <option value="absent">Absent Only</option>
               </select>
-              <select id="sortBy" onchange="filterAttendanceMembers()" style="width: auto;">
+              <select id="sortBy" onchange="filterAttendanceMembers()" class="w-auto">
                 <option value="name">Sort by Name</option>
                 <option value="time">Sort by Time In</option>
                 <option value="status">Sort by Status</option>
@@ -333,26 +333,26 @@
         </div>
 
         <!-- Attendance Stats -->
-        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div class="bg-blue-200 p-15 rounded-8 mb-20">
+          <div class="d-flex justify-content-between align-center flex-wrap grid-gap-10">
             <div>
-              <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
-              <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
+              <span id="presentCount" class="badge badge-active mr-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended mr-10">Absent: 0</span>
               <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
             </div>
             <div>
               <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
               <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
               <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
-                <span style="margin-right: 5px;">📥</span> Download Register
+                <span class="mr-5">📥</span> Download Register
               </button>
             </div>
           </div>
         </div>
 
         <!-- Attendance List -->
-        <div class="table-container" style="margin-top: 20px; overflow-x: auto;">
-          <table class="table" style="width: 100%;">
+        <div class="table-container mt-20 overflow-x-auto">
+          <table class="table w-100">
             <thead>
               <tr>
                 <th>#</th>
@@ -371,43 +371,43 @@
 
       <div id="dataTab" class="hidden">
         <h2>Data Management</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
-          <p style="margin-bottom: 10px;"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
-          <p style="margin-bottom: 0;"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
+        <div class="bg-blue-50 p-15 rounded-8 mb-20 border-blue-l">
+          <p class="mb-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
+          <p class="m-0"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
         </div>
         
-        <div style="display: grid; gap: 15px;">
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📥 Export Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Download a backup of all system data as a JSON file.</p>
+        <div class="d-grid grid-gap-15">
+          <div class="bg-white p-15 border-1 border-gray rounded-8">
+            <h3 class="mb-10 fs-16">📥 Export Data</h3>
+            <p class="text-gray fs-13 mb-10">Download a backup of all system data as a JSON file.</p>
             <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
           </div>
           
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📤 Import Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Restore data from a previously exported backup file.</p>
-            <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
+          <div class="bg-white p-15 border-1 border-gray rounded-8">
+            <h3 class="mb-10 fs-16">📤 Import Data</h3>
+            <p class="text-gray fs-13 mb-10">Restore data from a previously exported backup file.</p>
+            <input type="file" id="importFile" accept=".json" class="mb-10">
             <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
           </div>
           
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">💾 Manual Save</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Force save all current data (normally happens automatically).</p>
+          <div class="bg-white p-15 border-1 border-gray rounded-8">
+            <h3 class="mb-10 fs-16">💾 Manual Save</h3>
+            <p class="text-gray fs-13 mb-10">Force save all current data (normally happens automatically).</p>
             <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
           </div>
           
-          <div style="background: #fff4e6; padding: 15px; border: 1px solid #ed8936; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">⚠ Clear All Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Permanently delete all data and reset the system.</p>
+          <div class="bg-orange-50 p-15 border-1 border-orange rounded-8">
+            <h3 class="mb-10 fs-16">⚠ Clear All Data</h3>
+            <p class="text-gray fs-13 mb-10">Permanently delete all data and reset the system.</p>
             <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
           </div>
           
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📊 Storage Info</h3>
-            <p style="color: #666; font-size: 13px;"><strong>Members:</strong> <span id="storageMembers">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
-            <p style="color: #666; font-size: 13px; margin-bottom: 0;"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+          <div class="bg-white p-15 border-1 border-gray rounded-8">
+            <h3 class="mb-10 fs-16">📊 Storage Info</h3>
+            <p class="text-gray fs-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+            <p class="text-gray fs-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+            <p class="text-gray fs-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+            <p class="text-gray fs-13 m-0"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
           </div>
         </div>
       </div>
@@ -448,17 +448,17 @@
 
       <div id="memberSignatureTab" class="hidden">
         <h2>Digital Signature</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+        <div class="bg-blue-50 p-15 rounded-8 mb-20 border-blue-l">
           <p><strong>✍️ Draw your signature below:</strong></p>
         </div>
         <canvas id="signatureCanvas" width="600" height="200"></canvas>
-        <div style="margin-bottom: 15px;">
+        <div class="mb-15">
           <button class="btn btn-warning" onclick="clearSignature()">Clear</button>
           <button class="btn btn-success" onclick="saveSignature()">Save Signature</button>
         </div>
-        <div id="currentSignature" style="display:none;">
+        <div id="currentSignature" class="d-none">
           <h3>Your Current Signature:</h3>
-          <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;">
+          <img id="savedSignature" class="max-w-100 border-1 border-gray border-radius-5" alt="Saved digital signature preview">
         </div>
       </div>
       <div class="header">
@@ -499,11 +499,11 @@
 
       <div id="memberBeneficiariesTab" class="hidden">
         <h2>My Beneficiaries</h2>
-        <p style="color: #666; margin-bottom: 15px;">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
+        <p class="text-gray mb-15">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
         <button class="btn btn-success" id="addBenMemBtn" onclick="addBenMemModal()">+ Add Beneficiary</button>
         <button class="btn btn-primary hidden" id="saveBenMemBtn" onclick="saveBenMem()">Save & Lock</button>
         
-        <table style="margin-top: 20px;">
+        <table class="mt-20">
           <thead>
             <tr>
               <th>Name</th>
@@ -514,7 +514,7 @@
             </tr>
           </thead>
           <tbody id="memBenTableBody">
-            <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+            <tr><td colspan="5" class="align-center text-muted">No beneficiaries added yet</td></tr>
           </tbody>
         </table>
       </div>
@@ -538,7 +538,7 @@
 
       <div id="signatureTab" class="hidden">
         <h2>Digital Signature</h2>
-        <p style="font-size: 13px; color: #666;">Draw your signature below:</p>
+        <p class="fs-13 text-gray">Draw your signature below:</p>
         <canvas id="sigCanvas" width="500" height="150"></canvas>
         <button class="btn btn-secondary" onclick="clearSig()">Clear</button>
         <button class="btn btn-success" onclick="saveSig()">Save Signature</button>
@@ -1595,7 +1595,7 @@
           </td>
           <td>
             ${member.signature ? 
-              `<img src="${member.signature}" style="max-height: 50px;">` : 
+              `<img src="${member.signature}" style="max-height: 50px;" alt="Member signature">` : 
               isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
           </td>
         `;
@@ -1878,7 +1878,7 @@
             <td>${isPresent ? remarks : '-'}</td>
             <td>${isPresent ? 
               (member.signature ? 
-                `<img src="${member.signature}" class="signature">` : 
+                `<img src="${member.signature}" class="signature" alt="Member signature">` : 
                 '<span class="no-signature">No signature</span>'
               ) : '-'}
             </td>
