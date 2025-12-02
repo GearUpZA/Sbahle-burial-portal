@@ -106,7 +106,6 @@
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
       </div>
-      <div id="adminAlert"></div>
 
       <div id="overviewTab">
         <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
@@ -133,7 +132,7 @@
             <option value="">-- Select --</option>
           </select>
         </div>
-        <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
+        <button class="btn btn-success d-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
         <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
       </div>
 
@@ -155,7 +154,7 @@
 
       <div id="attendanceTab" class="hidden">
         <h2>Attendance Register</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+        <div class="bg-f0f9ff padding-15 border-radius-8 margin-bottom-20 border-left-4-667eea">
           <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
         </div>
         
@@ -166,6 +165,7 @@
             <input type="date" id="meetingDate" onchange="showAttendanceList()">
           </div>
           <div class="form-group">
+      <!DOCTYPE html>
             <label>Meeting Time</label>
             <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
           </div>

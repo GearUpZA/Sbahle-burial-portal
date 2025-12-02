@@ -1,4 +1,4 @@
-# Copilot Instructions for Sbahle Burial Portal
+(# Copilot Instructions for Sbahle Burial Portal
 
 ## Project Overview
 - **Purpose:** Web-based management portal for burial societies, supporting member management, attendance, beneficiaries, and financial tracking.

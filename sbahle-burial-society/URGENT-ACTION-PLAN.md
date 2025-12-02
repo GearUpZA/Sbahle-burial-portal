@@ -1,4 +1,4 @@
-# 🔧 CLOUD SYNC ISSUE - ACTION PLAN
+Overlay and stacking for login page# 🔧 CLOUD SYNC ISSUE - ACTION PLAN
 
 **Date:** November 7, 2025  
 **Status:** ⚠️ URGENT - Members using outdated cached version

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,8 +60,8 @@
   <div class="container">
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
-      <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
-      <div class="tabs" style="justify-content: center;">
+      <h1 class="center-text">🏛️ Sbahle Burial Society</h1>
+      <div class="tabs center-text">
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
@@ -70,15 +70,15 @@
 
       <div id="adminForm">
         <h2>Admin Login</h2>
-        <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123"></div>
+        <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin" placeholder="Enter admin email" title="Admin Email"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123" placeholder="Enter admin password" title="Admin Password"></div>
         <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
       </div>
 
       <div id="memberForm" class="hidden">
         <h2>Member Login</h2>
-        <div class="form-group"><label>Email</label><input type="text" id="memberEmail" value="member@test.com"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="memberPassword" value="password123"></div>
+        <div class="form-group"><label>Email</label><input type="text" id="memberEmail" value="member@test.com" placeholder="Enter member email" title="Member Email"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="memberPassword" value="password123" placeholder="Enter member password" title="Member Password"></div>
         <button class="btn btn-primary" onclick="loginMember()">Login</button>
       </div>
 
@@ -136,7 +136,7 @@
             <option value="">-- Select --</option>
           </select>
         </div>
-        <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
+        <button class="btn btn-success hidden" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
         <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
       </div>
 
@@ -158,25 +158,25 @@
 
       <div id="attendanceTab" class="hidden">
         <h2>Meeting Attendance</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <div class="info-box mb-2">
           <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
-          <p style="margin-top: 10px; color: #4a5568;">Track attendance, manage meetings, and generate reports</p>
+          <p class="mt-10 text-attendance-desc">Track attendance, manage meetings, and generate reports</p>
         </div>
 
         <!-- Meeting Details Section -->
-        <div class="grid-2" style="gap: 15px;">
-          <div class="form-group" style="margin: 0;">
+        <div class="grid-2 gap-15">
+          <div class="form-group m-0">
             <label>Meeting Date</label>
             <input type="date" id="meetingDate" onchange="showAttendanceList()">
           </div>
-          <div class="form-group" style="margin: 0;">
+          <div class="form-group m-0">
             <label>Meeting Time</label>
             <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
           </div>
         </div>
       
-        <div class="grid-2" style="gap: 15px; margin-top: 15px;">
-          <div class="form-group" style="margin: 0;">
+        <div class="grid-2 gap-15 mt-2">
+          <div class="form-group m-0">
             <label>Meeting Type</label>
             <select id="meetingType" onchange="updateMeetingDetails()">
               <option value="general">General Meeting</option>
@@ -185,7 +185,7 @@
               <option value="emergency">Emergency Meeting</option>
             </select>
           </div>
-          <div class="form-group" style="margin: 0;">
+          <div class="form-group m-0">
             <label>Meeting Description</label>
             <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
                       placeholder="Brief description of meeting agenda/purpose"></textarea>
@@ -193,21 +193,21 @@
         </div>
 
         <!-- Search and Filter Section -->
-        <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
-          <div class="grid-2" style="gap: 15px;">
-            <div class="form-group" style="margin: 0;">
+        <div class="search-filter-box mb-2 mt-2">
+          <div class="grid-2 gap-15">
+            <div class="form-group">
               <input type="text" id="memberSearch" 
-                     placeholder="Search members..." 
-                     onkeyup="filterAttendanceMembers()"
-                     style="margin: 0;">
+                placeholder="Search members..." 
+                onkeyup="filterAttendanceMembers()"
+                class="m-0">
             </div>
-            <div style="display: flex; gap: 10px;">
-              <select id="statusFilter" onchange="filterAttendanceMembers()" style="width: auto;">
+            <div class="flex gap-10">
+              <select id="statusFilter" onchange="filterAttendanceMembers()" class="w-auto">
                 <option value="all">All Status</option>
                 <option value="present">Present Only</option>
                 <option value="absent">Absent Only</option>
               </select>
-              <select id="sortBy" onchange="filterAttendanceMembers()" style="width: auto;">
+              <select id="sortBy" onchange="filterAttendanceMembers()" class="w-auto">
                 <option value="name">Sort by Name</option>
                 <option value="time">Sort by Time In</option>
                 <option value="status">Sort by Status</option>
@@ -217,26 +217,26 @@
         </div>
 
         <!-- Attendance Stats -->
-        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div class="attendance-stats mb-2">
+          <div class="flex-between flex-wrap gap-10">
             <div>
-              <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
-              <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
+              <span id="presentCount" class="badge badge-active mr-2">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended mr-2">Absent: 0</span>
               <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
             </div>
             <div>
               <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
               <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
               <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
-                <span style="margin-right: 5px;">📥</span> Download Register
+                <span class="mr-5">📥</span> Download Register
               </button>
             </div>
           </div>
         </div>
 
         <!-- Attendance List -->
-        <div class="table-container" style="margin-top: 20px; overflow-x: auto;">
-          <table class="table" style="width: 100%;">
+        <div class="table-container mt-2 overflow-x-auto">
+          <table class="table w-full">
             <thead>
               <tr>
                 <th>#</th>
@@ -255,74 +255,68 @@
 
       <div id="dataTab" class="hidden">
         <h2>Data Management</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
-          <p style="margin-bottom: 10px;"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
-          <p style="margin-bottom: 0;"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
+        <div class="info-box mb-2 border-left-primary">
+          <p class="mb-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
+          <p class="mb-0"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
         </div>
-        
-        <div style="display: grid; gap: 15px;">
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📥 Export Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Download a backup of all system data as a JSON file.</p>
+        <div class="grid gap-15">
+          <div class="white-box mb-2">
+            <h3 class="mb-10 fs-16">📥 Export Data</h3>
+            <p class="text-secondary fs-13 mb-10">Download a backup of all system data as a JSON file.</p>
             <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
           </div>
-          
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📤 Import Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Restore data from a previously exported backup file.</p>
-            <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
+          <div class="white-box mb-2">
+            <h3 class="mb-10 fs-16">📤 Import Data</h3>
+            <p class="text-secondary fs-13 mb-10">Restore data from a previously exported backup file.</p>
+            <input type="file" id="importFile" accept=".json" class="mb-10">
             <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
           </div>
-          
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">💾 Manual Save</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Force save all current data (normally happens automatically).</p>
+          <div class="white-box mb-2">
+            <h3 class="mb-10 fs-16">💾 Manual Save</h3>
+            <p class="text-secondary fs-13 mb-10">Force save all current data (normally happens automatically).</p>
             <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
           </div>
-          
-          <div style="background: #fff4e6; padding: 15px; border: 1px solid #ed8936; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">⚠ Clear All Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Permanently delete all data and reset the system.</p>
+          <div class="warning-box mb-2">
+            <h3 class="mb-10 fs-16">⚠ Clear All Data</h3>
+            <p class="text-secondary fs-13 mb-10">Permanently delete all data and reset the system.</p>
             <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
           </div>
-          
-          <div style="background: #f0f9ff; padding: 15px; border: 1px solid #3b82f6; border-radius: 8px;">
-            <h3 style="margin-bottom: 15px; font-size: 16px;">📊 System Overview</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
-              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
-                <div style="font-size: 24px; font-weight: bold; color: #10b981;" id="totalMembers">0</div>
-                <div style="font-size: 12px; color: #666;">Total Members</div>
+          <div class="info-box mb-2 border-primary">
+            <h3 class="mb-15 fs-16">📊 System Overview</h3>
+            <div class="sys-overview-grid">
+              <div class="sys-overview-card green">
+                <div class="sys-overview-value" id="totalMembers">0</div>
+                <div class="sys-overview-label">Total Members</div>
               </div>
-              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
-                <div style="font-size: 24px; font-weight: bold; color: #3b82f6;" id="totalMeetings">0</div>
-                <div style="font-size: 12px; color: #666;">Total Meetings</div>
+              <div class="sys-overview-card blue">
+                <div class="sys-overview-value" id="totalMeetings">0</div>
+                <div class="sys-overview-label">Total Meetings</div>
               </div>
-              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
-                <div style="font-size: 24px; font-weight: bold; color: #8b5cf6;" id="totalBeneficiaries">0</div>
-                <div style="font-size: 12px; color: #666;">Beneficiaries</div>
+              <div class="sys-overview-card purple">
+                <div class="sys-overview-value" id="totalBeneficiaries">0</div>
+                <div class="sys-overview-label">Beneficiaries</div>
               </div>
-              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
-                <div style="font-size: 24px; font-weight: bold; color: #f59e0b;" id="totalPayouts">0</div>
-                <div style="font-size: 12px; color: #666;">Payouts</div>
+              <div class="sys-overview-card yellow">
+                <div class="sys-overview-value" id="totalPayouts">0</div>
+                <div class="sys-overview-label">Payouts</div>
               </div>
             </div>
-            <div style="margin-top: 15px; padding: 10px; background: white; border-radius: 5px;">
-              <div style="font-size: 13px; color: #666;">
+            <div class="sys-overview-meta">
+              <div>
                 <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
                 <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
                 <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
               </div>
             </div>
           </div>
-          
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">� Detailed Storage Info</h3>
-            <p style="color: #666; font-size: 13px;"><strong>Members:</strong> <span id="storageMembers">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
-            <p style="color: #666; font-size: 13px; margin-bottom: 0;"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+          <div class="white-box mb-2">
+            <h3 class="mb-10 fs-16">� Detailed Storage Info</h3>
+            <p class="text-secondary fs-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+            <p class="text-secondary fs-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+            <p class="text-secondary fs-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+            <p class="text-secondary fs-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+            <p class="text-secondary fs-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+            <p class="text-secondary fs-13 mb-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
           </div>
         </div>
       </div>
@@ -363,17 +357,17 @@
 
       <div id="memberSignatureTab" class="hidden">
         <h2>Digital Signature</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+        <div class="info-box mb-2 border-left-primary">
           <p><strong>✍️ Draw your signature below:</strong></p>
         </div>
         <canvas id="signatureCanvas" width="600" height="200"></canvas>
-        <div style="margin-bottom: 15px;">
+        <div class="mb-2">
           <button class="btn btn-warning" onclick="clearSignature()">Clear</button>
           <button class="btn btn-success" onclick="saveSignature()">Save Signature</button>
         </div>
-        <div id="currentSignature" style="display:none;">
+        <div id="currentSignature" class="hidden">
           <h3>Your Current Signature:</h3>
-          <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;">
+          <img id="savedSignature" class="img-responsive signature-img">
         </div>
       </div>
       <div class="header">
@@ -414,11 +408,11 @@
 
       <div id="memberBeneficiariesTab" class="hidden">
         <h2>My Beneficiaries</h2>
-        <p style="color: #666; margin-bottom: 15px;">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
+        <p class="text-secondary mb-2">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
         <button class="btn btn-success" id="addBenMemBtn" onclick="addBenMemModal()">+ Add Beneficiary</button>
         <button class="btn btn-primary hidden" id="saveBenMemBtn" onclick="saveBenMem()">Save & Lock</button>
         
-        <table style="margin-top: 20px;">
+        <table class="mt-2">
           <thead>
             <tr>
               <th>Name</th>
@@ -429,22 +423,22 @@
             </tr>
           </thead>
           <tbody id="memBenTableBody">
-            <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+            <tr><td colspan="5" class="center-text text-muted">No beneficiaries added yet</td></tr>
           </tbody>
         </table>
       </div>
 
       <div id="documentsTab" class="hidden">
         <h2>Upload Documents</h2>
-        <div class="file-input">
+        <div class="file-input mb-2">
           <label>Proof of Payment (PDF/JPEG)</label>
           <input type="file" id="payFile" accept=".pdf,.jpg,.jpeg">
         </div>
-        <div class="file-input">
+        <div class="file-input mb-2">
           <label>Death Certificate (PDF/JPEG)</label>
           <input type="file" id="deathFile" accept=".pdf,.jpg,.jpeg">
         </div>
-        <div class="file-input">
+        <div class="file-input mb-2">
           <label>Supporting Documents (PDF/JPEG)</label>
           <input type="file" id="suppFile" accept=".pdf,.jpg,.jpeg">
         </div>
@@ -453,20 +447,20 @@
 
       <div id="signatureTab" class="hidden">
         <h2>Digital Signature</h2>
-        <p style="font-size: 13px; color: #666;">Draw your signature below:</p>
-        <canvas id="sigCanvas" width="500" height="150" style="border: 2px solid #ddd; border-radius: 8px; background: white;"></canvas>
-        <div style="margin-top: 10px;">
+        <p class="fs-13 text-secondary">Draw your signature below:</p>
+        <canvas id="sigCanvas" width="500" height="150" class="signature-canvas"></canvas>
+        <div class="mt-2">
           <button class="btn btn-secondary" onclick="clearSig()">Clear</button>
           <button class="btn btn-success" onclick="saveSig()">Save Signature</button>
         </div>
         
         <!-- Display saved signature -->
-        <div id="savedSignaturePreview" style="margin-top: 20px; display: none;">
-          <h3 style="font-size: 16px; margin-bottom: 10px;">Saved Signature:</h3>
-          <div style="border: 2px solid #48bb78; border-radius: 8px; padding: 15px; background: #f0fff4;">
-            <img id="savedSignatureImg" src="" style="max-width: 100%; height: auto; max-height: 150px;">
+        <div id="savedSignaturePreview" class="mt-2 hidden">
+          <h3 class="fs-16 mb-10">Saved Signature:</h3>
+          <div class="signature-preview-box">
+            <img id="savedSignatureImg" src="" class="img-responsive signature-img">
           </div>
-          <p style="color: #48bb78; margin-top: 10px;">✓ This signature will appear in attendance records</p>
+          <p class="success-text mt-2">✓ This signature will appear in attendance records</p>
         </div>
       </div>
 
@@ -1110,9 +1104,9 @@
           </td></tr>`;
         });
       } else if (id) {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added for this member</td></tr>';
+        html = '<tr><td colspan="5" class="center-text text-muted">No beneficiaries added for this member</td></tr>';
       } else {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">Please select a member</td></tr>';
+        html = '<tr><td colspan="5" class="center-text text-muted">Please select a member</td></tr>';
       }
       document.getElementById('benTableBody').innerHTML = html;
     }
@@ -1141,7 +1135,7 @@
           html += '</tr>';
         });
       } else {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>';
+        html = '<tr><td colspan="5" class="center-text text-muted">No beneficiaries added yet</td></tr>';
       }
       
       console.log('Generated HTML:', html.substring(0, 200));
@@ -1915,6 +1909,49 @@
               }
             </style>
           </head>
+            /* Attendance section cleanup */
+            .mt-10 { margin-top: 10px !important; }
+            .m-0 { margin: 0 !important; }
+            .gap-15 { gap: 15px !important; }
+            .mr-5 { margin-right: 5px !important; }
+            .text-attendance-desc { color: #4a5568 !important; }
+            /* Data Management & System Overview cleanup classes */
+            .mb-0 { margin-bottom: 0 !important; }
+            .mb-10 { margin-bottom: 10px !important; }
+            .mb-15 { margin-bottom: 15px !important; }
+            .fs-13 { font-size: 13px !important; }
+            .fs-16 { font-size: 16px !important; }
+            .sys-overview-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+              gap: 10px;
+            }
+            .sys-overview-card {
+              text-align: center;
+              padding: 10px;
+              background: white;
+              border-radius: 5px;
+            }
+            .sys-overview-card.green .sys-overview-value { color: #10b981; }
+            .sys-overview-card.blue .sys-overview-value { color: #3b82f6; }
+            .sys-overview-card.purple .sys-overview-value { color: #8b5cf6; }
+            .sys-overview-card.yellow .sys-overview-value { color: #f59e0b; }
+            .sys-overview-value {
+              font-size: 24px;
+              font-weight: bold;
+            }
+            .sys-overview-label {
+              font-size: 12px;
+              color: #666;
+            }
+            .sys-overview-meta {
+              margin-top: 15px;
+              padding: 10px;
+              background: white;
+              border-radius: 5px;
+              font-size: 13px;
+              color: #666;
+            }
           <body>
             <h1>🏛️ Sbahle Burial Society</h1>
             <div class="date-info">
