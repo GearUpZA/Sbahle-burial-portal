@@ -60,8 +60,8 @@
   <div class="container">
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
-      <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
-      <div class="tabs" style="justify-content: center;">
+      <h1 class="text-center">🏛️ Sbahle Burial Society</h1>
+      <div class="tabs justify-center">
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
@@ -136,7 +136,7 @@
             <option value="">-- Select --</option>
           </select>
         </div>
-        <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
+        <button class="btn btn-success d-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
         <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
       </div>
 
@@ -340,9 +340,9 @@
           <button class="btn btn-warning" onclick="clearSignature()">Clear</button>
           <button class="btn btn-success" onclick="saveSignature()">Save Signature</button>
         </div>
-        <div id="currentSignature" style="display:none;">
+        <div id="currentSignature" class="d-none">
           <h3>Your Current Signature:</h3>
-          <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;">
+          <img id="savedSignature" class="w-100 border rounded-1">
         </div>
       </div>
       <div class="header">
@@ -383,11 +383,11 @@
 
       <div id="memberBeneficiariesTab" class="hidden">
         <h2>My Beneficiaries</h2>
-        <p style="color: #666; margin-bottom: 15px;">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
+        <p class="text-muted mb-3">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
         <button class="btn btn-success" id="addBenMemBtn" onclick="addBenMemModal()">+ Add Beneficiary</button>
         <button class="btn btn-primary hidden" id="saveBenMemBtn" onclick="saveBenMem()">Save & Lock</button>
         
-        <table style="margin-top: 20px;">
+        <table class="mt-4">
           <thead>
             <tr>
               <th>Name</th>
@@ -398,7 +398,7 @@
             </tr>
           </thead>
           <tbody id="memBenTableBody">
-            <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+            <tr><td colspan="5" class="text-center text-muted">No beneficiaries added yet</td></tr>
           </tbody>
         </table>
       </div>
@@ -422,20 +422,20 @@
 
       <div id="signatureTab" class="hidden">
         <h2>Digital Signature</h2>
-        <p style="font-size: 13px; color: #666;">Draw your signature below:</p>
-        <canvas id="sigCanvas" width="500" height="150" style="border: 2px solid #ddd; border-radius: 8px; background: white;"></canvas>
-        <div style="margin-top: 10px;">
+        <p class="small text-muted">Draw your signature below:</p>
+        <canvas id="sigCanvas" width="500" height="150" class="border rounded bg-white"></canvas>
+        <div class="mt-2">
           <button class="btn btn-secondary" onclick="clearSig()">Clear</button>
           <button class="btn btn-success" onclick="saveSig()">Save Signature</button>
         </div>
         
         <!-- Display saved signature -->
-        <div id="savedSignaturePreview" style="margin-top: 20px; display: none;">
-          <h3 style="font-size: 16px; margin-bottom: 10px;">Saved Signature:</h3>
-          <div style="border: 2px solid #48bb78; border-radius: 8px; padding: 15px; background: #f0fff4;">
-            <img id="savedSignatureImg" src="" style="max-width: 100%; height: auto; max-height: 150px;">
+        <div id="savedSignaturePreview" class="mt-4 d-none">
+          <h3 class="h5 mb-2">Saved Signature:</h3>
+          <div class="border-success rounded p-3 bg-success-light">
+            <img id="savedSignatureImg" src="" class="w-100 h-auto" style="max-height: 150px;">
           </div>
-          <p style="color: #48bb78; margin-top: 10px;">✓ This signature will appear in attendance records</p>
+          <p class="text-success mt-2">✓ This signature will appear in attendance records</p>
         </div>
       </div>
 
@@ -959,9 +959,9 @@
           </td></tr>`;
         });
       } else if (id) {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added for this member</td></tr>';
+        html = '<tr><td colspan="5" class="text-center text-muted">No beneficiaries added for this member</td></tr>';
       } else {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">Please select a member</td></tr>';
+        html = '<tr><td colspan="5" class="text-center text-muted">Please select a member</td></tr>';
       }
       document.getElementById('benTableBody').innerHTML = html;
     }
@@ -990,7 +990,7 @@
           html += '</tr>';
         });
       } else {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>';
+        html = '<tr><td colspan="5" class="text-center text-muted">No beneficiaries added yet</td></tr>';
       }
       
       console.log('Generated HTML:', html.substring(0, 200));
@@ -1511,27 +1511,27 @@
           <td>
             <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'} btn-sm" 
                     onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
-                    style="width: 110px;">
+                    class="w-110">
               ${isPresent ? '✓ Present' : '✗ Absent'}
             </button>
           </td>
           <td>${isPresent ? 
             `<input type="time" value="${timeIn}" 
                     onchange="updateTimeIn('${member.id}', '${date}', this.value)" 
-                    style="padding: 5px; border: 1px solid #ccc; border-radius: 5px;">` : 
+                    class="p-1 border rounded">` : 
             '-'}
           </td>
           <td>
             ${isPresent ? 
               `<input type="text" placeholder="Add remarks" value="${remarks}"
                       onchange="updateRemarks('${member.id}', '${date}', this.value)"
-                      style="padding: 5px; border: 1px solid #ccc; border-radius: 5px; width: 200px;">` : 
+                      class="p-1 border rounded w-200">` : 
               '-'}
           </td>
           <td>
             ${member.signature ? 
-              `<img src="${member.signature}" style="max-height: 50px;">` : 
-              isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
+              `<img src="${member.signature}" class="max-h-50">` : 
+              isPresent ? '<span class="text-danger">No signature</span>' : '-'}
           </td>
         `;
         tbody.appendChild(row);

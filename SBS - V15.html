@@ -235,7 +235,7 @@
         </div>
 
         <!-- Search and Filter Section -->
-        <div class="bg-edf2f7 padding-15 border-radius-8" style="margin: 20px 0;">
+        <div class="bg-edf2f7 padding-15 border-radius-8 margin-top-20 margin-bottom-20">
           <div class="grid-2 gap-15">
             <div class="form-group margin-0">
               <input type="text" id="memberSearch" 
@@ -262,23 +262,23 @@
         <div class="bg-f7fafc padding-15 border-radius-8 margin-bottom-20">
           <div class="display-flex justify-content-between align-items-center flex-wrap gap-10">
             <div>
-              <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span> <!-- TODO: Add margin-right class if needed -->
-              <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span> <!-- TODO: Add margin-right class if needed -->
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
               <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
             </div>
             <div>
               <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
               <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
               <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
-                <span style="margin-right: 5px;">📥</span> Download Register <!-- TODO: Add margin-right class if needed -->
+                <span class="margin-right-5">📥</span> Download Register
               </button>
             </div>
           </div>
         </div>
 
         <!-- Attendance List -->
-        <div class="table-container" style="margin-top: 20px; overflow-x: auto;">
-          <table class="table" style="width: 100%;">
+        <div class="table-container margin-top-20 overflow-x-auto">
+          <table class="table width-100">
             <thead>
               <tr>
                 <th>#</th>
@@ -297,43 +297,43 @@
 
       <div id="dataTab" class="hidden">
         <h2>Data Management</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
-          <p style="margin-bottom: 10px;"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
-          <p style="margin-bottom: 0;"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
+        <div class="bg-f0f9ff padding-15 border-radius-8 margin-bottom-20 border-left-4-667eea">
+          <p class="margin-bottom-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
+          <p class="margin-bottom-0"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
         </div>
         
-        <div style="display: grid; gap: 15px;">
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📥 Export Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Download a backup of all system data as a JSON file.</p>
+        <div class="display-grid gap-15">
+          <div class="bg-white padding-15 border-1-ddd border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+            <p class="color-666 font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
             <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
           </div>
           
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📤 Import Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Restore data from a previously exported backup file.</p>
-            <input type="file" id="importFile" accept=".json" style="margin-bottom: 10px;">
+          <div class="bg-white padding-15 border-1-ddd border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+            <p class="color-666 font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+            <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
             <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
           </div>
           
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">💾 Manual Save</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Force save all current data (normally happens automatically).</p>
+          <div class="bg-white padding-15 border-1-ddd border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+            <p class="color-666 font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
             <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
           </div>
           
-          <div style="background: #fff4e6; padding: 15px; border: 1px solid #ed8936; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">⚠ Clear All Data</h3>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">Permanently delete all data and reset the system.</p>
+          <div class="bg-fff4e6 padding-15 border-1-ed8936 border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+            <p class="color-666 font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
             <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
           </div>
           
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">📊 Storage Info</h3>
-            <p style="color: #666; font-size: 13px;"><strong>Members:</strong> <span id="storageMembers">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
-            <p style="color: #666; font-size: 13px; margin-bottom: 0;"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+          <div class="bg-white padding-15 border-1-ddd border-radius-8">
+            <h3 class="margin-bottom-10 font-size-16">📊 Storage Info</h3>
+            <p class="color-666 font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+            <p class="color-666 font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+            <p class="color-666 font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+            <p class="color-666 font-size-13 margin-bottom-0"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
           </div>
         </div>
       </div>
@@ -374,17 +374,17 @@
 
       <div id="memberSignatureTab" class="hidden">
         <h2>Digital Signature</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+        <div class="bg-f0f9ff padding-15 border-radius-8 margin-bottom-20 border-left-4-667eea">
           <p><strong>✍️ Draw your signature below:</strong></p>
         </div>
         <canvas id="signatureCanvas" width="600" height="200"></canvas>
-        <div style="margin-bottom: 15px;">
+        <div class="margin-bottom-15">
           <button class="btn btn-warning" onclick="clearSignature()">Clear</button>
           <button class="btn btn-success" onclick="saveSignature()">Save Signature</button>
         </div>
-        <div id="currentSignature" style="display:none;">
+        <div id="currentSignature" class="d-none">
           <h3>Your Current Signature:</h3>
-          <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;">
+          <img id="savedSignature" class="max-width-100 border-1-ddd border-radius-5">
         </div>
       </div>
       <div class="header">
@@ -1001,9 +1001,9 @@
           </td></tr>`;
         });
       } else if (id) {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added for this member</td></tr>';
+        html = '<tr><td colspan="5" class="text-center color-999">No beneficiaries added for this member</td></tr>';
       } else {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">Please select a member</td></tr>';
+        html = '<tr><td colspan="5" class="text-center color-999">Please select a member</td></tr>';
       }
       document.getElementById('benTableBody').innerHTML = html;
     }
@@ -1032,7 +1032,7 @@
           html += '</tr>';
         });
       } else {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>';
+        html = '<tr><td colspan="5" class="text-center color-999">No beneficiaries added yet</td></tr>';
       }
       
       console.log('Generated HTML:', html.substring(0, 200));
@@ -1551,29 +1551,28 @@
           <td>${index + 1}</td>
           <td>${member.name}</td>
           <td>
-            <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'} btn-sm" 
-                    onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
-                    style="width: 110px;">
+            <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'} btn-sm width-110" 
+                    onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})">
               ${isPresent ? '✓ Present' : '✗ Absent'}
             </button>
           </td>
           <td>${isPresent ? 
             `<input type="time" value="${timeIn}" 
                     onchange="updateTimeIn('${member.id}', '${date}', this.value)" 
-                    style="padding: 5px; border: 1px solid #ccc; border-radius: 5px;">` : 
+                    class="padding-5 border-1-ddd border-radius-5">` : 
             '-'}
           </td>
           <td>
             ${isPresent ? 
               `<input type="text" placeholder="Add remarks" value="${remarks}"
                       onchange="updateRemarks('${member.id}', '${date}', this.value)"
-                      style="padding: 5px; border: 1px solid #ccc; border-radius: 5px; width: 200px;">` : 
+                      class="padding-5 border-1-ddd border-radius-5 width-200">` : 
               '-'}
           </td>
           <td>
             ${member.signature ? 
-              `<img src="${member.signature}" style="max-height: 50px;">` : 
-              isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
+              `<img src="${member.signature}" class="max-height-50">` : 
+              isPresent ? '<span class="color-e53e3e">No signature</span>' : '-'}
           </td>
         `;
         tbody.appendChild(row);
@@ -1868,15 +1867,15 @@
             </table>
             
             <div style="margin-top: 50px;">
-              <div style="float: left; width: 50%;">
+              <div class="float-left width-50">
                 <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
               </div>
-              <div style="float: right; width: 50%; text-align: right;">
+              <div class="float-right width-50 align-right">
                 <p><strong>Secretary's Signature:</strong> _______________________</p>
                 <p><strong>Chairperson's Signature:</strong> _______________________</p>
               </div>
             </div>
-            <button onclick="window.print()" style="margin-top: 30px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Register</button>
+            <button onclick="window.print()" class="margin-top-30 padding-10-20 bg-667eea color-white border-none border-radius-5 pointer">Print Register</button>
           </body>
         </html>
       `);
