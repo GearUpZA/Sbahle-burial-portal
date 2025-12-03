@@ -1,0 +1,249 @@
+// Initialize the attendance system with enhanced features
+function initializeAttendance() {
+  const meetingDateInput = document.getElementById('meetingDate');
+  const meetingTimeInput = document.getElementById('meetingTime');
+  if (meetingDateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    meetingDateInput.value = today;
+  }
+  if (meetingTimeInput) {
+    const now = new Date().toLocaleTimeString('en-GB').slice(0, 5);
+    meetingTimeInput.value = now;
+  }
+
+  // Initialize storage if needed
+  if (!localStorage.getItem('attendance')) {
+    localStorage.setItem('attendance', JSON.stringify({}));
+  }
+  if (!localStorage.getItem('meetingDetails')) {
+    localStorage.setItem('meetingDetails', JSON.stringify({}));
+  }
+
+  console.log('Attendance system initialized');
+  updateAttendanceStats();
+  showAttendanceList();
+}
+
+// Show attendance list with enhanced display
+function showAttendanceList() {
+  const attendanceList = document.getElementById('attendanceList');
+  if (!attendanceList || document.getElementById('attendanceTab').classList.contains('hidden')) return;
+
+  // Get meeting details
+  const meetingDateInput = document.getElementById('meetingDate');
+  const currentDate = meetingDateInput ? meetingDateInput.value : new Date().toISOString().split('T')[0];
+  const meetingDetails = JSON.parse(localStorage.getItem('meetingDetails') || '{}');
+  const currentMeeting = meetingDetails[currentDate] || {};
+  
+  // Clear list
+  attendanceList.innerHTML = '';
+  const attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+  const todayAttendance = attendance[currentDate] || {};
+
+  // Apply filters
+  const searchTerm = document.getElementById('memberSearch')?.value?.toLowerCase() || '';
+  const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+  const sortBy = document.getElementById('sortBy')?.value || 'name';
+
+  let filteredMembers = window.members.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchTerm);
+    const isPresent = !!todayAttendance[member.id];
+    
+    switch(statusFilter) {
+      case 'present': return matchesSearch && isPresent;
+      case 'absent': return matchesSearch && !isPresent;
+      case 'nosig': return matchesSearch && isPresent && !todayAttendance[member.id].signature;
+      default: return matchesSearch;
+    }
+  });
+
+  // Sort members
+  filteredMembers.sort((a, b) => {
+    switch(sortBy) {
+      case 'name':
+        return a.name.localeCompare(b.name);
+      case 'time':
+        const timeA = todayAttendance[a.id]?.time || '';
+        const timeB = todayAttendance[b.id]?.time || '';
+        return timeB.localeCompare(timeA);
+      case 'status':
+        const statusA = todayAttendance[a.id] ? 'Present' : 'Absent';
+        const statusB = todayAttendance[b.id] ? 'Present' : 'Absent';
+        return statusA.localeCompare(statusB);
+      default:
+        return 0;
+    }
+  });
+
+  // Create table rows
+  filteredMembers.forEach(member => {
+    const row = document.createElement('tr');
+    
+    const nameCell = document.createElement('td');
+    nameCell.textContent = member.name;
+    row.appendChild(nameCell);
+
+    const statusCell = document.createElement('td');
+    const status = todayAttendance[member.id] ? 'Present' : 'Absent';
+    statusCell.textContent = status;
+    statusCell.className = status === 'Present' ? 'text-success' : 'text-danger';
+    row.appendChild(statusCell);
+
+    // Time column
+    const timeCell = document.createElement('td');
+    timeCell.textContent = todayAttendance[member.id]?.time ? 
+      new Date(todayAttendance[member.id].time).toLocaleTimeString() : '-';
+    row.appendChild(timeCell);
+
+    // Signature column
+    const signatureCell = document.createElement('td');
+    if (todayAttendance[member.id]?.signature) {
+      const signatureImg = document.createElement('img');
+      signatureImg.src = todayAttendance[member.id].signature;
+      signatureImg.style.height = '30px';
+      signatureCell.appendChild(signatureImg);
+    } else {
+      signatureCell.textContent = '-';
+    }
+    row.appendChild(signatureCell);
+
+    // Actions column
+    const actionCell = document.createElement('td');
+    const markPresentBtn = document.createElement('button');
+    markPresentBtn.textContent = status === 'Present' ? 'Mark Absent' : 'Mark Present';
+    markPresentBtn.className = 'btn btn-sm ' + (status === 'Present' ? 'btn-danger' : 'btn-success');
+    markPresentBtn.onclick = () => toggleAttendance(member.id);
+    actionCell.appendChild(markPresentBtn);
+    row.appendChild(actionCell);
+
+    attendanceList.appendChild(row);
+  });
+}
+
+// Function to toggle attendance status
+function toggleAttendance(memberId) {
+  const meetingDateInput = document.getElementById('meetingDate');
+  const currentDate = meetingDateInput ? meetingDateInput.value : new Date().toISOString().split('T')[0];
+  const attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+  
+  if (!attendance[currentDate]) {
+    attendance[currentDate] = {};
+  }
+
+  if (attendance[currentDate][memberId]) {
+    delete attendance[currentDate][memberId];
+  } else {
+    attendance[currentDate][memberId] = {
+      time: new Date().toISOString(),
+      signature: null
+    };
+  }
+
+  localStorage.setItem('attendance', JSON.stringify(attendance));
+  showAttendanceList();
+  updateAttendanceStats();
+}
+
+// Update meeting details
+function updateMeetingDetails() {
+  const date = document.getElementById('meetingDate').value;
+  const meetingDetails = JSON.parse(localStorage.getItem('meetingDetails') || '{}');
+
+  meetingDetails[date] = {
+    time: document.getElementById('meetingTime').value,
+    type: document.getElementById('meetingType').value,
+    description: document.getElementById('meetingDesc').value
+  };
+
+  localStorage.setItem('meetingDetails', JSON.stringify(meetingDetails));
+}
+
+// Filter members based on search and filters
+function filterMembers() {
+  showAttendanceList();
+}
+
+// Mark all members as present
+function markAllPresent() {
+  if (!confirm('Are you sure you want to mark all members as present?')) return;
+
+  const currentDate = document.getElementById('meetingDate').value;
+  const attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+  
+  if (!attendance[currentDate]) {
+    attendance[currentDate] = {};
+  }
+
+  window.members.forEach(member => {
+    if (!attendance[currentDate][member.id]) {
+      attendance[currentDate][member.id] = {
+        time: new Date().toISOString(),
+        signature: null
+      };
+    }
+  });
+
+  localStorage.setItem('attendance', JSON.stringify(attendance));
+  showAttendanceList();
+  updateAttendanceStats();
+}
+
+// Clear all attendance for the current date
+function clearAttendance() {
+  if (!confirm('Are you sure you want to clear all attendance for this date?')) return;
+
+  const currentDate = document.getElementById('meetingDate').value;
+  const attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+  
+  delete attendance[currentDate];
+  
+  localStorage.setItem('attendance', JSON.stringify(attendance));
+  showAttendanceList();
+  updateAttendanceStats();
+}
+
+// Update attendance statistics
+function updateAttendanceStats() {
+  const currentDate = document.getElementById('meetingDate')?.value;
+  if (!currentDate) return;
+
+  const attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+  const todayAttendance = attendance[currentDate] || {};
+  
+  const presentCount = Object.keys(todayAttendance).length;
+  const totalCount = window.members.length;
+  const attendanceRate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
+
+  document.getElementById('presentCount').textContent = `Present: ${presentCount}`;
+  document.getElementById('absentCount').textContent = `Absent: ${totalCount - presentCount}`;
+  document.getElementById('attendanceRate').textContent = `Attendance Rate: ${attendanceRate}%`;
+}
+
+// Download attendance register
+function downloadAttendanceRegister() {
+  const currentDate = document.getElementById('meetingDate').value;
+  const meetingDetails = JSON.parse(localStorage.getItem('meetingDetails') || '{}')[currentDate] || {};
+  const attendance = JSON.parse(localStorage.getItem('attendance') || '{}')[currentDate] || {};
+
+  let csv = 'Member Name,Status,Time,Has Signature\n';
+  
+  window.members.forEach(member => {
+    const record = attendance[member.id];
+    const row = [
+      member.name,
+      record ? 'Present' : 'Absent',
+      record ? new Date(record.time).toLocaleString() : '-',
+      record?.signature ? 'Yes' : 'No'
+    ];
+    csv += row.join(',') + '\n';
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `attendance_${currentDate}.csv`;
+  link.click();
+}
+
+// Initialize on load
+window.addEventListener('load', initializeAttendance);

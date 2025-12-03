@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EMERGENCY - Restore Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fee2e2;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 3px solid #dc2626;
+        }
+        h1 { color: #dc2626; }
+        button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        button:hover { background: #b91c1c; }
+        button.success {
+            background: #16a34a;
+        }
+        button.success:hover {
+            background: #15803d;
+        }
+        #output {
+            background: #f7fafc;
+            border: 2px solid #dc2626;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 EMERGENCY DATA RESTORE</h1>
+        <p style="color: #dc2626; font-weight: bold; font-size: 18px;">Cloud data was accidentally overwritten during testing!</p>
+        <p>Click the buttons below to restore:</p>
+        
+        <button onclick="restoreFromLocalStorage()">1. Restore from Browser LocalStorage</button>
+        <button onclick="restoreMinimalData()">2. Restore Minimal Member Data</button>
+        
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const CLOUD_STORAGE = {
+            endpoint: 'https://api.jsonbin.io/v3/b',
+            binId: '69032dadd0ea881f40c6cfd5',
+            apiKey: '$2a$10$LUKvn7ZMDSlDEbqAM45V7ub0iXv2sLBAIH9bqLD7IvyGNJvwFWAne'
+        };
+
+        function log(msg) {
+            document.getElementById('output').innerHTML += msg + '\n';
+        }
+
+        async function restoreFromLocalStorage() {
+            log('🔍 Checking browser localStorage...');
+            const encrypted = localStorage.getItem('sbahleData');
+            
+            if (!encrypted) {
+                log('❌ No local backup found in this browser');
+                log('Try option 2 to restore minimal data');
+                return;
+            }
+            
+            try {
+                // Try to decrypt
+                const decrypted = atob(encrypted);
+                const data = JSON.parse(decrypted);
+                
+                log(`✅ Found local backup with ${data.members?.length || 0} members`);
+                log('📤 Uploading to cloud...');
+                
+                const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Access-Key': CLOUD_STORAGE.apiKey
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    log('✅ DATA RESTORED FROM LOCAL STORAGE!');
+                    log(`Restored: ${data.members.length} members`);
+                } else {
+                    log('❌ Upload failed: ' + response.status);
+                }
+            } catch (error) {
+                log('❌ Error: ' + error.message);
+            }
+        }
+
+        async function restoreMinimalData() {
+            log('📝 Creating minimal member structure...');
+            
+            const minimalData = {
+                members: [
+                    {id:"MEM004", name:"Mpande Sibiya", email:"sotobe114@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM005", name:"Sibulelo Njoli", email:"sbunjoli1@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM006", name:"khanya Pani", email:"Khanyawowo07@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM007", name:"Mlungisi  Maqashela", email:"maqashela@gmail.com", status:"Active", phone:"", role:"Admin", missedPayments:0},
+                    {id:"MEM008", name:"Zukile Siyanga", email:"kitano187@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM009", name:"Mavuso Mbidlana", email:"mavumbidlana@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM010", name:"Victor April", email:"furaapril@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM011", name:"Zola Cishe", email:"Zolacishe12@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM012", name:"Alisa Mbangani", email:"alisambangani@outlook.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM013", name:"Mahlubandile Ntshoko", email:"bandilen@outlook.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM014", name:"Abongile Mbangani", email:"aleighsa14@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0},
+                    {id:"MEM015", name:"Andile Dwayne  Snoek", email:"snoekdwayne@gmail.com", status:"Active", phone:"", role:"Member", missedPayments:0}
+                ],
+                beneficiaries: [],
+                payouts: [],
+                penalties: [],
+                meetingMinutes: [],
+                paymentProofs: [],
+                payoutCollectors: [],
+                memberIdCounter: 16,
+                minutesIdCounter: 1,
+                proofIdCounter: 1,
+                lastSaved: new Date().toISOString(),
+                version: "2.5-payouts"
+            };
+            
+            log('📤 Uploading to cloud...');
+            
+            try {
+                const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Access-Key': CLOUD_STORAGE.apiKey
+                    },
+                    body: JSON.stringify(minimalData)
+                });
+                
+                if (response.ok) {
+                    log('✅ MINIMAL DATA RESTORED!');
+                    log(`✅ 12 members restored`);
+                    log('⚠️ ALL MEMBERS NEED TO RE-ADD:');
+                    log('   - Signatures');
+                    log('   - Beneficiaries');
+                    log('   - Payment proofs');
+                    log('   - Meeting minutes');
+                    log('\n📱 Portal is now accessible again!');
+                } else {
+                    log('❌ Upload failed: ' + response.status);
+                }
+            } catch (error) {
+                log('❌ Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,4 @@
 <<<<<<< HEAD
-<<<<<<< HEAD
 # 🏛️ Sbahle Burial Portal
 
 A comprehensive web-based management portal for burial societies with features for member management, attendance tracking, beneficiary management, and financial tracking.
@@ -60,8 +59,6 @@ This project is open source and available under the MIT License.
 
 **Sbahle Burial Portal** | Developed by GearUpZA | © 2025
 =======
-=======
->>>>>>> d27854a (Allow any ID number length for beneficiaries)
 # Sbahle Burial Society - Testing Guide
 
 ## System Overview
@@ -253,7 +250,4 @@ This is a complete burial society management system with admin and member dashbo
 
 ## Support
 For issues or questions, check the browser console for error messages.
-<<<<<<< HEAD
 >>>>>>> a4d9158641a657f06fd9a11a16ecaa6582697874
-=======
->>>>>>> d27854a (Allow any ID number length for beneficiaries)

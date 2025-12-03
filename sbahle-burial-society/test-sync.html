@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Test JSONBin Sync</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: #f7fafc;
+                margin: 0;
+                padding: 30px;
+                min-height: 100vh;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 24px;
+                font-size: 2rem;
+            }
+            button {
+                padding: 10px 20px;
+                margin-right: 12px;
+                border: none;
+                border-radius: 5px;
+                background: #667eea;
+                color: white;
+                font-weight: bold;
+                cursor: pointer;
+                font-size: 1rem;
+                transition: background 0.2s, box-shadow 0.2s;
+                outline: none;
+                box-shadow: 0 2px 6px rgba(102,126,234,0.08);
+            }
+            button:last-of-type {
+                margin-right: 0;
+            }
+            button:hover, button:focus {
+                background: #5a67d8;
+                box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+            }
+            button:active {
+                background: #434190;
+            }
+            pre {
+                background: #fff;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 18px;
+                margin-top: 24px;
+                font-size: 15px;
+                color: #222;
+                max-width: 700px;
+                overflow-x: auto;
+                line-height: 1.5;
+                white-space: pre-wrap;
+                word-break: break-word;
+            }
+        </style>
+</head>
+<body>
+    <h1>Testing JSONBin Sync</h1>
+    <button onclick="testRead()">Test Read from Cloud</button>
+    <button onclick="testWrite()">Test Write to Cloud</button>
+    <pre id="output"></pre>
+
+    <script>
+        const CLOUD_STORAGE = {
+            binId: '69032dadd0ea881f40c6cfd5',
+            apiKey: '$2a$10$LUKvn7ZMDSlDEbqAM45V7ub0iXv2sLBAIH9bqLD7IvyGNJvwFWAne',
+            endpoint: 'https://api.jsonbin.io/v3/b'
+        };
+
+        function log(msg) {
+            document.getElementById('output').textContent += msg + '\n';
+            console.log(msg);
+        }
+
+        async function testRead() {
+            document.getElementById('output').textContent = '';
+            log('🔄 Testing read from JSONBin...');
+            
+            try {
+                const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}/latest`, {
+                    headers: {
+                        'X-Access-Key': CLOUD_STORAGE.apiKey
+                    }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    const data = result.record;
+                    log('✅ READ SUCCESS!');
+                    log(`Members: ${data.members?.length || 0}`);
+                    log(`Beneficiaries: ${data.beneficiaries?.length || 0}`);
+                    log(`Version: ${data.version}`);
+                    log(`Last saved: ${data.lastSaved}`);
+                    log('\nFull data:');
+                    log(JSON.stringify(data, null, 2));
+                } else {
+                    log('❌ READ FAILED: ' + response.status);
+                    const error = await response.text();
+                    log('Error: ' + error);
+                }
+            } catch (error) {
+                log('❌ ERROR: ' + error.message);
+            }
+        }
+
+        async function testWrite() {
+            document.getElementById('output').textContent = '';
+            log('🔄 Testing write to JSONBin...');
+            
+            const testData = {
+                members: [
+                    { id: 'TEST001', name: 'Test User', email: 'test@test.com' }
+                ],
+                beneficiaries: [],
+                payouts: [],
+                penalties: [],
+                meetingMinutes: [],
+                paymentProofs: [],
+                payoutCollectors: [],
+                version: '2.9.0-test',
+                lastSaved: new Date().toISOString()
+            };
+            
+            try {
+                const response = await fetch(`${CLOUD_STORAGE.endpoint}/${CLOUD_STORAGE.binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Access-Key': CLOUD_STORAGE.apiKey
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                if (response.ok) {
+                    log('✅ WRITE SUCCESS!');
+                    log('Test data written to cloud');
+                    log('Now click "Test Read" to verify');
+                } else {
+                    log('❌ WRITE FAILED: ' + response.status);
+                    const error = await response.text();
+                    log('Error: ' + error);
+                }
+            } catch (error) {
+                log('❌ ERROR: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

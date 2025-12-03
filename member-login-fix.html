@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html>
 <head>
@@ -132,4 +133,140 @@
         window.addEventListener('load', testCurrentState);
     </script>
 </body>
+ 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SBS Member Login Fix</title>
+</head>
+<body>
+    <h1>🔧 SBS Member Login Fix Tool</h1>
+    <p>Use this tool to fix the member login issue in SBS-V14.html</p>
+    
+    <div style="margin: 20px 0;">
+        <button onclick="clearAndTest()" style="background: #e53e3e; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 16px; margin: 5px;">
+            🗑️ Clear Data & Force Reinit
+        </button>
+        
+        <button onclick="testCurrentState()" style="background: #3182ce; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 16px; margin: 5px;">
+            🔍 Test Current State
+        </button>
+        
+        <button onclick="openSBS()" style="background: #38a169; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 16px; margin: 5px;">
+            🚀 Open SBS-V14
+        </button>
+    </div>
+    
+    <div id="results" style="margin: 20px 0; padding: 20px; background: #f7fafc; border-radius: 8px; border-left: 4px solid #3182ce;"></div>
+    
+    <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <h3>📋 Instructions:</h3>
+        <ol>
+            <li><strong>Clear Data & Force Reinit:</strong> Clears all localStorage data to force fresh initialization</li>
+            <li><strong>Open SBS-V14:</strong> Opens SBS-V14.html where the login should now work</li>
+            <li><strong>Login Credentials:</strong> Use email <code>member@test.com</code> (no password needed)</li>
+            <li><strong>Check Console:</strong> Press F12 in SBS-V14 to see debug messages</li>
+        </ol>
+    </div>
+    
+    <script>
+        function clearAndTest() {
+            // Clear all SBS related data
+            const keys = ['SBS_SECURE_DATA', 'members', 'beneficiaries', 'payouts', 'penalties', 'attendance'];
+            keys.forEach(key => localStorage.removeItem(key));
+            
+            document.getElementById('results').innerHTML = `
+                <h3>✅ Data Cleared Successfully!</h3>
+                <p>All SBS data has been removed from localStorage.</p>
+                <p><strong>Next steps:</strong></p>
+                <ol>
+                    <li>Click "Open SBS-V14" below or manually open SBS-V14.html</li>
+                    <li>The system will automatically initialize fresh demo data</li>
+                    <li>Try logging in with <code>member@test.com</code></li>
+                    <li>Check the browser console (F12) to see initialization messages</li>
+                </ol>
+                <p style="color: green; font-weight: bold;">The member login should now work! 🎉</p>
+            `;
+        }
+        
+        function testCurrentState() {
+            const results = document.getElementById('results');
+            const membersData = localStorage.getItem('members');
+            
+            if (!membersData) {
+                results.innerHTML = `
+                    <h3>ℹ️ No Members Data Found</h3>
+                    <p>SBS-V14.html hasn't been loaded yet or data was cleared.</p>
+                    <p><strong>Action needed:</strong> Open SBS-V14.html to initialize demo data.</p>
+                `;
+                return;
+            }
+            
+            try {
+                const members = JSON.parse(membersData);
+                const targetMember = members.find(m => m.email === 'member@test.com');
+                
+                let html = `<h3>📊 Current System State</h3>`;
+                html += `<p><strong>Members found:</strong> ${members.length}</p>`;
+                
+                if (targetMember) {
+                    html += `
+                        <div style="background: #c6f6d5; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            <h4>✅ Target Member Found!</h4>
+                            <p><strong>Name:</strong> ${targetMember.name}</p>
+                            <p><strong>Email:</strong> ${targetMember.email}</p>
+                            <p><strong>ID:</strong> ${targetMember.id}</p>
+                            <p><strong>Status:</strong> ${targetMember.status}</p>
+                            <p style="color: green; font-weight: bold;">Member login should work! 🎉</p>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div style="background: #fed7d7; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            <h4>❌ Target Member NOT Found</h4>
+                            <p>The member with email "member@test.com" was not found.</p>
+                            <p><strong>Try:</strong> Click "Clear Data & Force Reinit" to fix this.</p>
+                        </div>
+                    `;
+                }
+                
+                html += `<h4>📋 All Members:</h4>`;
+                members.forEach(member => {
+                    html += `<p>• <strong>${member.name}</strong> - ${member.email} (${member.status})</p>`;
+                });
+                
+                results.innerHTML = html;
+            } catch (e) {
+                results.innerHTML = `
+                    <h3>❌ Error Reading Data</h3>
+                    <p>Error parsing members data: ${e.message}</p>
+                    <p><strong>Solution:</strong> Click "Clear Data & Force Reinit" to fix this.</p>
+                `;
+            }
+        }
+        
+        function openSBS() {
+            // Try to open SBS-V14.html in a new tab
+            const newWindow = window.open('SBS - V14.html', '_blank');
+            if (!newWindow) {
+                document.getElementById('results').innerHTML = `
+                    <h3>🔗 Open SBS-V14 Manually</h3>
+                    <p>Please manually open <code>SBS - V14.html</code> in a new tab.</p>
+                    <p>The member login with <code>member@test.com</code> should now work!</p>
+                `;
+            } else {
+                document.getElementById('results').innerHTML = `
+                    <h3>🚀 SBS-V14 Opened</h3>
+                    <p>SBS-V14.html should have opened in a new tab.</p>
+                    <p>Try logging in with <code>member@test.com</code></p>
+                    <p>Check the browser console (F12) for debug messages.</p>
+                `;
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', testCurrentState);
+    </script>
+</body>
+>>>>>>> d27854a (Allow any ID number length for beneficiaries)
 </html>

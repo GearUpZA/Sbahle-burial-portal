@@ -4,12 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Sbahle Burial Society</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- External scripts disabled to prevent conflicts -->
+  <!-- <script src="init-attendance.js"></script> -->
+  <!-- <script src="sbs-init.js"></script> -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
     .container { max-width: 1200px; margin: 0 auto; }
     .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .hidden { display: none !important; }
+    
+    /* Tab visibility fixes - override hidden class when tabs should be visible */
+    #membersTab:not(.hidden), #beneficiariesTab:not(.hidden), #payoutsTab:not(.hidden), #penaltiesTab:not(.hidden) {
+      display: block !important;
+      min-height: 500px !important;
+      padding: 20px !important;
+      background: white !important;
+      border: 1px solid #ddd !important;
+      margin-top: 10px !important;
+      overflow: visible !important;
+    }
+    
+    /* Force table layout */
+    #membersTab table, #beneficiariesTab table, #payoutsTab table, #penaltiesTab table {
+      display: table !important;
+      width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: collapse !important;
+    }
+    
+    #membersTab tbody, #beneficiariesTab tbody, #payoutsTab tbody, #penaltiesTab tbody {
+      display: table-row-group !important;
+    }
+    
+    #membersTab tr, #beneficiariesTab tr, #payoutsTab tr, #penaltiesTab tr {
+      display: table-row !important;
+      height: 45px !important;
+      border-bottom: 1px solid #ddd !important;
+    }
+    
+    #membersTab td, #beneficiariesTab td, #payoutsTab td, #penaltiesTab td,
+    #membersTab th, #beneficiariesTab th, #payoutsTab th, #penaltiesTab th {
+      display: table-cell !important;
+      padding: 12px 8px !important;
+      vertical-align: middle !important;
+      border: 1px solid #ddd !important;
+      background: white !important;
+    }
     h1 { color: #333; margin-bottom: 20px; }
     h2 { color: #333; margin: 15px 0; font-size: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -56,48 +98,6 @@
     @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } }
   </style>
 </head>
-<head>
-  <style>
-    .bg-fff4e6 { background: #fff4e6 !important; }
-    .border-radius-8 { border-radius: 8px !important; }
-    .border-radius-5 { border-radius: 5px !important; }
-    .border-left-4-667eea { border-left: 4px solid #667eea !important; }
-    .border-2-ddd { border: 2px solid #ddd !important; }
-    .border-2-48bb78 { border: 2px solid #48bb78 !important; }
-    .border-1-ddd { border: 1px solid #ddd !important; }
-    .border-1-ed8936 { border: 1px solid #ed8936 !important; }
-    .color-4a5568 { color: #4a5568 !important; }
-    .color-666 { color: #666 !important; }
-    .color-48bb78 { color: #48bb78 !important; }
-    .margin-0 { margin: 0 !important; }
-    .margin-top-10 { margin-top: 10px !important; }
-    .margin-bottom-10 { margin-bottom: 10px !important; }
-    .margin-bottom-15 { margin-bottom: 15px !important; }
-    .margin-bottom-20 { margin-bottom: 20px !important; }
-    .margin-top-15 { margin-top: 15px !important; }
-    .margin-top-20 { margin-top: 20px !important; }
-    .padding-15 { padding: 15px !important; }
-    .padding-24 { padding: 24px !important; }
-    .padding-12-24 { padding: 12px 24px !important; }
-    .gap-10 { gap: 10px !important; }
-    .gap-15 { gap: 15px !important; }
-    .text-center { text-align: center !important; }
-    .font-size-13 { font-size: 13px !important; }
-    .font-size-16 { font-size: 16px !important; }
-    .font-weight-bold { font-weight: bold !important; }
-    .width-100 { width: 100% !important; }
-    .width-auto { width: auto !important; }
-    .max-width-100 { max-width: 100% !important; }
-    .max-height-150 { max-height: 150px !important; }
-    .overflow-x-auto { overflow-x: auto !important; }
-    .overflow-y-auto { overflow-y: auto !important; }
-    .display-flex { display: flex !important; }
-    .justify-content-center { justify-content: center !important; }
-    .justify-content-between { justify-content: space-between !important; }
-    .align-items-center { align-items: center !important; }
-    .flex-wrap { flex-wrap: wrap !important; }
-  </style>
-</head>
 <body>
   <div class="container">
     <!-- LOGIN PAGE -->
@@ -120,7 +120,6 @@
       <div id="memberForm" class="hidden">
         <h2>Member Login</h2>
         <div class="form-group"><label>Email</label><input type="text" id="memberEmail" value="member@test.com"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="memberPassword" value="password123"></div>
         <button class="btn btn-primary" onclick="loginMember()">Login</button>
       </div>
 
@@ -128,8 +127,6 @@
         <h2>Register Member</h2>
         <div class="form-group"><label>Name</label><input type="text" id="regName"></div>
         <div class="form-group"><label>Email</label><input type="text" id="regEmail"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Create a password"></div>
-        <div class="form-group"><label>Confirm Password</label><input type="password" id="regConfirmPassword" placeholder="Confirm your password"></div>
         <div class="form-group"><label>Phone</label><input type="text" id="regPhone"></div>
         <div class="form-group"><label>ID Number</label><input type="text" id="regId"></div>
         <button class="btn btn-success" onclick="registerMember()">Register</button>
@@ -149,46 +146,7 @@
         <button class="tab" onclick="adminTab('attendance', event)">Attendance</button>
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
-        <button class="tab" onclick="adminTab('documents', event)">Documents</button>
-        <button class="tab" onclick="adminTab('constitution', event)">Constitution</button>
-        <button class="tab" onclick="adminTab('monitoring', event)">Monitoring</button>
-        <button class="tab" onclick="adminTab('financial', event)">Financial</button>
-        <button class="tab" onclick="adminTab('docs', event)">Documentation</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
-            <!-- Constitution Tab (Admin) -->
-            <div id="constitutionTab" class="hidden">
-              <h2>Constitution Document</h2>
-              <div class="file-input">
-                <label>Upload Constitution (PDF/DOC/DOCX, max 10MB)</label>
-                <input type="file" id="constitutionFile" accept=".pdf,.doc,.docx">
-              </div>
-              <input type="text" id="constitutionTitle" placeholder="Document Title" class="form-group">
-              <input type="text" id="constitutionNotes" placeholder="Version/Notes (optional)" class="form-group">
-              <button class="btn btn-success" onclick="uploadConstitution()">Upload Constitution</button>
-              <div id="constitutionInfo" class="margin-top-20"></div>
-            </div>
-
-            <!-- Monitoring Tab (Admin) -->
-            <div id="monitoringTab" class="hidden">
-              <h2>Monitoring & Signature Status</h2>
-              <button class="btn btn-primary" onclick="showMonitoringDoc('MONITORING-SCHEDULE.md')">Sync Monitoring Schedule</button>
-              <button class="btn btn-primary" onclick="showMonitoringDoc('MEMBER-SIGNATURE-STATUS.md')">Signature Status Report</button>
-              <div id="monitoringDocContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
-            </div>
-
-            <!-- Documentation Tab (Admin) -->
-            <div id="docsTab" class="hidden">
-              <h2>System Documentation</h2>
-              <ul>
-                <li><a href="#" onclick="showDoc('CLOUD_STORAGE_SETUP.md')">Cloud Storage Setup Guide</a></li>
-                <li><a href="#" onclick="showDoc('CLOUD-STORAGE-UPGRADE-ANALYSIS.md')">Cloud Storage Upgrade Analysis</a></li>
-                <li><a href="#" onclick="showDoc('FINANCIAL-DASHBOARD-DOCS.md')">Financial Dashboard Docs</a></li>
-                <li><a href="#" onclick="showDoc('FIREBASE_SETUP.md')">Firebase Setup</a></li>
-                <li><a href="#" onclick="showDoc('FIX_API_KEY.md')">API Key Fix Guide</a></li>
-                <li><a href="#" onclick="showDoc('MOBILE-SETUP-GUIDE.md')">Mobile Setup Guide</a></li>
-              </ul>
-              <div id="docContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
-            </div>
       </div>
       <div id="adminAlert"></div>
 
@@ -200,16 +158,124 @@
         <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
       </div>
 
-      <div id="membersTab" class="hidden">
-        <h2>Members</h2>
-        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
-        <table>
-          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
-          <tbody id="memTable"></tbody>
-        </table>
+      <!-- Attendance Tab -->
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+          <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+            <p style="margin-top: 10px; color: #4a5568;">Track attendance, manage meetings, and generate reports</p>
+          </div>
+
+          <!-- Meeting Details Section -->
+          <div class="grid-2" style="gap: 15px;">
+            <div class="form-group" style="margin: 0;">
+              <label>Meeting Date</label>
+              <input type="date" id="meetingDate" onchange="showAttendanceList()">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label>Meeting Time</label>
+              <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
+            </div>
+          </div>
+        
+          <div class="grid-2" style="gap: 15px; margin-top: 15px;">
+            <div class="form-group" style="margin: 0;">
+              <label>Meeting Type</label>
+              <select id="meetingType" onchange="updateMeetingDetails()">
+                <option value="general">General Meeting</option>
+                <option value="committee">Committee Meeting</option>
+                <option value="special">Special Meeting</option>
+                <option value="emergency">Emergency Meeting</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label>Meeting Description</label>
+              <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+                        placeholder="Brief description of meeting agenda/purpose"></textarea>
+            </div>
+          </div>
+
+          <!-- Search and Filter Section -->
+          <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <div class="grid-2" style="gap: 15px;">
+              <div class="form-group" style="margin: 0;">
+                <input type="text" id="memberSearch" 
+                       placeholder="Search members..." 
+                       onkeyup="filterMembers()"
+                       style="margin: 0;">
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <select id="statusFilter" onchange="filterMembers()" style="width: auto;">
+                  <option value="all">All Status</option>
+                  <option value="present">Present Only</option>
+                  <option value="absent">Absent Only</option>
+                  <option value="nosig">No Signature</option>
+                </select>
+                <select id="sortBy" onchange="filterMembers()" style="width: auto;">
+                  <option value="name">Sort by Name</option>
+                  <option value="time">Sort by Time In</option>
+                  <option value="status">Sort by Status</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attendance Stats -->
+          <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
+                <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
+                <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+              </div>
+              <div>
+                <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+                <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+                <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+                  <span style="margin-right: 5px;">📥</span> Download Register
+                </button>
+              </div>
+            </div>
+        </div>
+
+        <!-- Attendance List -->
+        <div class="table-container" style="margin-top: 20px;">
+          <table class="table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Member Name</th>
+                <th>Status</th>
+                  <th>Time</th>
+                  <th>Signature</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceList">
+            </tbody>
+          </table>
       </div>
 
-      <div id="beneficiariesTab" class="hidden">
+      <div id="membersTab" class="hidden" style="min-height: 400px;">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <div style="overflow-x: auto; margin-top: 20px; min-height: 300px;">
+          <table style="width: 100%; border-collapse: collapse; display: table; background: white;">
+            <thead style="display: table-header-group; background: #667eea; color: white;">
+              <tr style="display: table-row;">
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">ID</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Name</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Email</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Missed</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="memTable" style="display: table-row-group; background: white;"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden" style="min-height: 400px;">
         <h2>Beneficiaries</h2>
         <div class="form-group">
           <label>Select Member</label>
@@ -218,106 +284,93 @@
           </select>
         </div>
         <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
-        <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+        <div style="overflow-x: auto; margin-top: 20px;">
+          <table id="benTable" style="width: 100%; border-collapse: collapse; display: table;">
+            <thead style="display: table-header-group; background: #667eea; color: white;">
+              <tr style="display: table-row;">
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Name</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Relationship</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">ID</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">%</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="benTableBody" style="display: table-row-group;"></tbody>
+          </table>
+        </div>
       </div>
 
-      <div id="payoutsTab" class="hidden">
+      <div id="payoutsTab" class="hidden" style="min-height: 400px;">
         <h2>Payouts</h2>
-        <table>
-          <thead><tr><th>Member</th><th>Amount</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody id="payTable"></tbody>
-        </table>
+        <div style="overflow-x: auto; margin-top: 20px;">
+          <table style="width: 100%; border-collapse: collapse; display: table;">
+            <thead style="display: table-header-group; background: #667eea; color: white;">
+              <tr style="display: table-row;">
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Member</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Amount</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Reason</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="payTable" style="display: table-row-group;"></tbody>
+          </table>
+        </div>
       </div>
 
-      <div id="penaltiesTab" class="hidden">
+      <div id="penaltiesTab" class="hidden" style="min-height: 400px;">
         <h2>Penalties</h2>
-        <table>
-          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody id="penTable"></tbody>
-        </table>
+        <div style="overflow-x: auto; margin-top: 20px;">
+          <table style="width: 100%; border-collapse: collapse; display: table;">
+            <thead style="display: table-header-group; background: #667eea; color: white;">
+              <tr style="display: table-row;">
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Member</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Amount</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Date</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Status</th>
+                <th style="display: table-cell; padding: 12px; border: 1px solid #ddd;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="penTable" style="display: table-row-group;"></tbody>
+          </table>
+        </div>
       </div>
 
-      <div id="attendanceTab" class="hidden">
-        <h2>Meeting Attendance</h2>
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
-          <p style="margin-top: 10px; color: #4a5568;">Track attendance, manage meetings, and generate reports</p>
-        </div>
-
-        <!-- Meeting Details Section -->
-        <div class="grid-2" style="gap: 15px;">
-          <div class="form-group" style="margin: 0;">
-            <label>Meeting Date</label>
-            <input type="date" id="meetingDate" onchange="showAttendanceList()">
-          </div>
-          <div class="form-group" style="margin: 0;">
-            <label>Meeting Time</label>
-            <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
-          </div>
-        </div>
-      
-        <div class="grid-2" style="gap: 15px; margin-top: 15px;">
-          <div class="form-group" style="margin: 0;">
-            <label>Meeting Type</label>
-            <select id="meetingType" onchange="updateMeetingDetails()">
-              <option value="general">General Meeting</option>
-              <option value="committee">Committee Meeting</option>
-              <option value="special">Special Meeting</option>
-              <option value="emergency">Emergency Meeting</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin: 0;">
-            <label>Meeting Description</label>
-            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
-                      placeholder="Brief description of meeting agenda/purpose"></textarea>
+        <div id="dataTab" class="hidden">
+          
+          <!-- Location and Device Info -->
+          <div style="display: flex; gap: 10px; font-size: 12px; color: #666;">
+            <div id="locationInfo">📍 Location: <span>Not detected</span></div>
+            <div id="deviceInfo">📱 Device: <span>Unknown</span></div>
           </div>
         </div>
 
-        <!-- Search and Filter Section -->
-        <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <!-- Analytics Section -->
+        <div id="analyticsSection" style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0; display: none;">
+          <h3 style="margin-bottom: 15px;">📊 Attendance Analytics</h3>
           <div class="grid-2" style="gap: 15px;">
-            <div class="form-group" style="margin: 0;">
-              <input type="text" id="memberSearch" 
-                     placeholder="Search members..." 
-                     onkeyup="filterAttendanceMembers()"
-                     style="margin: 0;">
+            <div style="background: white; padding: 15px; border-radius: 8px;">
+              <h4>Monthly Attendance Trend</h4>
+              <canvas id="attendanceTrendChart" height="200"></canvas>
             </div>
-            <div style="display: flex; gap: 10px;">
-              <select id="statusFilter" onchange="filterAttendanceMembers()" style="width: auto;">
-                <option value="all">All Status</option>
-                <option value="present">Present Only</option>
-                <option value="absent">Absent Only</option>
-              </select>
-              <select id="sortBy" onchange="filterAttendanceMembers()" style="width: auto;">
-                <option value="name">Sort by Name</option>
-                <option value="time">Sort by Time In</option>
-                <option value="status">Sort by Status</option>
-              </select>
+            <div style="background: white; padding: 15px; border-radius: 8px;">
+              <h4>Member Participation</h4>
+              <canvas id="memberParticipationChart" height="200"></canvas>
             </div>
           </div>
+          <button class="btn btn-primary" onclick="toggleAnalytics()" style="margin-top: 10px;">
+            Hide Analytics
+          </button>
         </div>
+        
+        <!-- Analytics Toggle -->
+        <button class="btn btn-primary" onclick="toggleAnalytics()" id="showAnalyticsBtn">
+          Show Analytics
+        </button>
 
-        <!-- Attendance Stats -->
-        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <div>
-              <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span>
-              <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span>
-              <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
-            </div>
-            <div>
-              <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
-              <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
-              <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
-                <span style="margin-right: 5px;">📥</span> Download Register
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Attendance List -->
-        <div class="table-container" style="margin-top: 20px; overflow-x: auto;">
-          <table class="table" style="width: 100%;">
+        <!-- Attendance Table -->
+        <div id="attendanceSheet">
+          <table id="attendanceTable">
             <thead>
               <tr>
                 <th>#</th>
@@ -329,6 +382,25 @@
               </tr>
             </thead>
             <tbody id="attendanceTableBody">
+              <!-- Members will be listed here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Attendance History -->
+        <div style="margin-top: 30px;">
+          <h3>Recent Meetings</h3>
+          <table id="meetingHistoryTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Attendance</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="meetingHistoryBody">
+              <!-- Meeting history will be listed here -->
             </tbody>
           </table>
         </div>
@@ -367,43 +439,12 @@
             <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
           </div>
           
-          <div style="background: #f0f9ff; padding: 15px; border: 1px solid #3b82f6; border-radius: 8px;">
-            <h3 style="margin-bottom: 15px; font-size: 16px;">📊 System Overview</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
-              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
-                <div style="font-size: 24px; font-weight: bold; color: #10b981;" id="totalMembers">0</div>
-                <div style="font-size: 12px; color: #666;">Total Members</div>
-              </div>
-              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
-                <div style="font-size: 24px; font-weight: bold; color: #3b82f6;" id="totalMeetings">0</div>
-                <div style="font-size: 12px; color: #666;">Total Meetings</div>
-              </div>
-              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
-                <div style="font-size: 24px; font-weight: bold; color: #8b5cf6;" id="totalBeneficiaries">0</div>
-                <div style="font-size: 12px; color: #666;">Beneficiaries</div>
-              </div>
-              <div style="text-align: center; padding: 10px; background: white; border-radius: 5px;">
-                <div style="font-size: 24px; font-weight: bold; color: #f59e0b;" id="totalPayouts">0</div>
-                <div style="font-size: 12px; color: #666;">Payouts</div>
-              </div>
-            </div>
-            <div style="margin-top: 15px; padding: 10px; background: white; border-radius: 5px;">
-              <div style="font-size: 13px; color: #666;">
-                <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
-                <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
-                <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
-              </div>
-            </div>
-          </div>
-          
           <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">� Detailed Storage Info</h3>
+            <h3 style="margin-bottom: 10px; font-size: 16px;">📊 Storage Info</h3>
             <p style="color: #666; font-size: 13px;"><strong>Members:</strong> <span id="storageMembers">0</span></p>
             <p style="color: #666; font-size: 13px;"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
             <p style="color: #666; font-size: 13px;"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
-            <p style="color: #666; font-size: 13px; margin-bottom: 0;"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+            <p style="color: #666; font-size: 13px; margin-bottom: 0;"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
           </div>
         </div>
       </div>
@@ -421,117 +462,7 @@
         <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
         <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
         <button class="tab" onclick="memberTab('documents', event)">Documents</button>
-        <button class="tab" onclick="memberTab('constitution', event)">Constitution</button>
-        <button class="tab" onclick="memberTab('financial', event)">Financial</button>
-        <button class="tab" onclick="memberTab('docs', event)">Documentation</button>
       </div>
-            <!-- Constitution Tab (Member) -->
-            <div id="memberConstitutionTab" class="hidden">
-              <h2>Constitution Document</h2>
-              <div id="memberConstitutionInfo" class="margin-top-20"></div>
-            </div>
-
-            <!-- Documentation Tab (Member) -->
-            <div id="memberDocsTab" class="hidden">
-              <h2>System Documentation</h2>
-              <ul>
-                <li><a href="#" onclick="showDoc('CLOUD_STORAGE_SETUP.md')">Cloud Storage Setup Guide</a></li>
-                <li><a href="#" onclick="showDoc('CLOUD-STORAGE-UPGRADE-ANALYSIS.md')">Cloud Storage Upgrade Analysis</a></li>
-                <li><a href="#" onclick="showDoc('FINANCIAL-DASHBOARD-DOCS.md')">Financial Dashboard Docs</a></li>
-                <li><a href="#" onclick="showDoc('FIREBASE_SETUP.md')">Firebase Setup</a></li>
-                <li><a href="#" onclick="showDoc('FIX_API_KEY.md')">API Key Fix Guide</a></li>
-                <li><a href="#" onclick="showDoc('MOBILE-SETUP-GUIDE.md')">Mobile Setup Guide</a></li>
-              </ul>
-              <div id="docContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
-            </div>
-          // Constitution Document Storage
-          const CONSTITUTION_KEY = 'sbahle_constitution_doc';
-          function uploadConstitution() {
-            const fileInput = document.getElementById('constitutionFile');
-            const file = fileInput.files[0];
-            const title = document.getElementById('constitutionTitle').value || 'Constitution';
-            const notes = document.getElementById('constitutionNotes').value || '';
-            if (!file) { showAlert('adminAlert', 'Select a file', 'error'); return; }
-            if (file.size > 10 * 1024 * 1024) { showAlert('adminAlert', 'File too large (max 10MB)', 'error'); return; }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              const doc = {
-                name: file.name,
-                title,
-                notes,
-                type: file.type,
-                data: e.target.result,
-                date: new Date().toISOString(),
-                size: file.size
-              };
-              localStorage.setItem(CONSTITUTION_KEY, JSON.stringify(doc));
-              showAlert('adminAlert', '✓ Constitution uploaded!', 'success');
-              renderConstitutionInfo();
-            };
-            reader.readAsDataURL(file);
-          }
-          function renderConstitutionInfo() {
-            const info = document.getElementById('constitutionInfo');
-            const docStr = localStorage.getItem(CONSTITUTION_KEY);
-            if (!info) return;
-            if (!docStr) {
-              info.innerHTML = '<p style="color:#999;">No constitution uploaded yet.</p>';
-              return;
-            }
-            const doc = JSON.parse(docStr);
-            info.innerHTML = `<div><strong>Title:</strong> ${doc.title}<br>
-              <strong>File:</strong> ${doc.name} (${(doc.size/1024).toFixed(1)} KB)<br>
-              <strong>Type:</strong> ${doc.type}<br>
-              <strong>Date:</strong> ${new Date(doc.date).toLocaleString()}<br>
-              <strong>Notes:</strong> ${doc.notes || '-'}<br>
-              <a href="${doc.data}" download="${doc.name}" class="btn btn-primary btn-sm">Download</a>
-              <button class="btn btn-danger btn-sm" onclick="deleteConstitution()">Delete</button>
-            </div>`;
-          }
-          function deleteConstitution() {
-            localStorage.removeItem(CONSTITUTION_KEY);
-            renderConstitutionInfo();
-            showAlert('adminAlert', '✓ Constitution deleted', 'success');
-          }
-          function renderMemberConstitutionInfo() {
-            const info = document.getElementById('memberConstitutionInfo');
-            const docStr = localStorage.getItem(CONSTITUTION_KEY);
-            if (!info) return;
-            if (!docStr) {
-              info.innerHTML = '<p style="color:#999;">No constitution uploaded yet.</p>';
-              return;
-            }
-            const doc = JSON.parse(docStr);
-            info.innerHTML = `<div><strong>Title:</strong> ${doc.title}<br>
-              <strong>File:</strong> ${doc.name} (${(doc.size/1024).toFixed(1)} KB)<br>
-              <strong>Type:</strong> ${doc.type}<br>
-              <strong>Date:</strong> ${new Date(doc.date).toLocaleString()}<br>
-              <strong>Notes:</strong> ${doc.notes || '-'}<br>
-              <a href="${doc.data}" download="${doc.name}" class="btn btn-primary btn-sm">Download</a>
-              <a href="${doc.data}" target="_blank" class="btn btn-success btn-sm">View</a>
-            </div>`;
-          }
-
-          // Documentation Viewer (loads static markdown as HTML)
-          const DOCS = {
-            'MONITORING-SCHEDULE.md': `# ⏰ SYNC MONITORING SCHEDULE - Version 2.6.0\n...\n(see file for full content)`,
-            'MEMBER-SIGNATURE-STATUS.md': `# Member Signature Status Report\n...\n(see file for full content)`,
-            'CLOUD_STORAGE_SETUP.md': `# Cloud Storage Setup Guide\n...\n(see file for full content)`,
-            'CLOUD-STORAGE-UPGRADE-ANALYSIS.md': `# ☁️ Cloud Storage Upgrade Analysis\n...\n(see file for full content)`,
-            'CONSTITUTION-FEATURE-ADDED.md': `# Constitution Upload Feature - Added Successfully\n...\n(see file for full content)`,
-            'FINANCIAL-DASHBOARD-DOCS.md': `# 📊 Financial Dashboard - Feature Documentation\n...\n(see file for full content)`,
-            'FIREBASE_SETUP.md': `# ☁️ Cloud Storage for Sbahle Burial Society\n...\n(see file for full content)`,
-            'FIX_API_KEY.md': `# 🔧 API Key Permission Issue\n...\n(see file for full content)`,
-            'MOBILE-SETUP-GUIDE.md': `# 📱 Sbahle Burial Society - Mobile Setup Guide\n...\n(see file for full content)`
-          };
-          function showDoc(docName) {
-            const content = DOCS[docName] || 'Document not found.';
-            document.getElementById('docContent').innerHTML = `<pre style="white-space:pre-wrap;">${content}</pre>`;
-          }
-          function showMonitoringDoc(docName) {
-            const content = DOCS[docName] || 'Document not found.';
-            document.getElementById('monitoringDocContent').innerHTML = `<pre style="white-space:pre-wrap;">${content}</pre>`;
-          }
       <div id="memberAlert"></div>
 
       <div id="memberProfileTab">
@@ -567,7 +498,97 @@
           <img id="savedSignature" style="max-width: 100%; border: 1px solid #ddd; border-radius: 5px;">
         </div>
       </div>
-      <!-- Removed duplicate/erroneous member dashboard markup -->
+      <div class="header">
+        <h1>Member Dashboard</h1>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="memberTab('profile', event)">Profile</button>
+        <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
+        <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
+        <button class="tab" onclick="memberTab('documents', event)">Documents</button>
+        <button class="tab" onclick="memberTab('signature', event)">Signature</button>
+        <button class="tab" onclick="memberTab('payouts', event)">Payouts</button>
+      </div>
+      <div id="memberAlert"></div>
+
+      <div id="profileTab">
+        <h2>My Profile</h2>
+        <p><strong>Member ID:</strong> <span id="memId">MEM001</span></p>
+        <p><strong>Status:</strong> <span id="memStatus" class="badge badge-active">Active</span></p>
+        <div class="form-group"><label>Name</label><input type="text" id="profName" disabled></div>
+        <div class="form-group"><label>Email</label><input type="text" id="profEmail" disabled></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="profPhone" disabled></div>
+        <button class="btn btn-primary" onclick="editProf()">Edit</button>
+        <button class="btn btn-success hidden" id="saveProf" onclick="saveProf()">Save</button>
+      </div>
+
+      <div id="contributionsTab" class="hidden">
+        <h2>Contributions - R 170/Month Required</h2>
+        <button class="btn btn-success" onclick="addContribModal()">+ Add Contribution</button>
+        <table>
+          <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>2025-03-15</td><td>R 170</td><td>Bank Transfer</td><td><span class="badge badge-approved">Verified</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="memberBeneficiariesTab" class="hidden">
+        <h2>My Beneficiaries</h2>
+        <p style="color: #666; margin-bottom: 15px;">You can add up to 5 beneficiaries. Total allocation must equal 100%.</p>
+        <button class="btn btn-success" id="addBenMemBtn" onclick="addBenMemModal()">+ Add Beneficiary</button>
+        <button class="btn btn-primary hidden" id="saveBenMemBtn" onclick="saveBenMem()">Save & Lock</button>
+        
+        <table style="margin-top: 20px;">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Relationship</th>
+              <th>ID Number</th>
+              <th>Allocation %</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="memBenTableBody">
+            <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="documentsTab" class="hidden">
+        <h2>Upload Documents</h2>
+        <div class="file-input">
+          <label>Proof of Payment (PDF/JPEG)</label>
+          <input type="file" id="payFile" accept=".pdf,.jpg,.jpeg">
+        </div>
+        <div class="file-input">
+          <label>Death Certificate (PDF/JPEG)</label>
+          <input type="file" id="deathFile" accept=".pdf,.jpg,.jpeg">
+        </div>
+        <div class="file-input">
+          <label>Supporting Documents (PDF/JPEG)</label>
+          <input type="file" id="suppFile" accept=".pdf,.jpg,.jpeg">
+        </div>
+        <button class="btn btn-success" onclick="saveDocs()">Save Documents</button>
+      </div>
+
+      <div id="signatureTab" class="hidden">
+        <h2>Digital Signature</h2>
+        <p style="font-size: 13px; color: #666;">Draw your signature below:</p>
+        <canvas id="sigCanvas" width="500" height="150"></canvas>
+        <button class="btn btn-secondary" onclick="clearSig()">Clear</button>
+        <button class="btn btn-success" onclick="saveSig()">Save Signature</button>
+      </div>
+
+      <div id="memberPayoutsTab" class="hidden">
+        <h2>Request Payout</h2>
+        <button class="btn btn-success" onclick="reqPayoutModal()">+ Request Payout</button>
+        <table>
+          <thead><tr><th>Date</th><th>Amount</th><th>Reason</th><th>Status</th></tr></thead>
+          <tbody id="memPayTable"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -583,6 +604,46 @@
     // ===== DATA STORAGE SYSTEM =====
     const STORAGE_KEY = 'sbahle_burial_society_data';
     const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' }; // In production, hash this!
+    
+    // Global variables
+    window.members = [];
+    window.currentUser = null;
+    
+    // Initialize demo data
+    function initializeDemoData() {
+      // Initialize demo members if not exists
+      if (!localStorage.getItem('members')) {
+        const demoMembers = [
+          { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
+          { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
+          { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', phone: '0741234567', idNum: '7812345678901', status: 'Suspended', missedPayments: 3 }
+        ];
+        localStorage.setItem('members', JSON.stringify(demoMembers));
+      }
+      
+      // Load members from localStorage
+      window.members = JSON.parse(localStorage.getItem('members')) || [];
+      
+      // Initialize other data arrays
+      window.beneficiaries = [
+        { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
+        { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 }
+      ];
+      window.payouts = [
+        { id: 'PO1', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 5000, reason: 'Funeral', status: 'Pending' }
+      ];
+      window.penalties = [
+        { id: 'PEN1', memberId: 'MEM002', memberName: 'Nomsa Dlamini', amount: 30, date: '2025-03-10', status: 'Pending' }
+      ];
+      window.tempBeneficiaries = [];
+      window.isDrawing = false;
+      window.memberIdCounter = 4;
+      
+      // Initialize attendance storage
+      if (!localStorage.getItem('attendance')) {
+        localStorage.setItem('attendance', JSON.stringify({}));
+      }
+    }
     
     // Simple encryption/decryption (for basic security - use proper encryption in production)
     function encryptData(data) {
@@ -608,46 +669,17 @@
     // Save all data to localStorage
     function saveDataToStorage() {
       try {
-        // Get attendance data
-        const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
-        
-        // Create comprehensive data structure
         const data = {
-          // Core member data
-          members,
-          beneficiaries,
-          payouts,
-          penalties,
-          
-          // Attendance and meeting data
-          attendance: attendanceData,
-          
-          // System data
-          memberIdCounter,
-          
-          // Metadata
-          lastSaved: new Date().toISOString(),
-          version: '2.0',
-          systemInfo: {
-            totalMembers: members.length,
-            activeMembers: members.filter(m => m.status === 'Active').length,
-            suspendedMembers: members.filter(m => m.status === 'Suspended').length,
-            totalBeneficiaries: beneficiaries.length,
-            totalPayouts: payouts.length,
-            totalPenalties: penalties.length,
-            totalMeetings: Object.keys(attendanceData).length
-          }
+          members: window.members || [],
+          beneficiaries: window.beneficiaries || [],
+          payouts: window.payouts || [],
+          penalties: window.penalties || [],
+          memberIdCounter: window.memberIdCounter || 4,
+          lastSaved: new Date().toISOString()
         };
-        
         const encrypted = encryptData(data);
         localStorage.setItem(STORAGE_KEY, encrypted);
-        
-        // Also save a backup with timestamp
-        const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
-        localStorage.setItem(backupKey, encrypted);
-        
         console.log('✓ Data saved to secure storage at', data.lastSaved);
-        console.log('✓ System Info:', data.systemInfo);
         return true;
       } catch (e) {
         console.error('Failed to save data:', e);
@@ -656,83 +688,56 @@
       }
     }
     
-    // Load data from localStorage with comprehensive structure
+    // Load data from localStorage
     function loadDataFromStorage() {
       try {
         const encrypted = localStorage.getItem(STORAGE_KEY);
         if (encrypted) {
           const data = decryptData(encrypted);
           if (data) {
-            // Load core data
-            members = data.members || [];
-            beneficiaries = data.beneficiaries || [];
-            payouts = data.payouts || [];
-            penalties = data.penalties || [];
-            memberIdCounter = data.memberIdCounter || 4;
-            
-            // Load attendance data if available
-            if (data.attendance) {
-              localStorage.setItem('attendance', JSON.stringify(data.attendance));
-            }
-            
+            window.members = data.members || [];
+            window.beneficiaries = data.beneficiaries || [];
+            window.payouts = data.payouts || [];
+            window.penalties = data.penalties || [];
+            window.memberIdCounter = data.memberIdCounter || 4;
             console.log('✓ Data loaded from storage. Last saved:', data.lastSaved);
-            if (data.systemInfo) {
-              console.log('✓ System Statistics:', data.systemInfo);
-            }
             return true;
           }
         }
-        console.log('No saved data found, using default data');
+        console.log('No saved data found, initializing demo data');
+        initializeDemoData();
         return false;
       } catch (e) {
         console.error('Failed to load data:', e);
+        console.log('Error loading data, initializing demo data');
+        initializeDemoData();
         return false;
       }
     }
     
-    // Export comprehensive data to JSON file
+    // Export data to JSON file
     function exportData() {
       try {
-        // Get attendance data
-        const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
-        
         const data = {
-          // Core data
           members,
           beneficiaries,
           payouts,
           penalties,
           memberIdCounter,
-          
-          // Attendance and meeting data
-          attendance: attendanceData,
-          
-          // Export metadata
           exportDate: new Date().toISOString(),
-          version: '2.0',
-          systemInfo: {
-            totalMembers: members.length,
-            activeMembers: members.filter(m => m.status === 'Active').length,
-            suspendedMembers: members.filter(m => m.status === 'Suspended').length,
-            totalBeneficiaries: beneficiaries.length,
-            totalPayouts: payouts.length,
-            totalPenalties: penalties.length,
-            totalMeetings: Object.keys(attendanceData).length,
-            exportedBy: 'Sbahle Burial Portal v2.0'
-          }
+          version: '1.0'
         };
-        
         const jsonStr = JSON.stringify(data, null, 2);
         const blob = new Blob([jsonStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `sbahle_complete_backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `sbahle_backup_${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showAlert('adminAlert', '✓ Complete data exported successfully!', 'success');
+        showAlert('adminAlert', '✓ Data exported successfully!', 'success');
       } catch (e) {
         console.error('Export error:', e);
         showAlert('adminAlert', '⚠ Failed to export data', 'error');
@@ -740,41 +745,24 @@
     }
     
     // Import data from JSON file
-    // Import comprehensive data from JSON file
     function importData(file) {
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
           const data = JSON.parse(e.target.result);
-          if (confirm('This will replace all current data including attendance records. Are you sure?')) {
-            // Import core data
-            members = data.members || [];
-            beneficiaries = data.beneficiaries || [];
-            payouts = data.payouts || [];
-            penalties = data.penalties || [];
-            memberIdCounter = data.memberIdCounter || 4;
-            
-            // Import attendance data if available
-            if (data.attendance) {
-              localStorage.setItem('attendance', JSON.stringify(data.attendance));
-            }
-            
-            // Save all imported data
+          if (confirm('This will replace all current data. Are you sure?')) {
+            window.members = data.members || [];
+            window.beneficiaries = data.beneficiaries || [];
+            window.payouts = data.payouts || [];
+            window.penalties = data.penalties || [];
+            window.memberIdCounter = data.memberIdCounter || 4;
             saveDataToStorage();
             updateAdmin();
-            
-            // Show success message with statistics
-            let message = '✓ Data imported successfully!';
-            if (data.systemInfo) {
-              message += `\n📊 Imported: ${data.systemInfo.totalMembers} members, ${data.systemInfo.totalMeetings} meetings`;
-            }
-            showAlert('adminAlert', message, 'success');
-            
-            console.log('✓ Import completed:', data.systemInfo || 'Basic data structure');
+            showAlert('adminAlert', '✓ Data imported successfully!', 'success');
           }
         } catch (err) {
           console.error('Import error:', err);
-          showAlert('adminAlert', '⚠ Invalid data file format', 'error');
+          showAlert('adminAlert', '⚠ Invalid data file', 'error');
         }
       };
       reader.readAsText(file);
@@ -790,32 +778,14 @@
       }
     }
     
-    // Default/initial data
-    let members = [
-      { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
-      { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
-      { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Suspended', missedPayments: 3 }
-    ];
-    let beneficiaries = [
-      { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
-      { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 }
-    ];
-    let payouts = [
-      { id: 'PO1', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 5000, reason: 'Funeral', status: 'Pending' }
-    ];
-    let penalties = [
-      { id: 'PEN1', memberId: 'MEM002', memberName: 'Nomsa Dlamini', amount: 30, date: '2025-03-10', status: 'Pending' }
-    ];
-    let currentUser = null;
-    let tempBeneficiaries = [];
-    let isDrawing = false;
-    let memberIdCounter = 4; // Start from 4 since we have MEM001, MEM002, MEM003
+    // Initialize data immediately and also on page load
+    initializeDemoData();
     
-    // Load saved data on page load
-    loadDataFromStorage();
-
     // CANVAS
     window.addEventListener('load', function() {
+      // Initialize demo data first
+      initializeDemoData();
+      
       const canvas = document.getElementById('sigCanvas');
       if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -869,38 +839,7 @@
     }
 
     function saveSig() {
-      const canvas = document.getElementById('sigCanvas');
-      
-      // Check if canvas has any drawing
-      const ctx = canvas.getContext('2d');
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const isBlank = !imageData.data.some(channel => channel !== 0);
-      
-      if (isBlank) {
-        showAlert('memberAlert', '⚠ Please draw your signature first', 'error');
-        return;
-      }
-      
-      // Convert canvas to base64 image
-      const signatureData = canvas.toDataURL('image/png');
-      
-      // Save to current user
-      if (currentUser) {
-        currentUser.signature = signatureData;
-        
-        // Update in members array
-        const memberIndex = members.findIndex(m => m.id === currentUser.id);
-        if (memberIndex !== -1) {
-          members[memberIndex].signature = signatureData;
-          saveDataToStorage();
-          
-          // Show preview
-          document.getElementById('savedSignatureImg').src = signatureData;
-          document.getElementById('savedSignaturePreview').style.display = 'block';
-          
-          showAlert('memberAlert', '✓ Signature saved successfully!', 'success');
-        }
-      }
+      showAlert('memberAlert', '✓ Signature saved!', 'success');
     }
 
     // LOGIN
@@ -921,90 +860,29 @@
     }
 
     function loginMember() {
-      const email = document.getElementById('memberEmail').value;
-      const password = document.getElementById('memberPassword').value;
-      
-      if (!email || !password) {
-        alert('⚠ Please enter both email and password');
-        return;
-      }
-      
-      const m = members.find(x => x.email === email);
-      if (!m) {
-        alert('❌ Email not found. Please check your email or register.');
-        return;
-      }
-      
-      if (m.password !== password) {
-        alert('❌ Incorrect password. Please try again.');
-        return;
-      }
-      
-      // Successful login
-      currentUser = m;
-      // Load beneficiaries for this member from the main beneficiaries array
-      tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === m.id)));
-      console.log('Member logged in:', m.id);
-      console.log('Filtered beneficiaries:', tempBeneficiaries);
-      show('memberPage');
-      updateMember();
+      const m = (window.members || []).find(x => x.email === document.getElementById('memberEmail').value);
+      if (m) {
+        window.currentUser = m;
+        // Load beneficiaries for this member from the main beneficiaries array
+        window.tempBeneficiaries = JSON.parse(JSON.stringify((window.beneficiaries || []).filter(b => b.memberId === m.id)));
+        console.log('Member logged in:', m.id);
+        console.log('Filtered beneficiaries:', window.tempBeneficiaries);
+        show('memberPage');
+        updateMember();
+      } else alert('Not found');
     }
 
     function registerMember() {
       const name = document.getElementById('regName').value;
       const email = document.getElementById('regEmail').value;
-      const password = document.getElementById('regPassword').value;
-      const confirmPassword = document.getElementById('regConfirmPassword').value;
       const phone = document.getElementById('regPhone').value;
       const idNum = document.getElementById('regId').value;
-      
-      // Validation
-      if (!name || !email || !password || !confirmPassword || !phone || !idNum) { 
-        alert('⚠ Please fill all fields'); 
-        return; 
-      }
-      
-      // Check if email already exists
-      if (members.find(m => m.email === email)) {
-        alert('❌ This email is already registered. Please use a different email or login.');
-        return;
-      }
-      
-      // Password validation
-      if (password.length < 6) {
-        alert('⚠ Password must be at least 6 characters long');
-        return;
-      }
-      
-      if (password !== confirmPassword) {
-        alert('❌ Passwords do not match. Please try again.');
-        return;
-      }
-      
-      // Create new member
+      if (!name || !email || !phone || !idNum) { alert('Fill all'); return; }
       const newId = 'MEM' + String(memberIdCounter).padStart(3, '0');
       memberIdCounter++;
-      members.push({ 
-        id: newId, 
-        name, 
-        email, 
-        password,
-        phone, 
-        idNum, 
-        status: 'Active', 
-        missedPayments: 0 
-      });
+      members.push({ id: newId, name, email, phone, idNum, status: 'Active', missedPayments: 0 });
       saveDataToStorage(); // Auto-save
-      
-      // Clear form
-      document.getElementById('regName').value = '';
-      document.getElementById('regEmail').value = '';
-      document.getElementById('regPassword').value = '';
-      document.getElementById('regConfirmPassword').value = '';
-      document.getElementById('regPhone').value = '';
-      document.getElementById('regId').value = '';
-      
-      alert('✓ Registration successful! You can now login with your email and password.');
+      alert('Registered!');
       showLoginForm('member');
     }
 
@@ -1020,89 +898,34 @@
     }
 
     function adminTab(t, e) {
+      // Hide all tabs
       document.getElementById('overviewTab').classList.toggle('hidden', t !== 'overview');
       document.getElementById('membersTab').classList.toggle('hidden', t !== 'members');
       document.getElementById('beneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
+      document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
       document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
-      document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
-      document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
-      document.getElementById('constitutionTab').classList.toggle('hidden', t !== 'constitution');
-      document.getElementById('monitoringTab').classList.toggle('hidden', t !== 'monitoring');
-      document.getElementById('financialTab').classList.toggle('hidden', t !== 'financial');
-      document.getElementById('docsTab').classList.toggle('hidden', t !== 'docs');
       document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
+      
+      // Update active tab button
       document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
+      
+      // Load content for active tab
+      if (t === 'overview') { updateAdmin(); }
       if (t === 'members') { displayMem(); }
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
-      if (t === 'payouts') displayPayouts();
-      if (t === 'penalties') displayPenalties();
-      if (t === 'attendance') { 
-        const dateInput = document.getElementById('meetingDate');
-        if (!dateInput.value) {
-          dateInput.value = new Date().toISOString().split('T')[0];
-          document.getElementById('meetingTime').value = new Date().toTimeString().slice(0,5);
-        }
-        showAttendanceList(); 
-      }
-      if (t === 'documents') { /* renderAdminDocuments(); */ }
-      if (t === 'constitution') { renderConstitutionInfo(); }
-      if (t === 'monitoring') { showMonitoringDoc('MONITORING-SCHEDULE.md'); }
-      if (t === 'financial') { /* refreshAdminFinancials(); */ showDoc('FINANCIAL-DASHBOARD-DOCS.md'); }
-      if (t === 'docs') { showDoc('CLOUD_STORAGE_SETUP.md'); }
+      if (t === 'attendance') { showAttendanceList(); }
+      if (t === 'payouts') { displayPayouts(); }
+      if (t === 'penalties') { displayPenalties(); }
       if (t === 'data') { updateStorageInfo(); }
     }
     
     function updateStorageInfo() {
-      // Get attendance data
-      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
-      const activeMembers = members.filter(m => m.status === 'Active');
-      
-      // Update overview cards
-      document.getElementById('totalMembers').textContent = members.length;
-      document.getElementById('totalMeetings').textContent = Object.keys(attendanceData).length;
-      document.getElementById('totalBeneficiaries').textContent = beneficiaries.length;
-      document.getElementById('totalPayouts').textContent = payouts.length;
-      
-      // Update detailed storage info
-      document.getElementById('storageMembers').textContent = members.length;
-      document.getElementById('storageBeneficiaries').textContent = beneficiaries.length;
-      document.getElementById('storagePayouts').textContent = payouts.length;
-      document.getElementById('storagePenalties').textContent = penalties.length;
-      document.getElementById('storageAttendance').textContent = Object.keys(attendanceData).length;
-      document.getElementById('storageActiveMembers').textContent = activeMembers.length;
-      
-      // Update metadata
-      const encrypted = localStorage.getItem(STORAGE_KEY);
-      if (encrypted) {
-        try {
-          const data = decryptData(encrypted);
-          if (data && data.lastSaved) {
-            document.getElementById('lastSavedTime').textContent = new Date(data.lastSaved).toLocaleString();
-          }
-          if (data && data.version) {
-            document.getElementById('dataVersion').textContent = data.version;
-          }
-        } catch (e) {
-          console.log('Could not read metadata');
-        }
-      }
-      
-      // Calculate storage size
-      try {
-        const totalStorage = JSON.stringify({
-          members,
-          beneficiaries,
-          payouts,
-          penalties,
-          attendance: attendanceData
-        }).length;
-        const sizeKB = (totalStorage / 1024).toFixed(2);
-        document.getElementById('storageSize').textContent = `${sizeKB} KB`;
-      } catch (e) {
-        document.getElementById('storageSize').textContent = 'Error calculating';
-      }
+      document.getElementById('storageMembers').textContent = window.members ? window.members.length : 0;
+      document.getElementById('storageBeneficiaries').textContent = window.beneficiaries ? window.beneficiaries.length : 0;
+      document.getElementById('storagPayouts').textContent = window.payouts ? window.payouts.length : 0;
+      document.getElementById('storagePenalties').textContent = window.penalties ? window.penalties.length : 0;
     }
 
     function memberTab(t, e) {
@@ -1110,35 +933,31 @@
       document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
       document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
       document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
-      document.getElementById('memberConstitutionTab').classList.toggle('hidden', t !== 'constitution');
       document.getElementById('signatureTab').classList.toggle('hidden', t !== 'signature');
       document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
-      document.getElementById('memberFinancialTab').classList.toggle('hidden', t !== 'financial');
-      document.getElementById('memberDocsTab').classList.toggle('hidden', t !== 'docs');
       document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
+      if (t === 'profile') { updateMember(); }
+      if (t === 'contributions') { /* Contributions tab - static content */ }
       if (t === 'beneficiaries') {
-        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
-        setTimeout(() => { displayMemBen(); }, 50);
+        // Refresh tempBeneficiaries from the main beneficiaries array
+        window.tempBeneficiaries = JSON.parse(JSON.stringify((window.beneficiaries || []).filter(b => b.memberId === currentUser.id)));
+        console.log('Beneficiaries tab clicked, count:', tempBeneficiaries.length);
+        console.log('Beneficiaries data:', tempBeneficiaries);
+        // Wait for the tab to be visible before rendering
+        setTimeout(() => {
+          console.log('Calling displayMemBen after tab is visible');
+          displayMemBen();
+        }, 50);
       }
-      if (t === 'signature') {
-        if (currentUser && currentUser.signature) {
-          document.getElementById('savedSignatureImg').src = currentUser.signature;
-          document.getElementById('savedSignaturePreview').style.display = 'block';
-        } else {
-          document.getElementById('savedSignaturePreview').style.display = 'none';
-        }
-      }
-      if (t === 'constitution') { renderMemberConstitutionInfo(); }
-      if (t === 'financial') { showDoc('FINANCIAL-DASHBOARD-DOCS.md'); }
-      if (t === 'docs') { showDoc('CLOUD_STORAGE_SETUP.md'); }
       if (t === 'payouts') displayMemPayouts();
     }
 
     function updateAdmin() {
-      document.getElementById('totalMem').textContent = members.length;
-      document.getElementById('activeMem').textContent = members.filter(m => m.status === 'Active').length;
-      document.getElementById('suspMem').textContent = members.filter(m => m.status === 'Suspended').length;
+      const membersList = window.members || [];
+      document.getElementById('totalMem').textContent = membersList.length;
+      document.getElementById('activeMem').textContent = membersList.filter(m => m.status === 'Active').length;
+      document.getElementById('suspMem').textContent = membersList.filter(m => m.status === 'Suspended').length;
     }
 
     function updateMember() {
@@ -1150,54 +969,77 @@
       badge.textContent = currentUser.status;
       badge.className = `badge badge-${currentUser.status === 'Active' ? 'active' : 'suspended'}`;
       // Make sure tempBeneficiaries is loaded from the main beneficiaries array
-      if (!tempBeneficiaries || tempBeneficiaries.length === 0) {
-        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
-        console.log('updateMember: loaded', tempBeneficiaries.length, 'beneficiaries');
+      if (!window.tempBeneficiaries || window.tempBeneficiaries.length === 0) {
+        window.tempBeneficiaries = JSON.parse(JSON.stringify((window.beneficiaries || []).filter(b => b.memberId === currentUser.id)));
+        console.log('updateMember: loaded', window.tempBeneficiaries.length, 'beneficiaries');
       }
     }
 
     function displayMem() {
       let html = '';
-      members.forEach(m => {
-        html += `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
-          <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
-          ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
-          <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
-        </td></tr>`;
+      (window.members || []).forEach(m => {
+        html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.id}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.name}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.email}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${m.missedPayments}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
+            <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
+            ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
+            <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
+          </td>
+        </tr>`;
       });
-      document.getElementById('memTable').innerHTML = html;
+      
+      const tableElement = document.getElementById('memTable');
+      if (tableElement) {
+        tableElement.innerHTML = html;
+      }
     }
 
     function displayPayouts() {
       let html = '';
-      payouts.forEach(p => {
-        html += `<tr><td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
-          ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
-        </td></tr>`;
+      (window.payouts || []).forEach(p => {
+        html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.memberName}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">R ${p.amount}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.reason}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
+            ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
+          </td>
+        </tr>`;
       });
       document.getElementById('payTable').innerHTML = html;
     }
 
     function displayPenalties() {
       let html = '';
-      penalties.forEach(p => {
-        html += `<tr><td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.date}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
-          <button class="btn btn-success btn-sm" onclick="payPen('${p.id}')">Mark Paid</button>
-        </td></tr>`;
+      (window.penalties || []).forEach(p => {
+        html += `<tr style="display: table-row; height: 45px; border-bottom: 1px solid #ddd; background: white;">
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.memberName}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">R ${p.amount}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">${p.date}</td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;"><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td>
+          <td style="display: table-cell; padding: 12px; border: 1px solid #ddd;">
+            <button class="btn btn-success btn-sm" onclick="payPen('${p.id}')">Mark Paid</button>
+          </td>
+        </tr>`;
       });
       document.getElementById('penTable').innerHTML = html;
     }
 
     function populateBenSelect() {
       let opts = '<option value="">-- Select --</option>';
-      members.forEach(m => opts += `<option value="${m.id}">${m.name}</option>`);
+      (window.members || []).forEach(m => opts += `<option value="${m.id}">${m.name}</option>`);
       document.getElementById('memSelectBen').innerHTML = opts;
     }
 
     function loadBeneficiaries() {
       const id = document.getElementById('memSelectBen').value;
       document.getElementById('addBenBtn').style.display = id ? 'block' : 'none';
-      const bens = beneficiaries.filter(b => b.memberId === id);
+      const bens = (window.beneficiaries || []).filter(b => b.memberId === id);
       let html = '';
       if (bens.length > 0) {
         bens.forEach(b => {
@@ -1215,20 +1057,15 @@
     }
 
     function displayMemBen() {
-      console.log('displayMemBen called with', tempBeneficiaries.length, 'beneficiaries');
-      console.log('Beneficiaries data:', JSON.stringify(tempBeneficiaries));
-      
+      const tempBens = window.tempBeneficiaries || [];
       const tbody = document.getElementById('memBenTableBody');
       
-      if (!tbody) {
-        console.error('Table body not found!');
-        return;
-      }
+      if (!tbody) return;
       
       let html = '';
       
-      if (tempBeneficiaries && tempBeneficiaries.length > 0) {
-        tempBeneficiaries.forEach((b, i) => {
+      if (tempBens && tempBens.length > 0) {
+        tempBens.forEach((b, i) => {
           html += '<tr>';
           html += '<td>' + (b.name || 'N/A') + '</td>';
           html += '<td>' + (b.relationship || 'N/A') + '</td>';
@@ -1241,10 +1078,7 @@
         html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>';
       }
       
-      console.log('Generated HTML:', html.substring(0, 200));
       tbody.innerHTML = html;
-      console.log('Table updated with', tempBeneficiaries.length, 'rows');
-      console.log('Table body HTML after update:', tbody.innerHTML.substring(0, 200));
       
       // Update button visibility
       const addBtn = document.getElementById('addBenMemBtn');
@@ -1275,7 +1109,7 @@
 
     function displayMemPayouts() {
       let html = '';
-      payouts.filter(p => p.memberId === currentUser.id).forEach(p => {
+      (window.payouts || []).filter(p => p.memberId === currentUser.id).forEach(p => {
         html += `<tr><td>${p.date || 'N/A'}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td></tr>`;
       });
       document.getElementById('memPayTable').innerHTML = html || '<tr><td colspan="4">No payouts</td></tr>';
@@ -1344,9 +1178,9 @@
 
     function delMem(id) {
       if (confirm('Delete member?')) {
-        members = members.filter(m => m.id !== id);
-        beneficiaries = beneficiaries.filter(b => b.memberId !== id);
-        payouts = payouts.filter(p => p.memberId !== id);
+        window.members = members.filter(m => m.id !== id);
+        window.beneficiaries = beneficiaries.filter(b => b.memberId !== id);
+        window.payouts = payouts.filter(p => p.memberId !== id);
         saveDataToStorage(); // Auto-save
         displayMem();
         updateAdmin();
@@ -1571,11 +1405,6 @@
       showAlert('memberAlert', '✓ Beneficiaries locked! Cannot modify', 'success');
     }
 
-    // Initialize on load
-    window.addEventListener('load', () => {
-      console.log('Window loaded');
-    });
-
     function saveDocs() {
       const payFile = document.getElementById('payFile').files[0];
       const deathFile = document.getElementById('deathFile').files[0];
@@ -1705,18 +1534,260 @@
       }
     }
 
-    function showAttendanceList() {
-      // Check if members are loaded
-      if (!members || members.length === 0) {
-        showAlert('adminAlert', '⚠ No members found. Please add members first.', 'error');
-        return;
+    // Device and Location Detection
+    function detectDeviceAndLocation() {
+      // Device detection
+      const userAgent = navigator.userAgent;
+      let deviceInfo = 'Desktop';
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+        deviceInfo = 'Mobile';
+      } else if (/iPad|Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 0) {
+        deviceInfo = 'Tablet';
       }
+      document.querySelector('#deviceInfo span').textContent = `${deviceInfo} - ${navigator.platform}`;
+
+      // Location detection
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const { latitude, longitude } = position.coords;
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+              .then(response => response.json())
+              .then(data => {
+                const location = data.display_name.split(',')[0];
+                document.querySelector('#locationInfo span').textContent = location;
+              })
+              .catch(() => {
+                document.querySelector('#locationInfo span').textContent = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+              });
+          },
+          () => {
+            document.querySelector('#locationInfo span').textContent = 'Location access denied';
+          }
+        );
+      }
+    }
+
+    // Search and Filter Functions
+    function filterMembers() {
+      const searchTerm = document.getElementById('memberSearch').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const sortBy = document.getElementById('sortBy').value;
+      const date = document.getElementById('meetingDate').value;
+      const attendance = JSON.parse(localStorage.getItem('attendance'));
+
+      let filteredMembers = [...members];
+
+      // Apply search filter
+      if (searchTerm) {
+        filteredMembers = filteredMembers.filter(member => 
+          member.name.toLowerCase().includes(searchTerm) ||
+          member.id.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      // Apply status filter
+      if (statusFilter !== 'all' && attendance[date]) {
+        filteredMembers = filteredMembers.filter(member => {
+          const isPresent = attendance[date].present.includes(member.id);
+          if (statusFilter === 'present') return isPresent;
+          if (statusFilter === 'absent') return !isPresent;
+          if (statusFilter === 'nosig') return isPresent && !member.signature;
+          return true;
+        });
+      }
+
+      // Apply sorting
+      filteredMembers.sort((a, b) => {
+        if (sortBy === 'name') {
+          return a.name.localeCompare(b.name);
+        } else if (sortBy === 'time' && attendance[date]) {
+          const timeA = attendance[date].timeIn?.[a.id] || '';
+          const timeB = attendance[date].timeIn?.[b.id] || '';
+          return timeB.localeCompare(timeA);
+        } else if (sortBy === 'status' && attendance[date]) {
+          const statusA = attendance[date].present.includes(a.id);
+          const statusB = attendance[date].present.includes(b.id);
+          return statusB - statusA;
+        }
+        return 0;
+      });
+
+      // Update table
+      updateAttendanceTable(filteredMembers);
+    }
+
+    function updateAttendanceTable(filteredMembers) {
+      const date = document.getElementById('meetingDate').value;
+      const attendance = JSON.parse(localStorage.getItem('attendance'));
+      const tbody = document.getElementById('attendanceTableBody');
+      tbody.innerHTML = '';
+
+      filteredMembers.forEach((member, index) => {
+        const isPresent = attendance[date].present.includes(member.id);
+        const timeIn = attendance[date].timeIn?.[member.id] || '';
+        const remarks = attendance[date].remarks?.[member.id] || '';
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${member.name}</td>
+          <td>
+            <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'}" 
+                    onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
+                    style="width: 100px;">
+              ${isPresent ? '✓ Present' : '✗ Absent'}
+            </button>
+          </td>
+          <td>${isPresent ? 
+            `<input type="time" value="${timeIn}" 
+                    onchange="updateTimeIn('${member.id}', '${date}', this.value)">` : 
+            '-'}
+          </td>
+          <td>
+            ${isPresent ? 
+              `<input type="text" placeholder="Add remarks" value="${remarks}"
+                      onchange="updateRemarks('${member.id}', '${date}', this.value)">` : 
+              '-'}
+          </td>
+          <td>
+            ${member.signature ? 
+              `<img src="${member.signature}" style="max-height: 50px;">` : 
+              isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Analytics Functions
+    function toggleAnalytics() {
+      const analyticsSection = document.getElementById('analyticsSection');
+      const showAnalyticsBtn = document.getElementById('showAnalyticsBtn');
+      
+      if (analyticsSection.style.display === 'none') {
+        analyticsSection.style.display = 'block';
+        showAnalyticsBtn.style.display = 'none';
+        generateAttendanceAnalytics();
+      } else {
+        analyticsSection.style.display = 'none';
+        showAnalyticsBtn.style.display = 'block';
+      }
+    }
+
+    function generateAttendanceAnalytics() {
+      const attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+      const dates = Object.keys(attendance).sort();
+      
+      // Monthly Trend Data
+      const monthlyData = {};
+      dates.forEach(date => {
+        const month = date.substring(0, 7); // YYYY-MM
+        if (!monthlyData[month]) {
+          monthlyData[month] = {
+            total: 0,
+            present: 0
+          };
+        }
+        monthlyData[month].total += members.length;
+        monthlyData[month].present += attendance[date].present.length;
+      });
+
+      // Member Participation Data
+      const memberData = {};
+      members.forEach(member => {
+        memberData[member.id] = {
+          name: member.name,
+          attended: 0,
+          total: dates.length
+        };
+      });
+
+      dates.forEach(date => {
+        attendance[date].present.forEach(memberId => {
+          if (memberData[memberId]) {
+            memberData[memberId].attended++;
+          }
+        });
+      });
+
+      // Draw Charts
+      drawAttendanceTrendChart(monthlyData);
+      drawMemberParticipationChart(memberData);
+    }
+
+    function drawAttendanceTrendChart(monthlyData) {
+      const ctx = document.getElementById('attendanceTrendChart').getContext('2d');
+      const months = Object.keys(monthlyData);
+      const rates = months.map(month => 
+        (monthlyData[month].present / monthlyData[month].total) * 100
+      );
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: months.map(m => m.substring(5) + '/' + m.substring(0, 4)),
+          datasets: [{
+            label: 'Monthly Attendance Rate (%)',
+            data: rates,
+            borderColor: '#667eea',
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    function drawMemberParticipationChart(memberData) {
+      const ctx = document.getElementById('memberParticipationChart').getContext('2d');
+      const members = Object.values(memberData);
+      const rates = members.map(m => (m.attended / m.total) * 100);
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: members.map(m => m.name),
+          datasets: [{
+            label: 'Participation Rate (%)',
+            data: rates,
+            backgroundColor: '#667eea'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    function showAttendanceList() {
+      // Initialize members if not already done
+      if (!members || members.length === 0) {
+        initializeDemoData();
+      }
+      
+      // Detect device and location
+      detectDeviceAndLocation();
 
       const date = document.getElementById('meetingDate').value;
       if (!date) {
         document.getElementById('meetingDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('meetingTime').value = new Date().toTimeString().slice(0,5);
-        // Don't return, continue to show the list
+        showAlert('adminAlert', 'Today\'s date has been automatically selected', 'success');
+        return;
       }
 
       // Get or create attendance record for the date
@@ -1750,30 +1821,25 @@
         const remarks = attendance[date].remarks[member.id] || '';
         
         const row = document.createElement('tr');
-        row.setAttribute('data-member-id', member.id);
-        row.setAttribute('data-member-name', member.name.toLowerCase());
-        row.setAttribute('data-status', isPresent ? 'present' : 'absent');
         row.innerHTML = `
           <td>${index + 1}</td>
           <td>${member.name}</td>
           <td>
-            <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'} btn-sm" 
+            <button class="btn ${isPresent ? 'btn-success' : 'btn-danger'}" 
                     onclick="toggleAttendance('${member.id}', '${date}', ${!isPresent})" 
-                    style="width: 110px;">
+                    style="width: 100px;">
               ${isPresent ? '✓ Present' : '✗ Absent'}
             </button>
           </td>
           <td>${isPresent ? 
             `<input type="time" value="${timeIn}" 
-                    onchange="updateTimeIn('${member.id}', '${date}', this.value)" 
-                    style="padding: 5px; border: 1px solid #ccc; border-radius: 5px;">` : 
+                    onchange="updateTimeIn('${member.id}', '${date}', this.value)">` : 
             '-'}
           </td>
           <td>
             ${isPresent ? 
               `<input type="text" placeholder="Add remarks" value="${remarks}"
-                      onchange="updateRemarks('${member.id}', '${date}', this.value)"
-                      style="padding: 5px; border: 1px solid #ccc; border-radius: 5px; width: 200px;">` : 
+                      onchange="updateRemarks('${member.id}', '${date}', this.value)">` : 
               '-'}
           </td>
           <td>
@@ -1781,14 +1847,14 @@
               `<img src="${member.signature}" style="max-height: 50px;">` : 
               isPresent ? '<span style="color: #e53e3e;">No signature</span>' : '-'}
           </td>
-        `;
+        </tr>`;
         tbody.appendChild(row);
       });
 
       // Update counts
       const presentCount = attendance[date].present.length;
       const absentCount = members.length - presentCount;
-      const attendanceRate = members.length > 0 ? Math.round((presentCount / members.length) * 100) : 0;
+      const attendanceRate = Math.round((presentCount / members.length) * 100);
       
       document.getElementById('presentCount').textContent = `Present: ${presentCount}`;
       document.getElementById('absentCount').textContent = `Absent: ${absentCount}`;
@@ -1799,47 +1865,11 @@
       document.getElementById('meetingType').value = attendance[date].type || 'general';
       document.getElementById('meetingDesc').value = attendance[date].description || '';
 
+      // Show meeting history
+      showMeetingHistory();
+
       // Save data
       localStorage.setItem('attendance', JSON.stringify(attendance));
-    }
-
-    function toggleAttendance(memberId, date, present) {
-      const attendance = JSON.parse(localStorage.getItem('attendance'));
-      
-      if (!attendance[date]) {
-        attendance[date] = {
-          date: date,
-          present: [],
-          timeIn: {},
-          remarks: {}
-        };
-      }
-
-      if (present) {
-        if (!attendance[date].present.includes(memberId)) {
-          attendance[date].present.push(memberId);
-          // Auto-set current time
-          if (!attendance[date].timeIn) attendance[date].timeIn = {};
-          attendance[date].timeIn[memberId] = new Date().toTimeString().slice(0,5);
-        }
-      } else {
-        attendance[date].present = attendance[date].present.filter(id => id !== memberId);
-        if (attendance[date].timeIn) delete attendance[date].timeIn[memberId];
-        if (attendance[date].remarks) delete attendance[date].remarks[memberId];
-      }
-
-      localStorage.setItem('attendance', JSON.stringify(attendance));
-      saveDataToStorage(); // Save comprehensive data backup
-      showAttendanceList();
-      
-      // Show confirmation alert
-      const member = members.find(m => m.id === memberId);
-      if (member) {
-        showAlert('adminAlert', 
-          `✓ ${member.name} marked as ${present ? 'present' : 'absent'}`, 
-          present ? 'success' : 'warning'
-        );
-      }
     }
 
     function updateTimeIn(memberId, date, time) {
@@ -1847,7 +1877,6 @@
       if (!attendance[date].timeIn) attendance[date].timeIn = {};
       attendance[date].timeIn[memberId] = time;
       localStorage.setItem('attendance', JSON.stringify(attendance));
-      showAlert('adminAlert', '✓ Time updated', 'success');
     }
 
     function updateRemarks(memberId, date, remarks) {
@@ -1855,7 +1884,6 @@
       if (!attendance[date].remarks) attendance[date].remarks = {};
       attendance[date].remarks[memberId] = remarks;
       localStorage.setItem('attendance', JSON.stringify(attendance));
-      showAlert('adminAlert', '✓ Remarks updated', 'success');
     }
 
     function updateMeetingDetails() {
@@ -1870,26 +1898,15 @@
       attendance[date].description = document.getElementById('meetingDesc').value;
 
       localStorage.setItem('attendance', JSON.stringify(attendance));
-      saveDataToStorage(); // Save comprehensive backup
       showAlert('adminAlert', '✓ Meeting details updated', 'success');
     }
 
     function markAllPresent() {
       const date = document.getElementById('meetingDate').value;
-      if (!date) {
-        showAlert('adminAlert', '⚠ Please select a meeting date first', 'error');
-        return;
-      }
+      if (!date) return;
 
       const attendance = JSON.parse(localStorage.getItem('attendance'));
-      if (!attendance[date]) {
-        attendance[date] = {
-          date: date,
-          present: [],
-          timeIn: {},
-          remarks: {}
-        };
-      }
+      if (!attendance[date]) return;
 
       const currentTime = document.getElementById('meetingTime').value || 
                          new Date().toTimeString().slice(0,5);
@@ -1909,12 +1926,7 @@
 
     function clearAttendance() {
       const date = document.getElementById('meetingDate').value;
-      if (!date) {
-        showAlert('adminAlert', '⚠ Please select a meeting date first', 'error');
-        return;
-      }
-
-      if (!confirm('Clear all attendance for this date?')) return;
+      if (!date) return;
 
       const attendance = JSON.parse(localStorage.getItem('attendance'));
       if (!attendance[date]) return;
@@ -1928,49 +1940,64 @@
       showAlert('adminAlert', '✓ Attendance cleared', 'warning');
     }
 
-    function filterAttendanceMembers() {
-      const searchTerm = document.getElementById('memberSearch').value.toLowerCase();
-      const statusFilter = document.getElementById('statusFilter').value;
-      const sortBy = document.getElementById('sortBy').value;
+    function showMeetingHistory() {
+      const attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+      const tbody = document.getElementById('meetingHistoryBody');
+      tbody.innerHTML = '';
 
-      const tbody = document.getElementById('attendanceTableBody');
-      let rows = Array.from(tbody.querySelectorAll('tr'));
+      // Get dates and sort them in reverse chronological order
+      const dates = Object.keys(attendance).sort().reverse();
+      
+      dates.slice(0, 5).forEach(date => {
+        const meeting = attendance[date];
+        const presentCount = meeting.present.length;
+        const attendanceRate = Math.round((presentCount / members.length) * 100);
 
-      // Filter by search term
-      rows.forEach(row => {
-        const name = row.getAttribute('data-member-name');
-        const matchesSearch = name.includes(searchTerm);
-        const status = row.getAttribute('data-status');
-        
-        let matchesFilter = true;
-        if (statusFilter === 'present') matchesFilter = status === 'present';
-        if (statusFilter === 'absent') matchesFilter = status === 'absent';
-
-        row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
-      });
-
-      // Sort rows
-      if (sortBy === 'name') {
-        rows.sort((a, b) => {
-          const nameA = a.getAttribute('data-member-name');
-          const nameB = b.getAttribute('data-member-name');
-          return nameA.localeCompare(nameB);
-        });
-      } else if (sortBy === 'status') {
-        rows.sort((a, b) => {
-          const statusA = a.getAttribute('data-status');
-          const statusB = b.getAttribute('data-status');
-          return statusB.localeCompare(statusA); // Present first
-        });
-      }
-
-      // Re-append rows in new order
-      rows.forEach((row, index) => {
-        if (row.style.display !== 'none') {
-          row.querySelector('td').textContent = index + 1;
-        }
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${new Date(date).toLocaleDateString()}</td>
+          <td>${meeting.type || 'General Meeting'}</td>
+          <td>${presentCount}/${members.length} (${attendanceRate}%)</td>
+          <td>
+            <button class="btn btn-primary btn-sm" 
+                    onclick="document.getElementById('meetingDate').value='${date}'; showAttendanceList();">
+              View
+            </button>
+          </td>
+        `;
         tbody.appendChild(row);
       });
+    }
+
+    function toggleAttendance(memberId, date, present) {
+      const attendance = JSON.parse(localStorage.getItem('attendance'));
+      
+      if (!attendance[date]) {
+        attendance[date] = {
+          date: date,
+          present: []
+        };
+      }
+
+      if (present) {
+        if (!attendance[date].present.includes(memberId)) {
+          attendance[date].present.push(memberId);
+        }
+      } else {
+        attendance[date].present = attendance[date].present.filter(id => id !== memberId);
+      }
+
+      localStorage.setItem('attendance', JSON.stringify(attendance));
+      showAttendanceList(); // Refresh the display
+      
+      // Show confirmation alert
+      const member = members.find(m => m.id === memberId);
+      if (member) {
+        showAlert('adminAlert', 
+          `✓ ${member.name} marked as ${present ? 'present' : 'absent'}`, 
+          present ? 'success' : 'warning'
+        );
+      }
     }
 
     function downloadAttendanceRegister() {
@@ -2084,32 +2111,19 @@
                 <p><strong>Chairperson's Signature:</strong> _______________________</p>
               </div>
             </div>
-            <button onclick="window.print()" style="margin-top: 30px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Register</button>
           </body>
         </html>
       `);
 
       printWindow.document.close();
-      showAlert('adminAlert', '✓ Attendance register opened in new window', 'success');
+      setTimeout(() => {
+        printWindow.print();
+        showAlert('adminAlert', '✓ Preparing attendance register for download...', 'success');
+      }, 500);
     }
 
     // Remove demo login credentials
-    window.addEventListener('load', () => {
-      const adminEmailInput = document.getElementById('adminEmail');
-      const adminPasswordInput = document.getElementById('adminPassword');
-      const memberEmailInput = document.getElementById('memberEmail');
-      const memberPasswordInput = document.getElementById('memberPassword');
-      
-      if (adminEmailInput) adminEmailInput.value = '';
-      if (adminPasswordInput) adminPasswordInput.value = '';
-      if (memberEmailInput) memberEmailInput.value = '';
-      if (memberPasswordInput) memberPasswordInput.value = '';
 
-      // Setup signature canvas when member dashboard loads
-      if (document.getElementById('signatureCanvas')) {
-        setupSignatureCanvas();
-      }
-    });
 
   </script>
 </body>

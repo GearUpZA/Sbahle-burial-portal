@@ -1,48 +1,63 @@
-# Financial Dashboard Documentation
+# 📊 Financial Dashboard - Feature Documentation
 
-## Overview
-The Financial Dashboard provides a comprehensive view of the burial society's financial health, including income, payouts, penalties, and net balance. It is designed for both transparency and ease of use for administrators.
-
-## Features
-- **Total Income**: Displays the sum of all member contributions.
-- **Total Payouts**: Shows the total amount paid out for claims and benefits.
-- **Total Penalties**: Sums all penalties applied to members.
-- **Net Balance**: Calculates the difference between total income and total payouts/penalties.
-- **Time Period Filter**: Allows filtering of financial data by all time, this year, last 6 months, last 3 months, or this month.
-- **Charts**:
-  - Income vs. Payouts
-  - Monthly Payment Trends
-  - Member Contribution Overview
-- **Top Contributors**: Lists members with the highest total contributions.
-- **Recent Payouts**: Shows the latest payout transactions.
-- **Export PDF Report**: Download a PDF summary of the financial dashboard.
-
-## Usage
-1. Navigate to the Admin Dashboard.
-2. Click the "Financials" tab.
-3. Use the period filter to adjust the displayed data.
-4. Review summary cards, charts, and tables for insights.
-5. Export reports as needed for record-keeping or sharing.
-
-## Data Sources
-- Member contributions (from local storage or cloud sync)
-- Payout records
-- Penalty records
-
-## Security
-- All financial data is encrypted and stored locally in the browser.
-- Optionally, data can be synced to cloud storage if enabled.
-
-## Troubleshooting
-- If data appears outdated, use the "Refresh" button.
-- For missing data, check Data Management for backup/restore options.
-
-## Customization
-- To add new metrics or charts, update the dashboard logic in the main HTML/JS file.
-- For advanced reporting, export data and use external tools as needed.
+**Version:** 2.7.0  
+**Feature Status:** ✅ Implemented  
+**Implementation Date:** 2024  
+**Priority:** HIGH
 
 ---
-For further details, see the main project README or contact the project maintainer.
+
+## 📋 Overview
+
+The Financial Dashboard provides comprehensive financial analytics and reporting for the Sbahle Burial Society. It offers real-time visualization of income, expenses, payment trends, and member contributions through interactive charts and detailed reports.
+
+### Key Benefits
+- **Visual Analytics**: Interactive charts showing financial health at a glance
+- **Period Filtering**: View data for all time, this year, last 6/3 months, or current month
+- **PDF Reports**: Export professional financial reports with one click
+- **Member Insights**: Track top contributors and identify payment patterns
+- **Real-time Updates**: All data syncs automatically with cloud storage
+
+---
+
+## 🎯 Features
+
+### 1. Financial Summary Cards
+Four prominent cards displaying critical metrics:
+- **Total Income** (Green) - All approved contributions
+- **Total Payouts** (Red) - All payout amounts
+- **Total Penalties** (Orange) - All paid penalties
+- **Net Balance** (Purple) - Income - Payouts + Penalties
+
+### 2. Interactive Charts
+
+#### Income vs Payouts (Doughnut Chart)
+- Visual breakdown of income sources vs expenses
+- Shows: Contributions, Payouts, Penalties
+- Color-coded for easy identification
+- Hover tooltips with exact amounts
+
+#### Monthly Payment Trends (Line Chart)
+- Last 6 months of contribution income
+- Identifies payment patterns and trends
+- Smooth curve visualization
+- Helps predict future income
+
+#### Member Contribution Overview (Bar Chart)
+- Top 10 contributors displayed
+- Horizontal bar chart for easy comparison
+- Exact contribution amounts on hover
+- Helps recognize active members
+
+### 3. Data Tables
+
+#### Top Contributors Table
+- Shows top 5 contributors
+- Displays: Name, Total Contributed, Status Badge
+- Status badges: Green (up-to-date), Yellow (warning), Red (behind)
+- Updates dynamically based on period filter
+
+#### Recent Payouts Table
 - Last 5 payouts displayed
 - Shows: Member name, Amount, Date
 - Helps track expense patterns

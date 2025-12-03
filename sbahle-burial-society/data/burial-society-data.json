@@ -1,0 +1,23 @@
+{
+  "members": [],
+  "beneficiaries": [],
+  "payouts": [],
+  "penalties": [],
+  "meetingMinutes": [],
+  "paymentProofs": [],
+  "payoutCollectors": [],
+  "attendance": {},
+  "memberIdCounter": 1,
+  "minutesIdCounter": 1,
+  "proofIdCounter": 1,
+  "lastSaved": "2025-11-14T00:00:00.000Z",
+  "version": "2.9.0",
+  "systemInfo": {
+    "totalMembers": 0,
+    "activeMembers": 0,
+    "suspendedMembers": 0,
+    "totalBeneficiaries": 0,
+    "totalPayouts": 0,
+    "totalPenalties": 0
+  }
+}
