@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,6 +87,7 @@
     .margin-bottom-20 { margin-bottom: 20px !important; }
     .margin-top-15 { margin-top: 15px !important; }
     .margin-top-20 { margin-top: 20px !important; }
+    .margin-right-5 { margin-right: 5px !important; }
     .padding-15 { padding: 15px !important; }
     .padding-24 { padding: 24px !important; }
     .padding-12-24 { padding: 12px 24px !important; }
@@ -107,6 +108,7 @@
     .justify-content-between { justify-content: space-between !important; }
     .align-items-center { align-items: center !important; }
     .flex-wrap { flex-wrap: wrap !important; }
+    .doc-content-scroll { max-height: 400px; overflow: auto; }
   </style>
 </head>
 <body>
@@ -114,7 +116,7 @@
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
       <h1 class="text-center">🏛️ Sbahle Burial Society</h1>
-      <div class="tabs justify-content-center">
+      <div class="tabs justify-center">
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
@@ -123,26 +125,56 @@
 
       <div id="adminForm">
         <h2>Admin Login</h2>
-        <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123"></div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" id="adminEmail" value="admin" class="input input-block">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="adminPassword" value="admin123" class="input input-block">
+        </div>
         <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
       </div>
 
       <div id="memberForm" class="hidden">
         <h2>Member Login</h2>
-        <div class="form-group"><label>Email</label><input type="text" id="memberEmail" value="member@test.com"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="memberPassword" value="password123"></div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" id="memberEmail" value="member@test.com" class="input input-block">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="memberPassword" value="password123" class="input input-block">
+        </div>
         <button class="btn btn-primary" onclick="loginMember()">Login</button>
       </div>
 
       <div id="registerForm" class="hidden">
         <h2>Register Member</h2>
-        <div class="form-group"><label>Name</label><input type="text" id="regName"></div>
-        <div class="form-group"><label>Email</label><input type="text" id="regEmail"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Create a password"></div>
-        <div class="form-group"><label>Confirm Password</label><input type="password" id="regConfirmPassword" placeholder="Confirm your password"></div>
-        <div class="form-group"><label>Phone</label><input type="text" id="regPhone"></div>
-        <div class="form-group"><label>ID Number</label><input type="text" id="regId"></div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="regName" class="input input-block">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" id="regEmail" class="input input-block">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" placeholder="Create a password" class="input input-block">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="regConfirmPassword" placeholder="Confirm your password" class="input input-block">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="regPhone" class="input input-block">
+        </div>
+        <div class="form-group">
+          <label>ID Number</label>
+          <input type="text" id="regId" class="input input-block">
+        </div>
         <button class="btn btn-success" onclick="registerMember()">Register</button>
       </div>
     </div>
@@ -184,7 +216,7 @@
                     <h2>Monitoring & Signature Status</h2>
                     <button class="btn btn-primary" onclick="showMonitoringDoc('MONITORING-SCHEDULE.md')">Sync Monitoring Schedule</button>
                     <button class="btn btn-primary" onclick="showMonitoringDoc('MEMBER-SIGNATURE-STATUS.md')">Signature Status Report</button>
-                    <div id="monitoringDocContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
+                    <div id="monitoringDocContent" class="margin-top-20 doc-content-scroll"></div>
                   </div>
 
                   <!-- Documentation Tab (Admin) -->
@@ -197,8 +229,8 @@
                       <li><a href="#" onclick="showDoc('FIREBASE_SETUP.md')">Firebase Setup</a></li>
                       <li><a href="#" onclick="showDoc('FIX_API_KEY.md')">API Key Fix Guide</a></li>
                       <li><a href="#" onclick="showDoc('MOBILE-SETUP-GUIDE.md')">Mobile Setup Guide</a></li>
-                    </ul>
-                    <div id="docContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
+                    <div id="docContent" class="margin-top-20 doc-content-scroll"></div>
+                    <div id="docContent" class="margin-top-20 doc-content-scroll"></div>
                   </div>
             <!-- Admin Documents Tab -->
             <div id="documentsTab" class="hidden">
@@ -274,17 +306,16 @@
         </div>
 
         <!-- Meeting Details Section -->
-        <div class="grid-2 gap-15">
-          <div class="form-group margin-0">
-            <label>Meeting Date</label>
-            <input type="date" id="meetingDate" onchange="showAttendanceList()">
-          </div>
-      <!DOCTYPE html>
-          <div class="form-group margin-0">
-            <label>Meeting Time</label>
-            <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
-          </div>
+      <div class="grid-2 gap-15">
+        <div class="form-group margin-0">
+          <label>Meeting Date</label>
+          <input type="date" id="meetingDate" onchange="showAttendanceList()">
         </div>
+        <div class="form-group margin-0">
+          <label>Meeting Time</label>
+          <input type="time" id="meetingTime" onchange="updateMeetingDetails()">
+        </div>
+      </div>
       
         <div class="grid-2 gap-15 margin-top-15">
           <div class="form-group margin-0">
@@ -336,8 +367,8 @@
           <div class="display-flex justify-content-between align-items-center flex-wrap gap-10">
             <div>
 <<<<<<< HEAD
-              <span id="presentCount" class="badge badge-active" style="margin-right: 10px;">Present: 0</span> <!-- TODO: Add margin-right class if needed -->
-              <span id="absentCount" class="badge badge-suspended" style="margin-right: 10px;">Absent: 0</span> <!-- TODO: Add margin-right class if needed -->
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
 =======
               <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
               <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
@@ -348,7 +379,7 @@
               <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
               <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
               <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
-<<<<<<< HEAD
+                <span class="margin-right-5">📥</span> Download Register
                 <span style="margin-right: 5px;">📥</span> Download Register <!-- TODO: Add margin-right class if needed -->
 =======
                 <span class="margin-right-5">📥</span> Download Register
@@ -454,7 +485,7 @@
                 <li><a href="#" onclick="showDoc('FIX_API_KEY.md')">API Key Fix Guide</a></li>
                 <li><a href="#" onclick="showDoc('MOBILE-SETUP-GUIDE.md')">Mobile Setup Guide</a></li>
               </ul>
-              <div id="docContent" class="margin-top-20" style="max-height:400px;overflow:auto;"></div>
+              <div id="docContent" class="margin-top-20 doc-content-scroll"></div>
             </div>
           // Constitution Document Storage
           const CONSTITUTION_KEY = 'sbahle_constitution_doc';
@@ -558,15 +589,15 @@
         <h2>Profile</h2>
         <div class="form-group">
           <label>Name</label>
-          <input type="text" id="profName" disabled>
+          <input type="text" id="memberProfName" disabled>
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="text" id="profEmail" disabled>
+          <input type="text" id="memberProfEmail" disabled>
         </div>
         <div class="form-group">
           <label>Phone</label>
-          <input type="text" id="profPhone" disabled>
+          <input type="text" id="memberProfPhone" disabled>
         </div>
         <button class="btn btn-warning" onclick="editProf()">Edit Profile</button>
         <button class="btn btn-success hidden" id="saveProf" onclick="saveProf()">Save</button>
@@ -605,9 +636,9 @@
         <h2>My Profile</h2>
         <p><strong>Member ID:</strong> <span id="memId">MEM001</span></p>
         <p><strong>Status:</strong> <span id="memStatus" class="badge badge-active">Active</span></p>
-        <div class="form-group"><label>Name</label><input type="text" id="profName" disabled></div>
-        <div class="form-group"><label>Email</label><input type="text" id="profEmail" disabled></div>
-        <div class="form-group"><label>Phone</label><input type="text" id="profPhone" disabled></div>
+        <div class="form-group"><label>Name</label><input type="text" id="profileTabName" disabled></div>
+        <div class="form-group"><label>Email</label><input type="text" id="profileTabEmail" disabled></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="profileTabPhone" disabled></div>
         <button class="btn btn-primary" onclick="editProf()">Edit</button>
         <button class="btn btn-success hidden" id="saveProf" onclick="saveProf()">Save</button>
       </div>
@@ -1036,251 +1067,7 @@
     function showLoginForm(type) {
       document.getElementById('adminForm').classList.toggle('hidden', type !== 'admin');
       document.getElementById('memberForm').classList.toggle('hidden', type !== 'member');
-      document.getElementById('registerForm').classList.toggle('hidden', type !== 'register');
-      document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tabs .tab')[type === 'admin' ? 0 : type === 'member' ? 1 : 2].classList.add('active');
-    }
-
-    function loginAdmin() {
-      if (document.getElementById('adminEmail').value === 'admin' && document.getElementById('adminPassword').value === 'admin123') {
-        currentUser = { type: 'admin' };
-        show('adminPage');
-        updateAdmin();
-      } else alert('Invalid');
-    }
-
-    function loginMember() {
-      const email = document.getElementById('memberEmail').value;
-      const password = document.getElementById('memberPassword').value;
-      
-      if (!email || !password) {
-        alert('⚠ Please enter both email and password');
-        return;
-      }
-      
-      const m = members.find(x => x.email === email);
-      if (!m) {
-        alert('❌ Email not found. Please check your email or register.');
-        return;
-      }
-      
-      if (m.password !== password) {
-        alert('❌ Incorrect password. Please try again.');
-        return;
-      }
-      
-      // Successful login
-      currentUser = m;
-      // Load beneficiaries for this member from the main beneficiaries array
-      tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === m.id)));
-      console.log('Member logged in:', m.id);
-      console.log('Filtered beneficiaries:', tempBeneficiaries);
-      show('memberPage');
-      updateMember();
-    }
-
-    function registerMember() {
-      const name = document.getElementById('regName').value;
-      const email = document.getElementById('regEmail').value;
-      const password = document.getElementById('regPassword').value;
-      const confirmPassword = document.getElementById('regConfirmPassword').value;
-      const phone = document.getElementById('regPhone').value;
-      const idNum = document.getElementById('regId').value;
-      
-      // Validation
-      if (!name || !email || !password || !confirmPassword || !phone || !idNum) { 
-        alert('⚠ Please fill all fields'); 
-        return; 
-      }
-      
-      // Check if email already exists
-      if (members.find(m => m.email === email)) {
-        alert('❌ This email is already registered. Please use a different email or login.');
-        return;
-      }
-      
-      // Password validation
-      if (password.length < 6) {
-        alert('⚠ Password must be at least 6 characters long');
-        return;
-      }
-      
-      if (password !== confirmPassword) {
-        alert('❌ Passwords do not match. Please try again.');
-        return;
-      }
-      
-      // Create new member
-      const newId = 'MEM' + String(memberIdCounter).padStart(3, '0');
-      memberIdCounter++;
-      members.push({ 
-        id: newId, 
-        name, 
-        email, 
-        password,
-        phone, 
-        idNum, 
-        status: 'Active', 
-        missedPayments: 0 
-      });
-      saveDataToStorage(); // Auto-save
-      
-      // Clear form
-      document.getElementById('regName').value = '';
-      document.getElementById('regEmail').value = '';
-      document.getElementById('regPassword').value = '';
-      document.getElementById('regConfirmPassword').value = '';
-      document.getElementById('regPhone').value = '';
-      document.getElementById('regId').value = '';
-      
-      alert('✓ Registration successful! You can now login with your email and password.');
-      showLoginForm('member');
-    }
-
-    function logout() {
-      currentUser = null;
-      show('loginPage');
-    }
-
-    function show(p) {
-      document.getElementById('loginPage').classList.toggle('hidden', p !== 'loginPage');
-      document.getElementById('adminPage').classList.toggle('hidden', p !== 'adminPage');
-      document.getElementById('memberPage').classList.toggle('hidden', p !== 'memberPage');
-    }
-
-    function adminTab(t, e) {
-      document.getElementById('overviewTab').classList.toggle('hidden', t !== 'overview');
-      document.getElementById('membersTab').classList.toggle('hidden', t !== 'members');
-      document.getElementById('beneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
-      document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
-      document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
-      document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
-      document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
-      document.getElementById('constitutionTab').classList.toggle('hidden', t !== 'constitution');
-      document.getElementById('monitoringTab').classList.toggle('hidden', t !== 'monitoring');
-      document.getElementById('financialTab').classList.toggle('hidden', t !== 'financial');
-      document.getElementById('docsTab').classList.toggle('hidden', t !== 'docs');
-      document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
-      document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
-      if (e && e.target) e.target.classList.add('active');
-      if (t === 'members') { displayMem(); }
-      if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
-      if (t === 'payouts') displayPayouts();
-      if (t === 'penalties') displayPenalties();
-      if (t === 'attendance') { 
-        const dateInput = document.getElementById('meetingDate');
-        if (!dateInput.value) {
-          dateInput.value = new Date().toISOString().split('T')[0];
-          document.getElementById('meetingTime').value = new Date().toTimeString().slice(0,5);
-        }
-        showAttendanceList(); 
-      }
-      if (t === 'documents') { renderAdminDocuments(); }
-      if (t === 'constitution') { renderConstitutionInfo(); }
-      if (t === 'monitoring') { showMonitoringDoc('MONITORING-SCHEDULE.md'); }
-      if (t === 'financial') { refreshAdminFinancials(); showDoc('FINANCIAL-DASHBOARD-DOCS.md'); }
-      if (t === 'docs') { showDoc('CLOUD_STORAGE_SETUP.md'); }
-      if (t === 'data') { updateStorageInfo(); }
-    }
-    
-    function updateStorageInfo() {
-      document.getElementById('storageMembers').textContent = members.length;
-      document.getElementById('storageBeneficiaries').textContent = beneficiaries.length;
-      document.getElementById('storagePayouts').textContent = payouts.length;
-      document.getElementById('storagePenalties').textContent = penalties.length;
-    }
-
-    function memberTab(t, e) {
-      document.getElementById('profileTab').classList.toggle('hidden', t !== 'profile');
-      document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
-      document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
-      document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
-      document.getElementById('memberConstitutionTab').classList.toggle('hidden', t !== 'constitution');
-      document.getElementById('signatureTab').classList.toggle('hidden', t !== 'signature');
-      document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
-      document.getElementById('memberFinancialTab').classList.toggle('hidden', t !== 'financial');
-      document.getElementById('memberDocsTab').classList.toggle('hidden', t !== 'docs');
-      document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
-      if (e && e.target) e.target.classList.add('active');
-      if (t === 'beneficiaries') {
-        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
-        setTimeout(() => { displayMemBen(); }, 50);
-      }
-      if (t === 'signature') {
-        if (currentUser && currentUser.signature) {
-          document.getElementById('savedSignatureImg').src = currentUser.signature;
-          document.getElementById('savedSignaturePreview').style.display = 'block';
-        } else {
-          document.getElementById('savedSignaturePreview').style.display = 'none';
-        }
-      }
-      if (t === 'constitution') { renderMemberConstitutionInfo(); }
-      if (t === 'financial') { refreshMemberFinancials(); showDoc('FINANCIAL-DASHBOARD-DOCS.md'); }
-      if (t === 'docs') { showDoc('CLOUD_STORAGE_SETUP.md'); }
-      if (t === 'payouts') displayMemPayouts();
-    }
-
-    function updateAdmin() {
-      document.getElementById('totalMem').textContent = members.length;
-      document.getElementById('activeMem').textContent = members.filter(m => m.status === 'Active').length;
-      document.getElementById('suspMem').textContent = members.filter(m => m.status === 'Suspended').length;
-    }
-
-    function updateMember() {
-      document.getElementById('memId').textContent = currentUser.id;
-      document.getElementById('profName').value = currentUser.name;
-      document.getElementById('profEmail').value = currentUser.email;
-      document.getElementById('profPhone').value = currentUser.phone;
-      const badge = document.getElementById('memStatus');
-      badge.textContent = currentUser.status;
-      badge.className = `badge badge-${currentUser.status === 'Active' ? 'active' : 'suspended'}`;
-      // Make sure tempBeneficiaries is loaded from the main beneficiaries array
-      if (!tempBeneficiaries || tempBeneficiaries.length === 0) {
-        tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
-        console.log('updateMember: loaded', tempBeneficiaries.length, 'beneficiaries');
-      }
-    }
-
-    function displayMem() {
-      let html = '';
-      members.forEach(m => {
-        html += `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
-          <button class="btn btn-primary btn-sm" onclick="editMemModal('${m.id}')">Edit</button>
-          ${m.status === 'Suspended' ? `<button class="btn btn-success btn-sm" onclick="reactMem('${m.id}')">Reactivate</button>` : ''}
-          <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
-        </td></tr>`;
-      });
-      document.getElementById('memTable').innerHTML = html;
-    }
-
-    function displayPayouts() {
-      let html = '';
-      payouts.forEach(p => {
-        html += `<tr><td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
-          ${p.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="appPayout('${p.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejPayout('${p.id}')">Reject</button>` : '-'}
-        </td></tr>`;
-      });
-      document.getElementById('payTable').innerHTML = html;
-    }
-
-    function displayPenalties() {
-      let html = '';
-      penalties.forEach(p => {
-        html += `<tr><td>${p.memberName}</td><td>R ${p.amount}</td><td>${p.date}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td><td>
-          <button class="btn btn-success btn-sm" onclick="payPen('${p.id}')">Mark Paid</button>
-        </td></tr>`;
-      });
-      document.getElementById('penTable').innerHTML = html;
-    }
-
-    function populateBenSelect() {
-      let opts = '<option value="">-- Select --</option>';
-      members.forEach(m => opts += `<option value="${m.id}">${m.name}</option>`);
-      document.getElementById('memSelectBen').innerHTML = opts;
-    }
-
-    function loadBeneficiaries() {
-      const id = document.getElementById('memSelectBen').value;
+      <script src="sbs-main.js"></script>
       document.getElementById('addBenBtn').style.display = id ? 'block' : 'none';
       const bens = beneficiaries.filter(b => b.memberId === id);
       let html = '';
@@ -1483,7 +1270,7 @@
       const b = beneficiaries.find(x => x.id === id);
       openModal(`
         <h2>Edit Beneficiary</h2>
-        <div class="form-group"><label>Percentage</label><input type="number" id="editPerc" value="${b.percentage}"></div>
+        <div class="form-group"><label>Percentage</label><input type="number" id="editPerc" value="${b.percentage}" title="Percentage Allocation" placeholder="Enter percentage"></div>
         <button class="btn btn-primary" onclick="updateBen('${id}')">Update</button>
       `);
     }
@@ -1592,9 +1379,9 @@
       openModal(`
         <h2>Add Contribution</h2>
         <div class="alert alert-warning">Minimum: R 170.00</div>
-        <div class="form-group"><label>Amount (R)</label><input type="number" id="contAmt" min="170" value="170"></div>
-        <div class="form-group"><label>Method</label><select id="contMeth"><option>Bank Transfer</option><option>EFT</option><option>Cash</option></select></div>
-        <div class="form-group"><label>Reference</label><input type="text" id="contRef"></div>
+        <div class="form-group"><label>Amount (R)</label><input type="number" id="contAmt" min="170" value="170" title="Contribution Amount" placeholder="Enter amount (minimum R 170)"></div>
+        <div class="form-group"><label for="contMeth">Method</label><select id="contMeth" title="Contribution Method"><option>Bank Transfer</option><option>EFT</option><option>Cash</option></select></div>
+        <div class="form-group"><label>Reference</label><input type="text" id="contRef" title="Reference" placeholder="Enter reference"></div>
         <button class="btn btn-success" onclick="submitContrib()">Submit</button>
       `);
     }
@@ -1610,10 +1397,10 @@
       if (tempBeneficiaries.length >= 5) { alert('Max 5'); return; }
       openModal(`
         <h2>Add Beneficiary</h2>
-        <div class="form-group"><label>Name</label><input type="text" id="memBenName"></div>
-        <div class="form-group"><label>Relationship</label><select id="memBenRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
-        <div class="form-group"><label>ID Number</label><input type="text" id="memBenId"></div>
-        <div class="form-group"><label>Percentage (%)</label><input type="number" id="memBenPerc" min="0" max="100"></div>
+        <div class="form-group"><label>Name</label><input type="text" id="memBenName" placeholder="Enter beneficiary name" title="Beneficiary Name"></div>
+        <div class="form-group"><label>Relationship</label><select id="memBenRel" title="Relationship"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option></select></div>
+        <div class="form-group"><label>ID Number</label><input type="text" id="memBenId" placeholder="Enter ID number" title="ID Number"></div>
+        <div class="form-group"><label>Percentage (%)</label><input type="number" id="memBenPerc" min="0" max="100" title="Allocation Percentage" placeholder="Enter percentage"></div>
         <button class="btn btn-success" onclick="addMemBen()">Add</button>
       `);
     }
@@ -1675,8 +1462,8 @@
     function reqPayoutModal() {
       openModal(`
         <h2>Request Payout</h2>
-        <div class="form-group"><label>Amount (R)</label><input type="number" id="payoutAmt" min="100"></div>
-        <div class="form-group"><label>Reason</label><input type="text" id="payoutReason"></div>
+        <div class="form-group"><label>Amount (R)</label><input type="number" id="payoutAmt" min="100" title="Payout Amount" placeholder="Enter amount"></div>
+        <div class="form-group"><label>Reason</label><input type="text" id="payoutReason" title="Reason for payout" placeholder="Enter reason"></div>
         <button class="btn btn-success" onclick="submitPayout()">Submit Request</button>
       `);
     }
@@ -1850,7 +1637,9 @@
           <td>${isPresent ? 
             `<input type="time" value="${timeIn}" 
                     onchange="updateTimeIn('${member.id}', '${date}', this.value)" 
-                    class="padding-5 border-1-ddd border-radius-5">` : 
+                    class="padding-5 border-1-ddd border-radius-5"
+                    title="Time In"
+                    placeholder="Enter time in">` : 
             '-'}
           </td>
           <td>
@@ -1862,7 +1651,7 @@
           </td>
           <td>
             ${member.signature ? 
-              `<img src="${member.signature}" class="max-height-50">` : 
+                `<img src="${member.signature}" alt="Member signature" class="max-height-50">` : 
               isPresent ? '<span class="color-e53e3e">No signature</span>' : '-'}
           </td>
         `;

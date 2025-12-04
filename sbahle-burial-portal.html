@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Sbahle Burial Society</title>
+  <style>
+    .manual-save-title {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .attendance-header-box {
+      background: #f0f9ff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .import-data-title {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .font-size-24 {
+      font-size: 24px !important;
+    }
+    .font-weight-bold {
+      font-weight: bold !important;
+    }
+    .color-orange {
+      color: #f59e0b !important;
+    }
+    .color-green {
+      color: #10b981 !important;
+    }
+    .font-size-24 {
+      font-size: 24px !important;
+    }
+    .font-weight-bold {
+      font-weight: bold !important;
+    }
+    .color-purple {
+      color: #8b5cf6 !important;
+    }
+    .import-data-title {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .attendance-header-box {
+      background: #f0f9ff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .margin-0 {
+      margin: 0 !important;
+    }
+    .member-search-input {
+          margin: 0 !important;
+    }
+    .export-data-title {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .stat-total-meetings {
+      font-size: 24px;
+      font-weight: bold;
+      color: #3b82f6;
+    }
+    .custom-card-style {
+      background: white;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    /* Added for inline style replacement */
+    .grid-auto-fit-150 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+    .grid-auto-fit-150-inline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+    .attendance-export-grid {
+      display: grid;
+      gap: 15px;
+    }
+    /* Added for inline style replacement */
+    .export-data-title {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+          .bg-blue-light { background: #f0f9ff; }
+          .border-radius-8 { border-radius: 8px; }
+          .margin-bottom-20 { margin-bottom: 20px; }
+          .bg-blue-border { border-left: 4px solid #667eea; }
+          .margin-bottom-15 { margin-bottom: 15px; }
+          .display-none { display: none; }
+          .max-width-100 { max-width: 100%; }
+          .border-1-solid-gray { border: 1px solid #ddd; }
+        .margin-top-20 { margin-top: 20px; }
+        .display-none { display: none; }
+        .font-size-16 { font-size: 16px; }
+        .margin-bottom-10 { margin-bottom: 10px; }
+        .border-2-solid-green { border: 2px solid #48bb78; }
+        .border-radius-8 { border-radius: 8px; }
+        .padding-15 { padding: 15px; }
+        .bg-green-light { background: #f0fff4; }
+        .max-width-100 { max-width: 100%; }
+        .max-height-150 { max-height: 150px; }
+        .color-green { color: #48bb78; }
+        .margin-top-10 { margin-top: 10px; }
+      .display-none { display: none; }
+      .margin-0 { margin: 0 !important; }
+      .font-size-16 { font-size: 16px; }
+      .font-size-13 { font-size: 13px; }
+      .margin-bottom-15 { margin-bottom: 15px; }
+      .border-2-dashed-blue { border: 2px dashed #3b82f6; }
+      .border-2-solid-green { border: 2px solid #48bb78; }
+      .border-2-solid-gray { border: 2px solid #ddd; }
+      .border-2-solid-orange { border: 2px solid #ed8936; }
+      .bg-green-light { background: #f0fff4; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .center-text { text-align: center; }
+    .justify-center { justify-content: center; }
+    .bg-blue-light { background: #f0f9ff; }
+    .bg-blue-lighter { background: #f7fafc; }
+    .bg-blue-border { border-left: 4px solid #667eea; }
+    .bg-orange-border { border: 1px solid #ed8936; }
+    .bg-orange-light { background: #fff4e6; }
+    .bg-white { background: white; }
+    .border-radius-8 { border-radius: 8px; }
+    .border-radius-5 { border-radius: 5px; }
+    .border-radius-10 { border-radius: 10px; }
+    .border-blue { border: 1px solid #3b82f6; }
+    .border-gray { border: 1px solid #ddd; }
+    .padding-15 { padding: 15px; }
+    .padding-10 { padding: 10px; }
+    .margin-bottom-20 { margin-bottom: 20px; }
+    .margin-bottom-10 { margin-bottom: 10px; }
+    .margin-bottom-0 { margin-bottom: 0; }
+    .margin-top-20 { margin-top: 20px; }
+    .margin-top-10 { margin-top: 10px; }
+    .margin-top-15 { margin-top: 15px; }
+    .margin-20-0 { margin: 20px 0; }
+    .margin-right-10 { margin-right: 10px; }
+    .margin-right-5 { margin-right: 5px; }
+    .overflow-x-auto { overflow-x: auto; }
+    .gap-10 { gap: 10px; }
+    .gap-15 { gap: 15px; }
+    .display-flex { display: flex; }
+    .display-grid { display: grid; }
+    .align-center { align-items: center; }
+    .flex-wrap { flex-wrap: wrap; }
+    .width-auto { width: auto; }
+    .color-gray { color: #666; }
+    .color-blue-dark { color: #4a5568; }
+    .monitoring-doc-content { max-height: 400px; overflow: auto; }
+    .display-grid.gap-15 { display: grid; gap: 15px; }
+    .grid-auto-fit-150 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    /* .grid-auto-fit-150-custom removed: empty ruleset */
+    .custom-card-style { background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+    .stat-total-members { font-size: 24px; font-weight: bold; color: #10b981; }
+    .font-size-24 { font-size: 24px !important; }
+    .font-weight-bold { font-weight: bold !important; }
+    .color-green { color: #10b981 !important; }
+    .stat-total-meetings { font-size: 24px; font-weight: bold; color: #3b82f6; }
+    .stat-total-beneficiaries { font-size: 24px; font-weight: bold; color: #8b5cf6; }
+    .stat-total-payouts { font-size: 24px; font-weight: bold; color: #f59e0b; }
+    .font-size-24 { font-size: 24px !important; }
+    .font-weight-bold { font-weight: bold !important; }
+    .color-purple { color: #8b5cf6 !important; }
+    /* Added for inline style replacement */
+    .attendance-info-box { background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .color-blue { color: #3b82f6 !important; }
+    .color-orange { color: #f59e0b !important; }
+body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; }
+    .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .hidden { display: none !important; }
+    h1 { color: #333; margin-bottom: 20px; }
+    h2 { color: #333; margin: 15px 0; font-size: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
+    .tab { padding: 8px 15px; background: #e2e8f0; border: none; cursor: pointer; font-weight: 600; border-radius: 5px; }
+    .tab.active { background: #667eea; color: white; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 3px; color: #333; font-weight: bold; font-size: 14px; }
+    input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+    input:disabled { background: #f0f0f0; }
+    .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; margin-right: 5px; margin-bottom: 5px; font-size: 13px; }
+    .btn-primary { background: #667eea; color: white; }
+    .btn-success { background: #48bb78; color: white; }
+    .btn-danger { background: #f56565; color: white; }
+    .btn-warning { background: #ed8936; color: white; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; }
+    .alert-success { background: #c6f6d5; color: #22543d; border-left: 4px solid #48bb78; }
+    .alert-error { background: #fed7d7; color: #742a2a; border-left: 4px solid #f56565; }
+    .alert-warning { background: #feebc8; color: #7c2d12; border-left: 4px solid #ed8936; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    thead { background: #667eea; color: white; }
+    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+    tbody tr:hover { background: #f7f7f7; }
+    .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .badge-active { background: #c6f6d5; color: #22543d; }
+    .badge-suspended { background: #fed7d7; color: #742a2a; }
+    .badge-pending { background: #feebc8; color: #744210; }
+    .badge-approved { background: #bee3f8; color: #2c5282; }
+    .stat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+    .stat h3 { font-size: 12px; margin-bottom: 8px; }
+    .stat .value { font-size: 24px; font-weight: bold; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+    .modal.show { display: flex; align-items: center; justify-content: center; }
+    .modal-content { background: white; border-radius: 10px; padding: 25px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .close { float: right; font-size: 20px; cursor: pointer; color: #999; }
+    .close:hover { color: #000; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ben-card { background: #f7f7f7; padding: 10px; border-radius: 5px; margin-bottom: 8px; border-left: 3px solid #667eea; display: block !important; visibility: visible !important; }
+    canvas { border: 1px solid #ccc; border-radius: 5px; display: block; margin-bottom: 10px; cursor: crosshair; }
+    .file-input { margin-bottom: 10px; }
+    .file-label { display: block; padding: 10px; background: #e2e8f0; border: 2px dashed #667eea; border-radius: 5px; text-align: center; cursor: pointer; font-size: 13px; }
+    .file-label:hover { background: #cbd5e0; }
+    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } }
+    .margin-0 { margin: 0 !important; }
+  </style>
+</head>
+<head>
+  <style>
+    .bg-fff4e6 { background: #fff4e6 !important; }
+    .border-radius-8 { border-radius: 8px !important; }
+    .border-radius-5 { border-radius: 5px !important; }
+    .border-left-4-667eea { border-left: 4px solid #667eea !important; }
+    .border-2-ddd { border: 2px solid #ddd !important; }
+    .border-2-48bb78 { border: 2px solid #48bb78 !important; }
+    .border-1-ddd { border: 1px solid #ddd !important; }
+    .border-1-ed8936 { border: 1px solid #ed8936 !important; }
+    .color-4a5568 { color: #4a5568 !important; }
+    .color-666 { color: #666 !important; }
+    .color-48bb78 { color: #48bb78 !important; }
+    .margin-0 { margin: 0 !important; }
+    .margin-top-10 { margin-top: 10px !important; }
+    .margin-bottom-10 { margin-bottom: 10px !important; }
+    .margin-bottom-15 { margin-bottom: 15px !important; }
+    .margin-bottom-20 { margin-bottom: 20px !important; }
+    .margin-top-15 { margin-top: 15px !important; }
+    .margin-top-20 { margin-top: 20px !important; }
+    .padding-15 { padding: 15px !important; }
+    .padding-24 { padding: 24px !important; }
+    .padding-12-24 { padding: 12px 24px !important; }
+    .gap-10 { gap: 10px !important; }
+    .gap-15 { gap: 15px !important; }
+    .text-center { text-align: center !important; }
+    .font-size-13 { font-size: 13px !important; }
+    .font-size-16 { font-size: 16px !important; }
+    .font-weight-bold { font-weight: bold !important; }
+    .width-100 { width: 100% !important; }
+    .width-auto { width: auto !important; }
+    .max-width-100 { max-width: 100% !important; }
+    .max-height-150 { max-height: 150px !important; }
+    .overflow-x-auto { overflow-x: auto !important; }
+    .overflow-y-auto { overflow-y: auto !important; }
+    .display-flex { display: flex !important; }
+    .justify-content-center { justify-content: center !important; }
+    .justify-content-between { justify-content: space-between !important; }
+    .align-items-center { align-items: center !important; }
+    .flex-wrap { flex-wrap: wrap !important; }
+    .import-data-title { margin-bottom: 10px !important; font-size: 16px !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="card">
+<h1 class="center-text">🏛️ Sbahle Burial Society</h1>
+<div class="tabs justify-center">
+        <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
+        <button class="tab" onclick="showLoginForm('member')">Member</button>
+        <button class="tab" onclick="showLoginForm('register')">Register</button>
+      </div>
+      <div id="alertMsg"></div>
+
+      <div id="adminForm">
+        <h2>Admin Login</h2>
+        <div class="form-group"><label>Email</label><input type="text" id="adminEmail" value="admin" placeholder="Enter admin email" title="Admin Email"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="adminPassword" value="admin123" placeholder="Enter admin password" title="Admin Password"></div>
+        <button class="btn btn-primary" onclick="loginAdmin()">Login</button>
+      </div>
+
+      <div id="memberForm" class="hidden">
+        <h2>Member Login</h2>
+        <div class="form-group"><label>Email</label><input type="text" id="memberEmail" value="member@test.com" title="Member Email" placeholder="Enter your email"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="memberPassword" value="password123"></div>
+        <button class="btn btn-primary" onclick="loginMember()">Login</button>
+      </div>
+
+      <div id="registerForm" class="hidden">
+        <h2>Register Member</h2>
+        <div class="form-group"><label>Name</label><input type="text" id="regName"></div>
+        <div class="form-group"><label>Email</label><input type="text" id="regEmail"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Create a password"></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" id="regConfirmPassword" placeholder="Confirm your password"></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="regPhone"></div>
+        <div class="form-group"><label>ID Number</label><input type="text" id="regId"></div>
+        <button class="btn btn-success" onclick="registerMember()">Register</button>
+      </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminPage" class="card hidden">
+      <div class="header">
+        <h1>Admin Dashboard</h1>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="adminTab('overview', event)">Overview</button>
+        <button class="tab" onclick="adminTab('members', event)">Members</button>
+        <button class="tab" onclick="adminTab('beneficiaries', event)">Beneficiaries</button>
+        <button class="tab" onclick="adminTab('attendance', event)">Attendance</button>
+        <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
+        <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
+        <button class="tab" onclick="adminTab('documents', event)">Documents</button>
+        <button class="tab" onclick="adminTab('constitution', event)">Constitution</button>
+        <button class="tab" onclick="adminTab('monitoring', event)">Monitoring</button>
+        <button class="tab" onclick="adminTab('financial', event)">Financial</button>
+        <button class="tab" onclick="adminTab('docs', event)">Documentation</button>
+        <button class="tab" onclick="adminTab('data', event)">Data Management</button>
+            <!-- Constitution Tab (Admin) -->
+            <div id="constitutionTab" class="hidden">
+              <h2>Constitution Document</h2>
+              <div class="file-input">
+                <label>Upload Constitution (PDF/DOC/DOCX, max 10MB)</label>
+                <input type="file" id="constitutionFile" accept=".pdf,.doc,.docx">
+              </div>
+              <input type="text" id="constitutionTitle" placeholder="Document Title" class="form-group">
+              <input type="text" id="constitutionNotes" placeholder="Version/Notes (optional)" class="form-group">
+              <button class="btn btn-success" onclick="uploadConstitution()">Upload Constitution</button>
+              <div id="constitutionInfo" class="margin-top-20"></div>
+            </div>
+
+            <!-- Monitoring Tab (Admin) -->
+            <div id="monitoringTab" class="hidden">
+              <h2>Monitoring & Signature Status</h2>
+              <button class="btn btn-primary" onclick="showMonitoringDoc('MONITORING-SCHEDULE.md')">Sync Monitoring Schedule</button>
+              <div id="monitoringDocContent" class="margin-top-20 overflow-y-auto max-height-400"></div>
+            </div>
+
+            <!-- Documentation Tab (Admin) -->
+            <div id="docsTab" class="hidden">
+              <h2>System Documentation</h2>
+              <ul>
+                <li><a href="#" onclick="showDoc('CLOUD_STORAGE_SETUP.md')">Cloud Storage Setup Guide</a></li>
+                <li><a href="#" onclick="showDoc('CLOUD-STORAGE-UPGRADE-ANALYSIS.md')">Cloud Storage Upgrade Analysis</a></li>
+                <li><a href="#" onclick="showDoc('FINANCIAL-DASHBOARD-DOCS.md')">Financial Dashboard Docs</a></li>
+                <li><a href="#" onclick="showDoc('FIREBASE_SETUP.md')">Firebase Setup</a></li>
+                <li><a href="#" onclick="showDoc('FIX_API_KEY.md')">API Key Fix Guide</a></li>
+                <li><a href="#" onclick="showDoc('MOBILE-SETUP-GUIDE.md')">Mobile Setup Guide</a></li>
+              </ul>
+              <div id="docContent" class="margin-top-20 overflow-y-auto max-height-400"></div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="bg-blue-light padding-15 border-radius-8 margin-bottom-20">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            
+            <div class="display-grid gap-15">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button type="button" class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid gap-10 grid-auto-fit-150">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-blue" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <div class="attendance-info-box">
+        <div class="attendance-info-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0 member-search-input">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            <div class="display-grid gap-15">
+              <div class="custom-card-style">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                <div class="display-grid grid-auto-fit-150 grid-auto-fit-150-custom">
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <div class="display-grid grid-auto-fit-150">
+                <div class="display-grid grid-auto-fit-150">
+                    <div class="stat-total-members" id="totalMembers">0</div>
+                    <div class="stat-total-members" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                    <div class="stat-total-meetings" id="totalMeetings">0</div>
+                    <div class="stat-total-meetings" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            
+            <div class="display-grid gap-15">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <h3 class="import-data-title">📤 Import Data</h3>
+              </div>
+              
+                <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+                <h3 class="import-data-title">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <h3 class="manual-save-title">💾 Manual Save</h3>
+              </div>
+              
+              <div class="custom-card-style">
+                <h3 class="manual-save-title">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid grid-auto-fit-150">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="stat-total-members" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="stat-total-meetings" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                    <div class="stat-total-beneficiaries" id="totalBeneficiaries">0</div>
+                    <div class="stat-total-beneficiaries" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                    <div class="stat-total-payouts" id="totalPayouts">0</div>
+                    <div class="stat-total-payouts" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0">
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     style="margin: 0;">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+                <h3 class="export-data-title">📥 Export Data</h3>
+            
+            <div class="display-grid gap-15">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid gap-10" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                    <div class="stat-total-meetings" id="totalMeetings">0</div>
+                    <div class="stat-total-members" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-blue" id="totalMeetings">0</div>
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                  </div>
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            
+            <div class="display-grid gap-15">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <div class="display-grid grid-auto-fit-150-inline">
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid grid-cols-auto-fit-150 gap-10">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-blue" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0 member-search-input">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            
+            <div class="display-grid gap-15">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="ma class="custom-card-style">
+rgin-bottom-10 font-size-16">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="custom-card-style">
+                <h3 class="manual-save-title">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid grid-auto-fit-150">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-blue" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="stat-total-payouts" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0 member-search-input">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            
+            <div class="attendance-export-grid">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="export-data-title">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="import-data-title">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid grid-auto-fit-150-inline">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="stat-total-members" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                    <div class="font-size-24 font-weight-bold color-blue" id="totalMeetings">0</div>
+                    <div class="font-size-24 font-weight-bold color-blue" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0 member-search-input">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+            <div class="attendance-export-grid">
+                <h3 class="export-data-title">📥 Export Data</h3>
+            </div>
+            
+            <div class="attendance-export-grid">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="manual-save-title">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                <div class="display-grid grid-auto-fit-150-inline">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="stat-total-meetings" id="totalMeetings">0</div>
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                  </div>
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0 member-search-input">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            
+            <div class="attendance-export-grid">
+              <div class="custom-card-style">
+                <h3 class="export-data-title">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <h3 class="import-data-title">📤 Import Data</h3>
+              </div>
+              
+              <div class="custom-card-style">
+                <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="custom-card-style">
+                <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <div class="display-grid grid-auto-fit-150">
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid grid-auto-fit-150">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-blue" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+        <div class="attendance-header-box">
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0 member-search-input">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            
+            <div class="attendance-export-grid">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid grid-auto-fit-150">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-green" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="stat-total-meetings" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-purple" id="totalBeneficiaries">0</div>
+                    <div class="font-size-13 color-gray">Beneficiaries</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div class="font-size-24 font-weight-bold color-orange" id="totalPayouts">0</div>
+                    <div class="font-size-13 color-gray">Payouts</div>
+                  </div>
+                </div>
+                <div class="margin-top-15 padding-10 bg-white border-radius-5">
+                  <div class="font-size-13 color-gray">
+                    <strong>Last Saved:</strong> <span id="lastSavedTime">Never</span><br>
+                    <strong>Data Version:</strong> <span id="dataVersion">2.0</span><br>
+                    <strong>Storage Size:</strong> <span id="storageSize">Calculating...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📦 Detailed Storage Info</h3>
+                <p class="color-gray font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+                <p class="color-gray font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+                <p class="color-gray font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+                <p class="color-gray font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+                <p class="color-gray font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+                <p class="color-gray font-size-13 margin-bottom-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+              </div>
+            </div>
+      </div>
+      <div id="adminAlert"></div>
+
+      <div id="overviewTab">
+        <div class="stat"><h3>Total Members</h3><div class="value" id="totalMem">5</div></div>
+        <div class="stat"><h3>Active Members</h3><div class="value" id="activeMem">4</div></div>
+        <div class="stat"><h3>Suspended</h3><div class="value" id="suspMem">1</div></div>
+        <button class="btn btn-warning" onclick="checkMissed()">Check Missed Payments</button>
+        <button class="btn btn-warning" onclick="applyPen()">Apply R30 Penalties</button>
+      </div>
+
+      <div id="membersTab" class="hidden">
+        <h2>Members</h2>
+        <button class="btn btn-success" onclick="addMemberModal()">+ Add Member</button>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Status</th><th>Missed</th><th>Actions</th></tr></thead>
+          <tbody id="memTable"></tbody>
+        </table>
+      </div>
+
+      <div id="beneficiariesTab" class="hidden">
+        <h2>Beneficiaries</h2>
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="memSelectBen" onchange="loadBeneficiaries()">
+            <option value="">-- Select --</option>
+          </select>
+        </div>
+  <button class="btn btn-success display-none" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
+  <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+</div>
+
+      <div id="penaltiesTab" class="hidden">
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+        <div class="attendance-header-box">
+        </table>
+      </div>
+
+      <div id="attendanceTab" class="hidden">
+        <h2>Meeting Attendance</h2>
+        <div class="attendance-header-box">
+          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
+          <p class="margin-top-10 color-blue-dark">Track attendance, manage meetings, and generate reports</p>
+        </div>
+
+        <!-- Meeting Details Section -->
+        <div class="grid-2 gap-15">
+          <div class="form-group margin-0">
+            <label>Meeting Date</label>
+            <input type="date" id="meetingDate" onchange="showAttendanceList()">
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Type</label>
+            <select id="meetingType" onchange="updateMeetingDetails()">
+              <option value="general">General Meeting</option>
+              <option value="committee">Committee Meeting</option>
+              <option value="special">Special Meeting</option>
+              <option value="emergency">Emergency Meeting</option>
+            </select>
+          </div>
+          <div class="form-group margin-0">
+            <label>Meeting Description</label>
+            <textarea id="meetingDesc" rows="2" onchange="updateMeetingDetails()" 
+              placeholder="Brief description of meeting agenda/purpose"></textarea>
+          </div>
+        </div>
+        <div class="grid-2 gap-15 margin-top-15">
+          <div class="form-group margin-0">
+            <input type="text" id="memberSearch" 
+                     placeholder="Search members..." 
+                     onkeyup="filterAttendanceMembers()"
+                     class="margin-0 member-search-input">
+          </div>
+          <div class="display-flex gap-10">
+            <select id="statusFilter" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="all">All Status</option>
+              <option value="present">Present Only</option>
+              <option value="absent">Absent Only</option>
+            </select>
+            <select id="sortBy" onchange="filterAttendanceMembers()" class="width-auto">
+              <option value="name">Sort by Name</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <span id="attendanceRate" class="badge badge-approved">Attendance Rate: 0%</span>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="markAllPresent()">Mark All Present</button>
+            <button class="btn btn-warning btn-sm" onclick="clearAttendance()">Clear All</button>
+            <button class="btn btn-success" onclick="downloadAttendanceRegister()" id="downloadRegisterBtn">
+              <span class="margin-right-5">📥</span> Download Register
+            </button>
+          </div>
+        </div>
+
+        <!-- Attendance List -->
+        <table class="table width-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Status</th>
+              <th>Time In</th>
+              <th>Remarks</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+        
+        <div class="bg-blue-lighter padding-15 border-radius-8 margin-bottom-20">
+          <div class="display-flex justify-content: space-between; align-center flex-wrap gap-10">
+            <div>
+              <span id="presentCount" class="badge badge-active margin-right-10">Present: 0</span>
+              <span id="absentCount" class="badge badge-suspended margin-right-10">Absent: 0</span>
+            </div>
+            
+            <div class="attendance-export-grid">
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">📥 Export Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Download a backup of all system data as a JSON file.</p>
+                <button class="btn btn-primary" onclick="exportData()">Export Data Backup</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 class="import-data-title">📤 Import Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Restore data from a previously exported backup file.</p>
+                <input type="file" id="importFile" accept=".json" class="margin-bottom-10">
+                <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+              </div>
+              
+              <div class="bg-white padding-15 border-gray border-radius-8">
+                <h3 style="margin-bottom: 10px; font-size: 16px;">💾 Manual Save</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Force save all current data (normally happens automatically).</p>
+                <button class="btn btn-primary" onclick="saveDataToStorage() && showAlert('adminAlert', '✓ Data saved successfully!', 'success')">Save Now</button>
+              </div>
+              
+              <div class="bg-orange-light padding-15 bg-orange-border border-radius-8">
+                <h3 class="margin-bottom-10 font-size-16">⚠ Clear All Data</h3>
+                <p class="color-gray font-size-13 margin-bottom-10">Permanently delete all data and reset the system.</p>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+              </div>
+              
+              <div class="bg-blue-light padding-15 border-blue border-radius-8">
+                <h3 class="margin-bottom-15 font-size-16">📊 System Overview</h3>
+                <div class="display-grid grid-auto-fit-150">
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div style="font-size: 24px; font-weight: bold; color: #10b981;" id="totalMembers">0</div>
+                    <div class="font-size-13 color-gray">Total Members</div>
+                  </div>
+                  <div class="center-text padding-10 bg-white border-radius-5">
+                    <div style="font-size: 24px; font-weight: bold; color: #3b82f6;" id="totalMeetings">0</div>
+                    <div class="font-size-13 color-gray">Total Meetings</div>
+                  </div>
+                  <div class="
