@@ -1,6 +1,25 @@
-// All JavaScript from <script>...</script> in index.html moved here for CSP compliance
-// ...existing code from the <script> block in index.html...
-// (The full script content will be inserted here, as extracted from your HTML)
+// External JS for Sbahle Burial Society
+// All event handlers and logic should be moved here from inline HTML
+
+// Example: Replace onclick="loginAdmin()" with this
+// document.getElementById('adminLoginBtn').addEventListener('click', loginAdmin);
+
+// Repeat for all buttons, selects, inputs, etc. that use inline event handlers
+// You will need to assign IDs to elements in index.html if they do not have them
+
+// Example for tab buttons:
+// document.querySelectorAll('.tab').forEach(tab => {
+//   tab.addEventListener('click', function(e) {
+//     // Call the appropriate function based on tab text or data attribute
+//   });
+// });
+
+// Example for select onchange:
+// document.getElementById('memSelectBen').addEventListener('change', loadBeneficiaries);
+
+// Continue for all other event handlers
+
+// Place all your main logic here
 
 // --- Keyboard Navigation for Tabs and Modal ---
 document.addEventListener('DOMContentLoaded', function() {
@@ -55,5 +74,49 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// ...rest of your script code from index.html goes here...
-// (For brevity, not repeating the entire script block here, but in the real file, all code from <script>...</script> is included)
+// Event listeners for buttons and controls
+document.addEventListener('DOMContentLoaded', function() {
+  // Add Beneficiary
+  document.getElementById('addBenBtn')?.addEventListener('click', addBenModal);
+
+  // Check Missed Payments
+  document.getElementById('checkMissedBtn')?.addEventListener('click', checkMissed);
+
+  // Apply Penalties
+  document.getElementById('applyPenBtn')?.addEventListener('click', applyPen);
+
+  // Add Member
+  document.getElementById('addMemberBtn')?.addEventListener('click', addMemberModal);
+
+  // Beneficiary select
+  document.getElementById('memSelectBen')?.addEventListener('change', loadBeneficiaries);
+
+  // Attendance controls
+  document.getElementById('meetingDate')?.addEventListener('change', showAttendanceList);
+  document.getElementById('meetingType')?.addEventListener('change', updateMeetingDetails);
+  document.getElementById('meetingDesc')?.addEventListener('change', updateMeetingDetails);
+  document.getElementById('memberSearch')?.addEventListener('keyup', filterAttendanceMembers);
+  document.getElementById('statusFilter')?.addEventListener('change', filterAttendanceMembers);
+  document.getElementById('sortBy')?.addEventListener('change', filterAttendanceMembers);
+  document.getElementById('markAllPresentBtn')?.addEventListener('click', markAllPresent);
+  document.getElementById('clearAttendanceBtn')?.addEventListener('click', clearAttendance);
+  document.getElementById('downloadRegisterBtn')?.addEventListener('click', downloadAttendanceRegister);
+
+  // Data management
+  document.getElementById('importDataBtn')?.addEventListener('click', function() {
+    const fileInput = document.getElementById('importFile');
+    if (fileInput && fileInput.files[0]) {
+      importData(fileInput.files[0]);
+    }
+  });
+  document.getElementById('saveNowBtn')?.addEventListener('click', function() {
+    saveDataToStorage();
+    showAlert('adminAlert', '✓ Data saved successfully!', 'success');
+  });
+  document.getElementById('clearAllDataBtn')?.addEventListener('click', clearAllData);
+  document.getElementById('exportDataBtn')?.addEventListener('click', exportData);
+});
+
+// All JavaScript from <script>...</script> in index.html moved here for CSP compliance
+// ...existing code from the <script> block in index.html...
+// (The full script content will be inserted here, as extracted from your HTML)
