@@ -164,12 +164,12 @@
 <body>
   <div class="container">
     <!-- LOGIN PAGE -->
+    <div id="loginPage" class="card">
       <h1 class="center-title">🏛️ Sbahle Burial Society</h1>
       <div class="tabs center">
         <button class="tab active" onclick="showLoginForm('admin')">Admin</button>
         <button class="tab" onclick="showLoginForm('member')">Member</button>
         <button class="tab" onclick="showLoginForm('register')">Register</button>
-      </div>
       </div>
       <div id="alertMsg"></div>
 
@@ -254,13 +254,13 @@
       </div>
 
       <div id="penaltiesTab" class="hidden">
-          <p class="attendance-description">Track attendance, manage meetings, and generate reports</p>
-          <p class="attendance-description">Track attendance, manage meetings, and generate reports</p>
-        <div class="stat-box">
-        <div class="custom-bg-f0f9ff">
-          <p><strong>📋 Manage meeting attendance and track member participation</strong></p>
-          <p class="attendance-description">Track attendance, manage meetings, and generate reports</p>
-        </div>
+        <h2>Penalties</h2>
+        <table>
+          <thead><tr><th>Member</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="penTable"></tbody>
+        </table>
+      </div>
+
       <div id="attendanceTab" class="hidden">
         <h2>Meeting Attendance</h2>
         <div class="meeting-details-box">
@@ -418,14 +418,14 @@
               </div>
             </div>
           
-          <div style="background: white; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="margin-bottom: 10px; font-size: 16px;">� Detailed Storage Info</h3>
-            <p style="color: #666; font-size: 13px;"><strong>Members:</strong> <span id="storageMembers">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
-            <p style="color: #666; font-size: 13px;"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
-            <p style="color: #666; font-size: 13px; margin-bottom: 0;"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
+          <div class="data-card-white">
+            <h3 class="mb-10 font-size-16">� Detailed Storage Info</h3>
+            <p class="color-666 font-size-13"><strong>Members:</strong> <span id="storageMembers">0</span></p>
+            <p class="color-666 font-size-13"><strong>Beneficiaries:</strong> <span id="storageBeneficiaries">0</span></p>
+            <p class="color-666 font-size-13"><strong>Payouts:</strong> <span id="storagePayouts">0</span></p>
+            <p class="color-666 font-size-13"><strong>Penalties:</strong> <span id="storagePenalties">0</span></p>
+            <p class="color-666 font-size-13"><strong>Attendance Records:</strong> <span id="storageAttendance">0</span></p>
+            <p class="color-666 font-size-13 mb-0"><strong>Active Members:</strong> <span id="storageActiveMembers">0</span></p>
           </div>
         </div>
       </div>
@@ -996,15 +996,30 @@
     }
 
     function adminTab(t, e) {
-      document.getElementById('overviewTab').classList.toggle('hidden', t !== 'overview');
-      document.getElementById('membersTab').classList.toggle('hidden', t !== 'members');
-      document.getElementById('beneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
-      document.getElementById('payoutsTab').classList.toggle('hidden', t !== 'payouts');
-      document.getElementById('penaltiesTab').classList.toggle('hidden', t !== 'penalties');
-      document.getElementById('attendanceTab').classList.toggle('hidden', t !== 'attendance');
-      document.getElementById('dataTab').classList.toggle('hidden', t !== 'data');
+      console.log('adminTab called with:', t);
+      
+      const tabs = {
+        'overviewTab': document.getElementById('overviewTab'),
+        'membersTab': document.getElementById('membersTab'),
+        'beneficiariesTab': document.getElementById('beneficiariesTab'),
+        'payoutsTab': document.getElementById('payoutsTab'),
+        'penaltiesTab': document.getElementById('penaltiesTab'),
+        'attendanceTab': document.getElementById('attendanceTab'),
+        'dataTab': document.getElementById('dataTab')
+      };
+      
+      // Check for missing elements
+      Object.keys(tabs).forEach(key => {
+        if (!tabs[key]) {
+          console.error(`Missing element: ${key}`);
+        } else {
+          tabs[key].classList.toggle('hidden', key !== t + 'Tab');
+        }
+      });
+      
       document.querySelectorAll('#adminPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
+      
       if (t === 'members') { displayMem(); }
       if (t === 'beneficiaries') { populateBenSelect(); loadBeneficiaries(); }
       if (t === 'payouts') displayPayouts();
@@ -1012,9 +1027,10 @@
       if (t === 'attendance') { 
         // Set today's date if not already set
         const dateInput = document.getElementById('meetingDate');
-        if (!dateInput.value) {
+        if (dateInput && !dateInput.value) {
           dateInput.value = new Date().toISOString().split('T')[0];
-          document.getElementById('meetingTime').value = new Date().toTimeString().slice(0,5);
+          const timeInput = document.getElementById('meetingTime');
+          if (timeInput) timeInput.value = new Date().toTimeString().slice(0,5);
         }
         showAttendanceList(); 
       }
