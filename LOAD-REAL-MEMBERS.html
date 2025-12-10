@@ -168,7 +168,14 @@
     <div class="step">
       <h3>Step 3: Verify & Open Portal</h3>
       <button class="secondary" onclick="openPortal()">🌐 Open Sbahle Portal</button>
+      <button onclick="openLocalPortal()">📂 Open Local Portal (index.html)</button>
       <div id="verifyResult"></div>
+    </div>
+    
+    <div class="status warning" style="margin-top: 20px;">
+      <strong>⚠️ IMPORTANT:</strong><br>
+      After loading members, you MUST open the portal in the <strong>SAME BROWSER</strong> where you clicked "Load Members".<br>
+      LocalStorage is browser-specific - data won't transfer between different browsers.
     </div>
   </div>
 
@@ -273,6 +280,28 @@
       }
     }
 
+    function openLocalPortal() {
+      // Open local index.html
+      window.open('index.html', '_blank');
+      
+      document.getElementById('verifyResult').innerHTML = `
+        <div class="status success">
+          ✅ Local portal opened!<br><br>
+          <strong>Login as Admin:</strong>
+          <ul style="margin-top: 10px; margin-left: 20px;">
+            <li>Username: <code>admin</code></li>
+            <li>Password: <code>admin123</code></li>
+          </ul>
+          <br>
+          <strong>Or login as Mlungisi:</strong>
+          <ul style="margin-top: 10px; margin-left: 20px;">
+            <li>Email: <code>maqashela@gmail.com</code></li>
+            <li>Password: <code>password123</code></li>
+          </ul>
+        </div>
+      `;
+    }
+    
     function openPortal() {
       // Open in new tab
       window.open('https://gearupza.github.io/Sbahle-burial-portal/', '_blank');
