@@ -1375,6 +1375,7 @@
           <td>${r.month}</td>
           <td>R ${r.amount}</td>
           <td>${r.method}</td>
+          <td>REF${r.id}</td>
           <td><span class="badge badge-${r.status === 'Paid' ? 'success' : 'pending'}">${r.status}</span></td>
           <td>
             ${r.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="verifyPayment('${r.id}')">Verify</button>` : '✓'}
@@ -1390,13 +1391,13 @@
       const pending = financialRecords.filter(r => r.status === 'Pending').length * 170;
 
       document.getElementById('totalContributions').textContent = `R ${totalContributions.toFixed(2)}`;
-      document.getElementById('totalPayouts').textContent = `R ${totalPayouts.toFixed(2)}`;
-      document.getElementById('currentBalance').textContent = `R ${balance.toFixed(2)}`;
-      document.getElementById('pendingPayments').textContent = `R ${pending.toFixed(2)}`;
+      document.getElementById('totalPayoutsAmount').textContent = `R ${totalPayouts.toFixed(2)}`;
+      document.getElementById('availableBalance').textContent = `R ${balance.toFixed(2)}`;
+      document.getElementById('pendingContributions').textContent = `R ${pending.toFixed(2)}`;
     }
 
     function filterFinancial() {
-      const search = document.getElementById('searchFinancial').value.toLowerCase();
+      const search = document.getElementById('finSearchMember').value.toLowerCase();
       const rows = document.querySelectorAll('#financialTableBody tr');
       rows.forEach(row => {
         const text = row.textContent.toLowerCase();
