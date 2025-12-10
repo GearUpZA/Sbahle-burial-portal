@@ -832,6 +832,30 @@
             if (data.systemInfo) {
               console.log('✓ System Statistics:', data.systemInfo);
             }
+            
+            // If loaded data is empty, restore default data
+            if (members.length === 0) {
+              console.warn('⚠ Loaded data has no members. Restoring default data...');
+              members = [
+                { id: 'MEM001', name: 'Thabo Mkhize', email: 'member@test.com', password: 'password123', phone: '0721234567', idNum: '8712345678901', status: 'Active', missedPayments: 0 },
+                { id: 'MEM002', name: 'Nomsa Dlamini', email: 'nomsa@test.com', password: 'password123', phone: '0731234567', idNum: '9012345678901', status: 'Active', missedPayments: 0 },
+                { id: 'MEM003', name: 'Sipho Ndlela', email: 'sipho@test.com', password: 'password123', phone: '0741234567', idNum: '7812345678901', status: 'Suspended', missedPayments: 3 }
+              ];
+              beneficiaries = [
+                { id: 'B1', memberId: 'MEM001', name: 'Aisha Mkhize', relationship: 'Spouse', idNum: '9512345678901', percentage: 50 },
+                { id: 'B2', memberId: 'MEM001', name: 'Omuhle Mkhize', relationship: 'Child', idNum: '2015123456', percentage: 50 }
+              ];
+              payouts = [
+                { id: 'PO1', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 5000, reason: 'Funeral', status: 'Pending' }
+              ];
+              penalties = [
+                { id: 'PEN1', memberId: 'MEM002', memberName: 'Nomsa Dlamini', amount: 30, date: '2025-03-10', status: 'Pending' }
+              ];
+              // Save the default data
+              saveDataToStorage();
+              console.log('✓ Default data restored and saved');
+            }
+            
             return true;
           }
         }
