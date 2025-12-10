@@ -211,6 +211,7 @@
         <button class="tab" onclick="adminTab('beneficiaries', event)">Beneficiaries</button>
         <button class="tab" onclick="adminTab('attendance', event)">Attendance</button>
         <button class="tab" onclick="adminTab('financial', event)">Financial</button>
+        <button class="tab" onclick="adminTab('constitution', event)">Constitution</button>
         <button class="tab" onclick="adminTab('documents', event)">Documents</button>
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
@@ -245,6 +246,34 @@
         <button class="btn btn-success" id="addBenBtn" class="hidden" onclick="addBenModal()">+ Add Beneficiary</button>
         <button class="btn btn-success hidden" id="addBenBtn" onclick="addBenModal()">+ Add Beneficiary</button>
         <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+      </div>
+
+      <div id="constitutionTab" class="hidden">
+        <h2>Constitution Management</h2>
+        <div class="info-header">
+          <p class="mb-0"><strong>📄 Upload and manage the society's constitution document</strong></p>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="data-card-white mb-20">
+          <h3 class="mb-10">Upload Constitution</h3>
+          <div class="form-group">
+            <label>Document Title</label>
+            <input type="text" id="constitutionTitle" placeholder="e.g., Sbahle Burial Society Constitution 2025">
+          </div>
+          <div class="form-group">
+            <label>Select Document (PDF, DOC, DOCX - Max 10MB)</label>
+            <input type="file" id="constitutionFile" accept=".pdf,.doc,.docx">
+          </div>
+          <div class="form-group">
+            <label>Version Notes (Optional)</label>
+            <textarea id="constitutionNotes" rows="2" placeholder="e.g., Version 2.0 - Amended November 2025"></textarea>
+          </div>
+          <button class="btn btn-success" onclick="uploadConstitution()">📤 Upload Constitution</button>
+        </div>
+
+        <!-- Current Constitution Display -->
+        <div id="constitutionDisplay"></div>
       </div>
 
       <div id="payoutsTab" class="hidden">
@@ -550,6 +579,7 @@
         <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
         <button class="tab" onclick="memberTab('financial', event)">Financial</button>
         <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
+        <button class="tab" onclick="memberTab('constitution', event)">Constitution</button>
         <button class="tab" onclick="memberTab('documents', event)">Documents</button>
         <button class="tab" onclick="memberTab('signature', event)">Signature</button>
         <button class="tab" onclick="memberTab('payouts', event)">Payouts</button>
@@ -677,6 +707,14 @@
         </table>
       </div>
 
+      <div id="memberConstitutionTab" class="hidden">
+        <h2>Society Constitution</h2>
+        <div class="info-header">
+          <p class="mb-0"><strong>📄 View and download the society's constitution</strong></p>
+        </div>
+        <div id="memberConstitutionDisplay"></div>
+      </div>
+
       <div id="documentsTab" class="hidden">
         <h2>Upload Documents</h2>
         <div class="file-input">
@@ -772,6 +810,9 @@
           payouts,
           penalties,
           
+          // Documents
+          constitutionDocument,
+          
           // Attendance and meeting data
           attendance: attendanceData,
           
@@ -780,7 +821,7 @@
           
           // Metadata
           lastSaved: new Date().toISOString(),
-          version: '2.0',
+          version: '2.6.1',
           systemInfo: {
             totalMembers: members.length,
             activeMembers: members.filter(m => m.status === 'Active').length,
@@ -822,6 +863,9 @@
             payouts = data.payouts || [];
             penalties = data.penalties || [];
             memberIdCounter = data.memberIdCounter || 4;
+            
+            // Load documents
+            constitutionDocument = data.constitutionDocument || null;
             
             // Load attendance data if available
             if (data.attendance) {
@@ -998,6 +1042,7 @@
     let tempBeneficiaries = [];
     let isDrawing = false;
     let memberIdCounter = 4; // Start from 4 since we have MEM001, MEM002, MEM003
+    let constitutionDocument = null; // Store constitution: {title, uploadDate, fileData, fileSize, fileType, fileName, notes}
     
     // Load saved data on page load
     loadDataFromStorage();
@@ -1222,6 +1267,7 @@
         'penaltiesTab': document.getElementById('penaltiesTab'),
         'attendanceTab': document.getElementById('attendanceTab'),
         'financialTab': document.getElementById('financialTab'),
+        'constitutionTab': document.getElementById('constitutionTab'),
         'documentsTab': document.getElementById('documentsTab'),
         'dataTab': document.getElementById('dataTab')
       };
@@ -1253,6 +1299,7 @@
         showAttendanceList(); 
       }
       if (t === 'financial') { displayFinancialRecords(); }
+      if (t === 'constitution') { displayConstitution(); }
       if (t === 'documents') { displayDocuments(); }
       if (t === 'data') { updateStorageInfo(); }
     }
@@ -1313,12 +1360,14 @@
       document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
       document.getElementById('memberFinancialTab').classList.toggle('hidden', t !== 'financial');
       document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
+      document.getElementById('memberConstitutionTab').classList.toggle('hidden', t !== 'constitution');
       document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
       document.getElementById('signatureTab').classList.toggle('hidden', t !== 'signature');
       document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
       if (t === 'financial') { displayMemberFinancial(); }
+      if (t === 'constitution') { displayConstitutionMember(); }
       if (t === 'beneficiaries') {
         // Refresh tempBeneficiaries from the main beneficiaries array
         tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
@@ -1558,6 +1607,189 @@
       
       // Refresh display
       displayMemberFinancial();
+    }
+
+    // Constitution Management Functions
+    function uploadConstitution() {
+      const title = document.getElementById('constitutionTitle').value;
+      const fileInput = document.getElementById('constitutionFile');
+      const notes = document.getElementById('constitutionNotes').value;
+
+      if (!title) {
+        alert('Please enter a document title');
+        return;
+      }
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select a document file');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const maxSize = 10 * 1024 * 1024; // 10MB
+
+      // Validate file type
+      const allowedTypes = ['.pdf', '.doc', '.docx'];
+      const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+      if (!allowedTypes.includes(fileExt)) {
+        alert('Please upload a PDF, DOC, or DOCX file');
+        return;
+      }
+
+      // Validate file size
+      if (file.size > maxSize) {
+        alert('File size exceeds 10MB limit');
+        return;
+      }
+
+      // Read file and save
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        constitutionDocument = {
+          title: title,
+          uploadDate: new Date().toISOString(),
+          fileData: e.target.result,
+          fileSize: file.size,
+          fileType: file.type,
+          fileName: file.name,
+          notes: notes || ''
+        };
+
+        saveDataToStorage();
+        
+        // Clear form
+        document.getElementById('constitutionTitle').value = '';
+        document.getElementById('constitutionFile').value = '';
+        document.getElementById('constitutionNotes').value = '';
+
+        alert('✓ Constitution uploaded successfully!');
+        displayConstitution();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function displayConstitution() {
+      const display = document.getElementById('constitutionDisplay');
+      
+      if (!constitutionDocument) {
+        display.innerHTML = '<p class="color-999">No constitution document uploaded yet.</p>';
+        return;
+      }
+
+      const uploadDate = new Date(constitutionDocument.uploadDate).toLocaleDateString();
+      const fileSize = formatFileSize(constitutionDocument.fileSize);
+
+      display.innerHTML = `
+        <div class="data-card-white">
+          <h3>📄 Current Constitution</h3>
+          <p><strong>Title:</strong> ${constitutionDocument.title}</p>
+          <p><strong>Uploaded:</strong> ${uploadDate}</p>
+          <p><strong>File:</strong> ${constitutionDocument.fileName} (${fileSize})</p>
+          ${constitutionDocument.notes ? `<p><strong>Notes:</strong> ${constitutionDocument.notes}</p>` : ''}
+          <div class="mt-10">
+            <button class="btn btn-primary" onclick="viewConstitution()">👁️ View Document</button>
+            <button class="btn btn-success" onclick="downloadConstitution()">📥 Download</button>
+            <button class="btn btn-danger" onclick="deleteConstitution()">🗑️ Delete</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function viewConstitution() {
+      if (!constitutionDocument) {
+        alert('No constitution document available');
+        return;
+      }
+
+      const blob = dataURLtoBlob(constitutionDocument.fileData);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    }
+
+    function downloadConstitution() {
+      if (!constitutionDocument) {
+        alert('No constitution document available');
+        return;
+      }
+
+      const blob = dataURLtoBlob(constitutionDocument.fileData);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = constitutionDocument.fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function deleteConstitution() {
+      if (!confirm('Are you sure you want to delete the constitution document?')) {
+        return;
+      }
+
+      constitutionDocument = null;
+      saveDataToStorage();
+      alert('✓ Constitution document deleted');
+      displayConstitution();
+    }
+
+    function displayConstitutionMember() {
+      const display = document.getElementById('memberConstitutionDisplay');
+      
+      if (!constitutionDocument) {
+        display.innerHTML = `
+          <div class="data-card-white">
+            <p class="color-999">No constitution document has been uploaded yet.</p>
+            <p class="color-999">Please contact an administrator.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const uploadDate = new Date(constitutionDocument.uploadDate).toLocaleDateString();
+      const fileSize = formatFileSize(constitutionDocument.fileSize);
+
+      display.innerHTML = `
+        <div class="data-card-white">
+          <h3>📄 ${constitutionDocument.title}</h3>
+          <p><strong>Uploaded:</strong> ${uploadDate}</p>
+          <p><strong>File:</strong> ${constitutionDocument.fileName} (${fileSize})</p>
+          ${constitutionDocument.notes ? `<p><strong>Notes:</strong> ${constitutionDocument.notes}</p>` : ''}
+          <div class="mt-10">
+            <button class="btn btn-primary" onclick="viewConstitutionMember()">👁️ View Document</button>
+            <button class="btn btn-success" onclick="downloadConstitutionMember()">📥 Download Constitution</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function viewConstitutionMember() {
+      viewConstitution();
+    }
+
+    function downloadConstitutionMember() {
+      downloadConstitution();
+    }
+
+    // Helper function to convert base64 to Blob
+    function dataURLtoBlob(dataurl) {
+      const arr = dataurl.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], {type: mime});
+    }
+
+    // Helper function to format file size
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+      return (bytes / 1048576).toFixed(2) + ' MB';
     }
 
     function populateBenSelect() {
