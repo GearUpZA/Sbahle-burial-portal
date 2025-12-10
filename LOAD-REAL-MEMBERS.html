@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Load Real Members - Sbahle Burial Society</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .status.info { background: #e3f2fd; border-left: 4px solid #2196f3; color: #1565c0; }
+    .status.success { background: #e8f5e9; border-left: 4px solid #4caf50; color: #2e7d32; }
+    .status.warning { background: #fff3e0; border-left: 4px solid #ff9800; color: #e65100; }
+    .status.error { background: #ffebee; border-left: 4px solid #f44336; color: #c62828; }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin: 10px 5px;
+      box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+    }
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    button.secondary {
+      background: #6c757d;
+      box-shadow: 0 4px 6px rgba(108, 117, 125, 0.3);
+    }
+    button.secondary:hover {
+      background: #5a6268;
+    }
+    button.success {
+      background: #4caf50;
+      box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);
+    }
+    button.success:hover {
+      background: #45a049;
+    }
+    .member-list {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .member-item {
+      background: white;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .member-name {
+      font-weight: 600;
+      color: #333;
+    }
+    .member-email {
+      color: #666;
+      font-size: 14px;
+    }
+    .member-id {
+      color: #999;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      max-height: 300px;
+    }
+    .step {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .step h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    .badge.active {
+      background: #4caf50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Load Real Members</h1>
+    <p class="subtitle">Sbahle Burial Society - Data Integration Tool</p>
+
+    <div class="status info">
+      <strong>📋 What this does:</strong><br>
+      Loads 12 real members from your backup data into the system.<br>
+      This will replace the 3 default demo members (Thabo, Nomsa, Sipho).
+    </div>
+
+    <div class="step">
+      <h3>Step 1: Preview Data</h3>
+      <button onclick="previewData()">👁️ Preview 12 Members</button>
+      <div id="previewResult"></div>
+    </div>
+
+    <div class="step">
+      <h3>Step 2: Load into System</h3>
+      <button class="success" onclick="loadMembers()">✅ Load 12 Real Members Now</button>
+      <div id="loadResult"></div>
+    </div>
+
+    <div class="step">
+      <h3>Step 3: Verify & Open Portal</h3>
+      <button class="secondary" onclick="openPortal()">🌐 Open Sbahle Portal</button>
+      <div id="verifyResult"></div>
+    </div>
+  </div>
+
+  <script>
+    const REAL_MEMBERS_DATA = {
+      "members": [
+        {"id":"MEM004", "name":"Mpande Sibiya", "email":"sotobe114@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM005", "name":"Sibulelo Njoli", "email":"sbunjoli1@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM006", "name":"khanya Pani", "email":"Khanyawowo07@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM007", "name":"Mlungisi  Maqashela", "email":"maqashela@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM008", "name":"Zukile Siyanga", "email":"kitano187@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM009", "name":"Mavuso Mbidlana", "email":"mavumbidlana@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM010", "name":"Victor April", "email":"furaapril@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM011", "name":"Zola Cishe", "email":"Zolacishe12@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM012", "name":"Alisa Mbangani", "email":"alisambangani@outlook.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM013", "name":"Mahlubandile Ntshoko", "email":"bandilen@outlook.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM014", "name":"Abongile Mbangani", "email":"aleighsa14@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""},
+        {"id":"MEM015", "name":"Andile Dwayne  Snoek", "email":"snoekdwayne@gmail.com", "password":"password123", "phone":"", "idNum":"", "status":"Active", "missedPayments":0, "signature":""}
+      ],
+      "beneficiaries": [],
+      "payouts": [],
+      "penalties": [],
+      "meetingMinutes": [],
+      "paymentProofs": [],
+      "payoutCollectors": [],
+      "attendance": {},
+      "memberIdCounter": 16,
+      "minutesIdCounter": 1,
+      "proofIdCounter": 1,
+      "lastSaved": new Date().toISOString(),
+      "version": "2.6.1"
+    };
+
+    function previewData() {
+      const resultDiv = document.getElementById('previewResult');
+      const members = REAL_MEMBERS_DATA.members;
+
+      let html = '<div class="member-list">';
+      html += `<div style="margin-bottom: 15px;"><strong>Total Members: ${members.length}</strong></div>`;
+      
+      members.forEach((m, i) => {
+        html += `
+          <div class="member-item">
+            <div>
+              <div class="member-name">${i + 1}. ${m.name}</div>
+              <div class="member-email">📧 ${m.email}</div>
+              <div class="member-id">ID: ${m.id}</div>
+            </div>
+            <span class="badge active">${m.status}</span>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      resultDiv.innerHTML = html;
+    }
+
+    function loadMembers() {
+      const resultDiv = document.getElementById('loadResult');
+      resultDiv.innerHTML = '<div class="status warning">⏳ Loading members into localStorage...</div>';
+
+      try {
+        // Encrypt data (same as your system)
+        const encryptData = (data) => btoa(JSON.stringify(data));
+        const encrypted = encryptData(REAL_MEMBERS_DATA);
+
+        // Save to localStorage with your system's key
+        localStorage.setItem('sbsData', encrypted);
+
+        // Verify
+        const saved = localStorage.getItem('sbsData');
+        if (saved) {
+          resultDiv.innerHTML = `
+            <div class="status success">
+              ✅ <strong>SUCCESS!</strong> 12 real members loaded into system!<br><br>
+              <strong>Members loaded:</strong>
+              <ul style="margin-top: 10px; margin-left: 20px;">
+                ${REAL_MEMBERS_DATA.members.map(m => `<li>${m.name} (${m.email})</li>`).join('')}
+              </ul>
+              <br>
+              <strong>Next step:</strong> Open the Sbahle Portal and login as admin to see the members.
+            </div>
+          `;
+
+          // Also show in verify section
+          document.getElementById('verifyResult').innerHTML = `
+            <div class="status info">
+              <strong>Ready to test!</strong><br>
+              Click the button above to open the portal, then login as admin:
+              <ul style="margin-top: 10px; margin-left: 20px;">
+                <li><strong>Username:</strong> admin</li>
+                <li><strong>Password:</strong> admin123</li>
+              </ul>
+              Then click on the Members tab to see all 12 members!
+            </div>
+          `;
+        } else {
+          resultDiv.innerHTML = '<div class="status error">❌ Failed to save data!</div>';
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    function openPortal() {
+      // Open in new tab
+      window.open('https://gearupza.github.io/Sbahle-burial-portal/', '_blank');
+      
+      // Update verify section
+      document.getElementById('verifyResult').innerHTML = `
+        <div class="status success">
+          ✅ Portal opened in new tab!<br><br>
+          <strong>Login as Admin:</strong>
+          <ul style="margin-top: 10px; margin-left: 20px;">
+            <li>Username: <code>admin</code></li>
+            <li>Password: <code>admin123</code></li>
+          </ul>
+          <br>
+          <strong>Or login as a Member:</strong>
+          <ul style="margin-top: 10px; margin-left: 20px;">
+            <li>Email: <code>maqashela@gmail.com</code></li>
+            <li>Password: <code>password123</code></li>
+          </ul>
+        </div>
+      `;
+    }
+
+    // Auto-preview on load
+    window.addEventListener('load', () => {
+      setTimeout(previewData, 500);
+    });
+  </script>
+</body>
+</html>
