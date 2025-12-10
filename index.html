@@ -1305,6 +1305,9 @@
     }
     
     function updateStorageInfo() {
+      console.log('updateStorageInfo called');
+      console.log('Current members:', members.length);
+      
       // Get attendance data
       const attendanceData = JSON.parse(localStorage.getItem('attendance') || '{}');
       const activeMembers = members.filter(m => m.status === 'Active');
@@ -1353,6 +1356,8 @@
       } catch (e) {
         document.getElementById('storageSize').textContent = 'Error calculating';
       }
+      
+      console.log('✓ Storage info updated - Members:', members.length, 'Payouts:', payouts.length);
     }
 
     function memberTab(t, e) {
