@@ -210,6 +210,8 @@
         <button class="tab" onclick="adminTab('members', event)">Members</button>
         <button class="tab" onclick="adminTab('beneficiaries', event)">Beneficiaries</button>
         <button class="tab" onclick="adminTab('attendance', event)">Attendance</button>
+        <button class="tab" onclick="adminTab('financial', event)">Financial</button>
+        <button class="tab" onclick="adminTab('documents', event)">Documents</button>
         <button class="tab" onclick="adminTab('payouts', event)">Payouts</button>
         <button class="tab" onclick="adminTab('penalties', event)">Penalties</button>
         <button class="tab" onclick="adminTab('data', event)">Data Management</button>
@@ -358,6 +360,112 @@
         </div>
       </div>
 
+      <div id="financialTab" class="hidden">
+        <h2>Financial Management</h2>
+        <div class="info-header">
+          <p class="mb-0"><strong>💰 Track all financial transactions, contributions, and society finances</strong></p>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="grid-2 gap-15 mb-20">
+          <div class="stat">
+            <h3>Total Contributions</h3>
+            <div class="value" id="totalContributions">R 0.00</div>
+          </div>
+          <div class="stat">
+            <h3>Total Payouts</h3>
+            <div class="value" id="totalPayoutsAmount">R 0.00</div>
+          </div>
+          <div class="stat">
+            <h3>Available Balance</h3>
+            <div class="value" id="availableBalance">R 0.00</div>
+          </div>
+          <div class="stat">
+            <h3>Pending Contributions</h3>
+            <div class="value" id="pendingContributions">R 0.00</div>
+          </div>
+        </div>
+
+        <!-- Contribution Records -->
+        <h3>Monthly Contributions (R170/member)</h3>
+        <div class="search-filter-box mb-15">
+          <div class="form-group no-margin">
+            <input type="text" id="finSearchMember" placeholder="Search member..." onkeyup="filterFinancial()">
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Month</th>
+              <th>Amount</th>
+              <th>Payment Method</th>
+              <th>Reference</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="financialTableBody">
+            <tr><td colspan="7" class="text-center color-999">No contribution records yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="documentsTab" class="hidden">
+        <h2>Document Management</h2>
+        <div class="info-header">
+          <p class="mb-0"><strong>📄 Manage all society documents, certificates, and member uploads</strong></p>
+        </div>
+
+        <!-- Document Categories -->
+        <div class="grid-2 gap-15 mb-20">
+          <div class="data-card-white">
+            <h3 class="mb-10 font-size-16">📋 Constitution & Bylaws</h3>
+            <p class="color-666 font-size-13 mb-10">Upload society constitution and governing documents</p>
+            <input type="file" id="constitutionFile" accept=".pdf,.doc,.docx" class="mb-10">
+            <button class="btn btn-primary btn-sm" onclick="uploadDocument('constitution')">Upload</button>
+          </div>
+          
+          <div class="data-card-white">
+            <h3 class="mb-10 font-size-16">📊 Financial Reports</h3>
+            <p class="color-666 font-size-13 mb-10">Upload monthly/annual financial statements</p>
+            <input type="file" id="reportFile" accept=".pdf,.xlsx,.xls" class="mb-10">
+            <button class="btn btn-primary btn-sm" onclick="uploadDocument('report')">Upload</button>
+          </div>
+
+          <div class="data-card-white">
+            <h3 class="mb-10 font-size-16">🏛️ Registration Documents</h3>
+            <p class="color-666 font-size-13 mb-10">Society registration certificates</p>
+            <input type="file" id="registrationFile" accept=".pdf" class="mb-10">
+            <button class="btn btn-primary btn-sm" onclick="uploadDocument('registration')">Upload</button>
+          </div>
+
+          <div class="data-card-white">
+            <h3 class="mb-10 font-size-16">📝 Meeting Minutes</h3>
+            <p class="color-666 font-size-13 mb-10">Upload meeting minutes and AGM records</p>
+            <input type="file" id="minutesFile" accept=".pdf,.doc,.docx" class="mb-10">
+            <button class="btn btn-primary btn-sm" onclick="uploadDocument('minutes')">Upload</button>
+          </div>
+        </div>
+
+        <!-- Uploaded Documents List -->
+        <h3>Uploaded Documents</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Document Name</th>
+              <th>Category</th>
+              <th>Uploaded By</th>
+              <th>Upload Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="documentsTableBody">
+            <tr><td colspan="5" class="text-center color-999">No documents uploaded yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <div id="dataTab" class="hidden">
         <h2>Data Management</h2>
         <div class="info-header">
@@ -440,6 +548,7 @@
       <div class="tabs">
         <button class="tab active" onclick="memberTab('profile', event)">Profile</button>
         <button class="tab" onclick="memberTab('contributions', event)">Contributions</button>
+        <button class="tab" onclick="memberTab('financial', event)">Financial</button>
         <button class="tab" onclick="memberTab('beneficiaries', event)">Beneficiaries</button>
         <button class="tab" onclick="memberTab('documents', event)">Documents</button>
         <button class="tab" onclick="memberTab('signature', event)">Signature</button>
@@ -476,6 +585,74 @@
             <tr><td>2025-03-15</td><td>R 170</td><td>Bank Transfer</td><td><span class="badge badge-approved">Verified</span></td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div id="memberFinancialTab" class="hidden">
+        <h2>My Financial Summary</h2>
+        <div class="info-header">
+          <p class="mb-0"><strong>💰 View your contribution history and financial status</strong></p>
+        </div>
+
+        <!-- Personal Financial Stats -->
+        <div class="grid-2 gap-15 mb-20">
+          <div class="stat">
+            <h3>Total Contributions</h3>
+            <div class="value" id="myTotalContributions">R 0.00</div>
+          </div>
+          <div class="stat">
+            <h3>Outstanding Balance</h3>
+            <div class="value" id="myOutstanding">R 0.00</div>
+          </div>
+          <div class="stat">
+            <h3>Last Payment</h3>
+            <div class="value" id="myLastPayment">-</div>
+          </div>
+          <div class="stat">
+            <h3>Membership Status</h3>
+            <div class="value" id="myPaymentStatus">Good Standing</div>
+          </div>
+        </div>
+
+        <!-- Payment History -->
+        <h3>Payment History</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Month</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Reference</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="memberFinancialTableBody">
+            <tr><td colspan="6" class="text-center color-999">No payment history yet</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Make Payment Section -->
+        <div class="mt-20 data-card-white">
+          <h3 class="mb-10">📤 Submit Payment Proof</h3>
+          <p class="color-666 font-size-13 mb-10">Monthly contribution: R170.00</p>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select id="paymentMethod">
+              <option>EFT</option>
+              <option>Cash Deposit</option>
+              <option>Direct Deposit</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Reference Number</label>
+            <input type="text" id="paymentRef" placeholder="Enter payment reference">
+          </div>
+          <div class="form-group">
+            <label>Upload Proof of Payment</label>
+            <input type="file" id="paymentProofFile" accept="image/*,.pdf">
+          </div>
+          <button class="btn btn-success" onclick="submitPaymentProof()">Submit Payment</button>
+        </div>
       </div>
 
       <div id="memberBeneficiariesTab" class="hidden">
@@ -1005,6 +1182,8 @@
         'payoutsTab': document.getElementById('payoutsTab'),
         'penaltiesTab': document.getElementById('penaltiesTab'),
         'attendanceTab': document.getElementById('attendanceTab'),
+        'financialTab': document.getElementById('financialTab'),
+        'documentsTab': document.getElementById('documentsTab'),
         'dataTab': document.getElementById('dataTab')
       };
       
@@ -1034,6 +1213,8 @@
         }
         showAttendanceList(); 
       }
+      if (t === 'financial') { displayFinancialRecords(); }
+      if (t === 'documents') { displayDocuments(); }
       if (t === 'data') { updateStorageInfo(); }
     }
     
@@ -1091,12 +1272,14 @@
     function memberTab(t, e) {
       document.getElementById('profileTab').classList.toggle('hidden', t !== 'profile');
       document.getElementById('contributionsTab').classList.toggle('hidden', t !== 'contributions');
+      document.getElementById('memberFinancialTab').classList.toggle('hidden', t !== 'financial');
       document.getElementById('memberBeneficiariesTab').classList.toggle('hidden', t !== 'beneficiaries');
       document.getElementById('documentsTab').classList.toggle('hidden', t !== 'documents');
       document.getElementById('signatureTab').classList.toggle('hidden', t !== 'signature');
       document.getElementById('memberPayoutsTab').classList.toggle('hidden', t !== 'payouts');
       document.querySelectorAll('#memberPage .tab').forEach(x => x.classList.remove('active'));
       if (e && e.target) e.target.classList.add('active');
+      if (t === 'financial') { displayMemberFinancial(); }
       if (t === 'beneficiaries') {
         // Refresh tempBeneficiaries from the main beneficiaries array
         tempBeneficiaries = JSON.parse(JSON.stringify(beneficiaries.filter(b => b.memberId === currentUser.id)));
@@ -1171,6 +1354,163 @@
         </td></tr>`;
       });
       document.getElementById('penTable').innerHTML = html;
+    }
+
+    // Financial Management Functions
+    function displayFinancialRecords() {
+      // Generate sample financial data from members
+      let financialRecords = members.map((m, i) => ({
+        id: m.id,
+        memberName: m.name,
+        month: new Date().toLocaleDateString('en-US', {month: 'long', year: 'numeric'}),
+        amount: 170,
+        method: i % 3 === 0 ? 'EFT' : i % 3 === 1 ? 'Cash' : 'Direct Deposit',
+        status: m.status === 'Active' ? 'Paid' : 'Pending'
+      }));
+
+      let html = '';
+      financialRecords.forEach(r => {
+        html += `<tr>
+          <td>${r.memberName}</td>
+          <td>${r.month}</td>
+          <td>R ${r.amount}</td>
+          <td>${r.method}</td>
+          <td><span class="badge badge-${r.status === 'Paid' ? 'success' : 'pending'}">${r.status}</span></td>
+          <td>
+            ${r.status === 'Pending' ? `<button class="btn btn-success btn-sm" onclick="verifyPayment('${r.id}')">Verify</button>` : '✓'}
+          </td>
+        </tr>`;
+      });
+      document.getElementById('financialTableBody').innerHTML = html;
+
+      // Update financial summary
+      const totalContributions = financialRecords.filter(r => r.status === 'Paid').length * 170;
+      const totalPayouts = payouts.filter(p => p.status === 'Approved').reduce((sum, p) => sum + parseFloat(p.amount), 0);
+      const balance = totalContributions - totalPayouts;
+      const pending = financialRecords.filter(r => r.status === 'Pending').length * 170;
+
+      document.getElementById('totalContributions').textContent = `R ${totalContributions.toFixed(2)}`;
+      document.getElementById('totalPayouts').textContent = `R ${totalPayouts.toFixed(2)}`;
+      document.getElementById('currentBalance').textContent = `R ${balance.toFixed(2)}`;
+      document.getElementById('pendingPayments').textContent = `R ${pending.toFixed(2)}`;
+    }
+
+    function filterFinancial() {
+      const search = document.getElementById('searchFinancial').value.toLowerCase();
+      const rows = document.querySelectorAll('#financialTableBody tr');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(search) ? '' : 'none';
+      });
+    }
+
+    function verifyPayment(memberId) {
+      alert(`Payment verified for member ${memberId}`);
+      displayFinancialRecords();
+    }
+
+    // Document Management Functions
+    function displayDocuments() {
+      // Sample documents
+      const docs = [
+        { name: 'Constitution_2024.pdf', category: 'Constitution', date: '2024-01-15', size: '2.5 MB' },
+        { name: 'Annual_Report_2023.pdf', category: 'Financial Reports', date: '2024-02-01', size: '1.8 MB' },
+        { name: 'Registration_Certificate.pdf', category: 'Registration', date: '2023-12-10', size: '850 KB' }
+      ];
+
+      let html = '';
+      docs.forEach(d => {
+        html += `<tr>
+          <td>${d.name}</td>
+          <td>${d.category}</td>
+          <td>${d.date}</td>
+          <td>${d.size}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="viewDocument('${d.name}')">View</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteDocument('${d.name}')">Delete</button>
+          </td>
+        </tr>`;
+      });
+      document.getElementById('documentsTableBody').innerHTML = html;
+    }
+
+    function uploadDocument(category) {
+      const fileInput = document.getElementById(`upload${category.replace(/\s/g, '')}`);
+      if (fileInput && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        alert(`Uploading ${file.name} to ${category} category`);
+        fileInput.value = '';
+        displayDocuments();
+      } else {
+        alert('Please select a file to upload');
+      }
+    }
+
+    function viewDocument(name) {
+      alert(`Opening document: ${name}`);
+    }
+
+    function deleteDocument(name) {
+      if (confirm(`Delete document ${name}?`)) {
+        alert(`Document ${name} deleted`);
+        displayDocuments();
+      }
+    }
+
+    // Member Financial Functions
+    function displayMemberFinancial() {
+      if (!currentUser) return;
+
+      // Sample payment history for current member
+      const paymentHistory = [
+        { date: '2024-03-01', month: 'March 2024', amount: 170, method: 'EFT', reference: 'REF001', status: 'Paid' },
+        { date: '2024-02-01', month: 'February 2024', amount: 170, method: 'Cash', reference: 'REF002', status: 'Paid' },
+        { date: '2024-01-01', month: 'January 2024', amount: 170, method: 'EFT', reference: 'REF003', status: 'Paid' }
+      ];
+
+      let html = '';
+      paymentHistory.forEach(p => {
+        html += `<tr>
+          <td>${p.date}</td>
+          <td>${p.month}</td>
+          <td>R ${p.amount}</td>
+          <td>${p.method}</td>
+          <td>${p.reference}</td>
+          <td><span class="badge badge-success">${p.status}</span></td>
+        </tr>`;
+      });
+      document.getElementById('memberFinancialTableBody').innerHTML = html;
+
+      // Update stats
+      const totalPaid = paymentHistory.length * 170;
+      document.getElementById('myTotalContributions').textContent = `R ${totalPaid.toFixed(2)}`;
+      document.getElementById('myOutstanding').textContent = 'R 0.00';
+      document.getElementById('myLastPayment').textContent = paymentHistory[0].date;
+      document.getElementById('myPaymentStatus').textContent = 'Good Standing';
+    }
+
+    function submitPaymentProof() {
+      const method = document.getElementById('paymentMethod').value;
+      const ref = document.getElementById('paymentRef').value;
+      const file = document.getElementById('paymentProofFile').files[0];
+
+      if (!ref) {
+        alert('Please enter a payment reference');
+        return;
+      }
+      if (!file) {
+        alert('Please upload proof of payment');
+        return;
+      }
+
+      alert(`Payment proof submitted!\nMethod: ${method}\nReference: ${ref}\nFile: ${file.name}`);
+      
+      // Clear form
+      document.getElementById('paymentRef').value = '';
+      document.getElementById('paymentProofFile').value = '';
+      
+      // Refresh display
+      displayMemberFinancial();
     }
 
     function populateBenSelect() {
