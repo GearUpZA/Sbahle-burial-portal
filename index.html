@@ -1364,6 +1364,7 @@
     }
 
     function displayMem() {
+      console.log('displayMem called, members count:', members.length);
       let html = '';
       members.forEach(m => {
         html += `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td><span class="badge badge-${m.status === 'Active' ? 'active' : 'suspended'}">${m.status}</span></td><td>${m.missedPayments}</td><td>
@@ -1372,7 +1373,13 @@
           <button class="btn btn-danger btn-sm" onclick="delMem('${m.id}')">Delete</button>
         </td></tr>`;
       });
-      document.getElementById('memTable').innerHTML = html;
+      const tableElement = document.getElementById('memTable');
+      if (tableElement) {
+        tableElement.innerHTML = html;
+        console.log('✓ Member table updated with', members.length, 'rows');
+      } else {
+        console.error('❌ memTable element not found!');
+      }
     }
 
     function displayPayouts() {
