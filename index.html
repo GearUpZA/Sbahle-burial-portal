@@ -854,6 +854,17 @@
               // Save the default data
               saveDataToStorage();
               console.log('✓ Default data restored and saved');
+              
+              // Refresh displays if user is already logged in
+              if (currentUser) {
+                if (currentUser.type === 'admin') {
+                  updateAdmin();
+                  displayMem();
+                  displayPayouts();
+                  displayPenalties();
+                  console.log('✓ Admin dashboard refreshed with restored data');
+                }
+              }
             }
             
             return true;
