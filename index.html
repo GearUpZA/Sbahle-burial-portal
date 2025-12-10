@@ -1070,6 +1070,10 @@
         currentUser = { type: 'admin' };
         show('adminPage');
         updateAdmin();
+        // Populate data tables
+        displayMem();
+        displayPayouts();
+        displayPenalties();
       } else alert('Invalid');
     }
 
@@ -1900,6 +1904,13 @@
     // Initialize on load
     window.addEventListener('load', () => {
       console.log('Window loaded');
+      // Initialize admin dashboard if visible
+      if (currentUser && currentUser.type === 'admin') {
+        updateAdmin();
+        displayMem();
+        displayPayouts();
+        displayPenalties();
+      }
     });
 
     function saveDocs() {
