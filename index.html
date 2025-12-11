@@ -1231,11 +1231,24 @@
       if (document.getElementById('adminEmail').value === 'admin' && document.getElementById('adminPassword').value === 'admin123') {
         currentUser = { type: 'admin' };
         show('adminPage');
+        
+        console.log('🔐 Admin logged in successfully');
+        console.log('📊 Current data - Members:', members.length, 'Payouts:', payouts.length, 'Penalties:', penalties.length);
+        
+        // Update overview statistics
         updateAdmin();
-        // Populate data tables
+        
+        // Populate ALL data tables immediately
         displayMem();
         displayPayouts();
         displayPenalties();
+        displayFinancialRecords();
+        displayDocuments();
+        displayConstitution();
+        populateBenSelect();
+        updateStorageInfo();
+        
+        console.log('✅ All display functions called');
       } else alert('Invalid');
     }
 
@@ -1490,9 +1503,17 @@
     }
 
     function updateAdmin() {
-      document.getElementById('totalMem').textContent = members.length;
-      document.getElementById('activeMem').textContent = members.filter(m => m.status === 'Active').length;
-      document.getElementById('suspMem').textContent = members.filter(m => m.status === 'Suspended').length;
+      const total = members.length;
+      const active = members.filter(m => m.status === 'Active').length;
+      const suspended = members.filter(m => m.status === 'Suspended').length;
+      
+      console.log('updateAdmin - Setting overview:', { total, active, suspended });
+      
+      document.getElementById('totalMem').textContent = total;
+      document.getElementById('activeMem').textContent = active;
+      document.getElementById('suspMem').textContent = suspended;
+      
+      console.log('✓ Overview stats updated');
     }
 
     function updateMember() {
