@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/images/myicon.png" type="image/png">
   <title>Welcome to Sbahle Burial Society</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -102,6 +103,7 @@
     .mb-10 { margin-bottom: 10px; }
     .mb-15 { margin-bottom: 15px; }
     .mb-20 { margin-bottom: 20px; }
+    .margin-bottom-10 { margin-bottom: 10px !important; }
     .mr-5 { margin-right: 5px; }
     .mr-10 { margin-right: 10px; }
     .p-10 { padding: 10px; }
@@ -159,6 +161,86 @@
     .canvas-signature { border: 2px solid #ddd; border-radius: 8px; background: white; }
     .btn-icon-spacing { margin-right: 5px; }
     .d-grid { display: grid; gap: 15px; }
+    .min-h-500 { min-height: 500px; }
+    .data-management-title {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .no-margin-bottom {
+      margin-bottom: 0 !important;
+    }
+    .margin-bottom-10 {
+      margin-bottom: 10px !important;
+    }
+    .no-margin-bottom {
+      margin-bottom: 0 !important;
+    }
+    /* Added for data management grid */
+    .grid-data-management {
+      display: grid;
+      gap: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .export-data-card {
+      background: white;
+      padding: 20px;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+    }
+    .export-data-title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .export-data-desc {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .export-data-btn {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    /* Added for import data card to replace inline styles */
+    .import-data-card {
+      background: white;
+      padding: 20px;
+      border: 2px solid #48bb78;
+      border-radius: 8px;
+    }
+    .import-data-title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .import-data-desc {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .import-file-input {
+      margin-bottom: 10px;
+      padding: 8px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .import-data-btn {
+      padding: 10px 20px;
+      background: #48bb78;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
@@ -475,14 +557,14 @@
             <input type="file" id="minutesFile" accept=".pdf,.doc,.docx" class="mb-10">
             <button class="btn btn-primary btn-sm" onclick="uploadDocument('minutes')">Upload</button>
           </div>
-        </div>
-
-        <!-- Uploaded Documents List -->
-        <h3>Uploaded Documents</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Document Name</th>
+          <div class="data-card-white import-data-card">
+            <h3 class="mb-10 font-size-16 import-data-title">📤 Import Data</h3>
+            <p class="color-666 font-size-13 mb-10 import-data-desc">Restore data from a previously exported backup file.</p>
+            <input type="file" id="importFile" accept=".json" class="mb-10 import-file-input">
+            <button class="btn btn-success import-data-btn" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
+          </div>
+            <button class="btn btn-primary export-data-btn" onclick="exportData()">Export Data Backup</button>
+          </div>
               <th>Category</th>
               <th>Uploaded By</th>
               <th>Upload Date</th>
@@ -491,29 +573,29 @@
           </thead>
           <tbody id="documentsTableBody">
             <tr><td colspan="5" class="text-center color-999">No documents uploaded yet</td></tr>
-          </tbody>
+        <h2 class="data-management-title">Data Management</h2>
         </table>
       </div>
-
-      <div id="dataTab" class="hidden" style="min-height: 500px;">
-        <h2 style="color: #333; font-size: 24px; margin-bottom: 20px;">Data Management</h2>
-        <div class="info-header" style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <p class="mb-10" style="margin-bottom: 10px;"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
-          <p class="mb-0" style="margin-bottom: 0;"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
+      <div id="dataTab" class="hidden min-h-500">
+          <p class="mb-10 margin-bottom-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
+        <div class="d-grid grid-data-management">
+          <p class="mb-10 margin-bottom-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
+          <p class="mb-10 margin-bottom-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
+          <p class="mb-0 no-margin-bottom"><strong>💾 Auto-Save:</strong> Data is automatically saved after every change.</p>
         </div>
         
-        <div class="d-grid" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-          <div class="data-card-white" style="background: white; padding: 20px; border: 2px solid #667eea; border-radius: 8px;">
-            <h3 class="mb-10 font-size-16" style="font-size: 16px; margin-bottom: 10px; color: #333;">📥 Export Data</h3>
-            <p class="color-666 font-size-13 mb-10" style="color: #666; font-size: 13px; margin-bottom: 10px;">Download a backup of all system data as a JSON file.</p>
-            <button class="btn btn-primary" onclick="exportData()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Export Data Backup</button>
+        <div class="d-grid grid-data-management">
+          <div class="data-card-white export-data-card">
+            <h3 class="mb-10 font-size-16 export-data-title">📥 Export Data</h3>
+            <p class="color-666 font-size-13 mb-10 export-data-desc">Download a backup of all system data as a JSON file.</p>
+            <button class="btn btn-primary export-data-btn" onclick="exportData()">Export Data Backup</button>
           </div>
           
-          <div class="data-card-white" style="background: white; padding: 20px; border: 2px solid #48bb78; border-radius: 8px;">
-            <h3 class="mb-10 font-size-16" style="font-size: 16px; margin-bottom: 10px; color: #333;">📤 Import Data</h3>
-            <p class="color-666 font-size-13 mb-10" style="color: #666; font-size: 13px; margin-bottom: 10px;">Restore data from a previously exported backup file.</p>
-            <input type="file" id="importFile" accept=".json" class="mb-10" style="margin-bottom: 10px; padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 5px;">
-            <button class="btn btn-success" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])" style="padding: 10px 20px; background: #48bb78; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;">Import Data</button>
+          <div class="data-card-white import-data-card">
+            <h3 class="mb-10 font-size-16 import-data-title">📤 Import Data</h3>
+            <p class="color-666 font-size-13 mb-10 import-data-desc">Restore data from a previously exported backup file.</p>
+            <input type="file" id="importFile" accept=".json" class="mb-10 import-file-input">
+            <button class="btn btn-success import-data-btn" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
           </div>
           
           <div class="data-card-white">
