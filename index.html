@@ -1595,6 +1595,12 @@
         status: m.status === 'Active' ? 'Paid' : 'Pending'
       }));
 
+      const tableBody = document.getElementById('financialTableBody');
+      if (!tableBody) {
+        console.warn('⚠ financialTableBody element not found');
+        return;
+      }
+      
       let html = '';
       financialRecords.forEach(r => {
         html += `<tr>
@@ -1609,7 +1615,7 @@
           </td>
         </tr>`;
       });
-      document.getElementById('financialTableBody').innerHTML = html;
+      tableBody.innerHTML = html;
 
       // Update financial summary
       const totalContributions = financialRecords.filter(r => r.status === 'Paid').length * 170;
@@ -1617,10 +1623,16 @@
       const balance = totalContributions - totalPayouts;
       const pending = financialRecords.filter(r => r.status === 'Pending').length * 170;
 
-      document.getElementById('totalContributions').textContent = `R ${totalContributions.toFixed(2)}`;
-      document.getElementById('totalPayoutsAmount').textContent = `R ${totalPayouts.toFixed(2)}`;
-      document.getElementById('availableBalance').textContent = `R ${balance.toFixed(2)}`;
-      document.getElementById('pendingContributions').textContent = `R ${pending.toFixed(2)}`;
+      const totalContEl = document.getElementById('totalContributions');
+      const totalPayoutsEl = document.getElementById('totalPayoutsAmount');
+      const balanceEl = document.getElementById('availableBalance');
+      const pendingEl = document.getElementById('pendingContributions');
+      
+      if (totalContEl) totalContEl.textContent = `R ${totalContributions.toFixed(2)}`;
+      if (totalPayoutsEl) totalPayoutsEl.textContent = `R ${totalPayouts.toFixed(2)}`;
+      if (balanceEl) balanceEl.textContent = `R ${balance.toFixed(2)}`;
+      if (pendingEl) pendingEl.textContent = `R ${pending.toFixed(2)}`;
+      
       console.log('✓ Financial records displayed:', financialRecords.length, 'records');
     }
 
@@ -1641,6 +1653,13 @@
     // Document Management Functions
     function displayDocuments() {
       console.log('displayDocuments called');
+      
+      const tableBody = document.getElementById('documentsTableBody');
+      if (!tableBody) {
+        console.warn('⚠ documentsTableBody element not found');
+        return;
+      }
+      
       // Sample documents
       const docs = [
         { name: 'Constitution_2024.pdf', category: 'Constitution', date: '2024-01-15', size: '2.5 MB' },
@@ -1661,7 +1680,8 @@
           </td>
         </tr>`;
       });
-      document.getElementById('documentsTableBody').innerHTML = html;
+      tableBody.innerHTML = html;
+      console.log('✓ Documents table updated');
     }
 
     function uploadDocument(category) {
@@ -1930,9 +1950,15 @@
     }
 
     function populateBenSelect() {
+      const selectEl = document.getElementById('memSelectBen');
+      if (!selectEl) {
+        console.warn('⚠ memSelectBen element not found');
+        return;
+      }
       let opts = '<option value="">-- Select --</option>';
       members.forEach(m => opts += `<option value="${m.id}">${m.name}</option>`);
-      document.getElementById('memSelectBen').innerHTML = opts;
+      selectEl.innerHTML = opts;
+      console.log('✓ Beneficiary select populated with', members.length, 'members');
     }
 
     function loadBeneficiaries() {
