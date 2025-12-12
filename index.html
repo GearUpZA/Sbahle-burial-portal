@@ -1279,7 +1279,18 @@
       console.log('Member logged in:', m.id);
       console.log('Filtered beneficiaries:', tempBeneficiaries);
       show('memberPage');
+      
+      // Update all member dashboard tabs
+      console.log('🔐 Member logged in successfully');
+      console.log('📊 Current user data - ID:', currentUser.id, 'Name:', currentUser.name);
+      
       updateMember();
+      displayMemBen();
+      displayMemPayouts();
+      displayMemberFinancial();
+      displayConstitutionMember();
+      
+      console.log('✅ All member display functions called');
     }
 
     function registerMember() {
@@ -1709,7 +1720,12 @@
 
     // Member Financial Functions
     function displayMemberFinancial() {
-      if (!currentUser) return;
+      console.log('displayMemberFinancial called for member:', currentUser?.id);
+      
+      if (!currentUser) {
+        console.warn('⚠ No current user');
+        return;
+      }
 
       // Sample payment history for current member
       const paymentHistory = [
@@ -1718,25 +1734,40 @@
         { date: '2024-01-01', month: 'January 2024', amount: 170, method: 'EFT', reference: 'REF003', status: 'Paid' }
       ];
 
-      let html = '';
-      paymentHistory.forEach(p => {
-        html += `<tr>
-          <td>${p.date}</td>
-          <td>${p.month}</td>
-          <td>R ${p.amount}</td>
-          <td>${p.method}</td>
-          <td>${p.reference}</td>
-          <td><span class="badge badge-success">${p.status}</span></td>
-        </tr>`;
-      });
-      document.getElementById('memberFinancialTableBody').innerHTML = html;
+      const tableBody = document.getElementById('memberFinancialTableBody');
+      if (tableBody) {
+        let html = '';
+        paymentHistory.forEach(p => {
+          html += `<tr>
+            <td>${p.date}</td>
+            <td>${p.month}</td>
+            <td>R ${p.amount}</td>
+            <td>${p.method}</td>
+            <td>${p.reference}</td>
+            <td><span class="badge badge-success">${p.status}</span></td>
+          </tr>`;
+        });
+        tableBody.innerHTML = html;
+      } else {
+        console.warn('⚠ memberFinancialTableBody element not found');
+      }
 
-      // Update stats
+      // Update stats with null checks
       const totalPaid = paymentHistory.length * 170;
-      document.getElementById('myTotalContributions').textContent = `R ${totalPaid.toFixed(2)}`;
-      document.getElementById('myOutstanding').textContent = 'R 0.00';
-      document.getElementById('myLastPayment').textContent = paymentHistory[0].date;
-      document.getElementById('myPaymentStatus').textContent = 'Good Standing';
+      
+      const totalContEl = document.getElementById('myTotalContributions');
+      if (totalContEl) totalContEl.textContent = `R ${totalPaid.toFixed(2)}`;
+      
+      const outstandingEl = document.getElementById('myOutstanding');
+      if (outstandingEl) outstandingEl.textContent = 'R 0.00';
+      
+      const lastPaymentEl = document.getElementById('myLastPayment');
+      if (lastPaymentEl) lastPaymentEl.textContent = paymentHistory[0].date;
+      
+      const statusEl = document.getElementById('myPaymentStatus');
+      if (statusEl) statusEl.textContent = 'Good Standing';
+      
+      console.log('✓ Member financial data displayed');
     }
 
     function submitPaymentProof() {
@@ -1892,7 +1923,14 @@
     }
 
     function displayConstitutionMember() {
+      console.log('displayConstitutionMember called');
+      
       const display = document.getElementById('memberConstitutionDisplay');
+      
+      if (!display) {
+        console.warn('⚠ memberConstitutionDisplay element not found');
+        return;
+      }
       
       if (!constitutionDocument) {
         display.innerHTML = `
@@ -1901,6 +1939,7 @@
             <p class="color-999">Please contact an administrator.</p>
           </div>
         `;
+        console.log('✓ Constitution display updated (no document)');
         return;
       }
 
@@ -2041,11 +2080,20 @@
     }
 
     function displayMemPayouts() {
+      console.log('displayMemPayouts called for member:', currentUser?.id);
+      
+      const table = document.getElementById('memPayTable');
+      if (!table) {
+        console.warn('⚠ memPayTable element not found');
+        return;
+      }
+      
       let html = '';
       payouts.filter(p => p.memberId === currentUser.id).forEach(p => {
         html += `<tr><td>${p.date || 'N/A'}</td><td>R ${p.amount}</td><td>${p.reason}</td><td><span class="badge badge-${p.status === 'Pending' ? 'pending' : 'approved'}">${p.status}</span></td></tr>`;
       });
-      document.getElementById('memPayTable').innerHTML = html || '<tr><td colspan="4">No payouts</td></tr>';
+      table.innerHTML = html || '<tr><td colspan="4">No payouts</td></tr>';
+      console.log('✓ Member payouts table updated');
     }
 
     // MODALS
