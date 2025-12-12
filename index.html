@@ -1357,9 +1357,22 @@
     }
 
     function show(p) {
-      document.getElementById('loginPage').classList.toggle('hidden', p !== 'loginPage');
-      document.getElementById('adminPage').classList.toggle('hidden', p !== 'adminPage');
-      document.getElementById('memberPage').classList.toggle('hidden', p !== 'memberPage');
+      console.log('show() called with:', p);
+      const loginPage = document.getElementById('loginPage');
+      const adminPage = document.getElementById('adminPage');
+      const memberPage = document.getElementById('memberPage');
+      
+      loginPage.classList.toggle('hidden', p !== 'loginPage');
+      adminPage.classList.toggle('hidden', p !== 'adminPage');
+      memberPage.classList.toggle('hidden', p !== 'memberPage');
+      
+      console.log('Page visibility:', {
+        loginPage: !loginPage.classList.contains('hidden'),
+        adminPage: !adminPage.classList.contains('hidden'),
+        memberPage: !memberPage.classList.contains('hidden')
+      });
+      console.log('memberPage element:', memberPage);
+      console.log('memberPage has hidden class:', memberPage.classList.contains('hidden'));
     }
 
     function adminTab(t, e) {
