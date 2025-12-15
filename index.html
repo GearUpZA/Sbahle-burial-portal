@@ -557,14 +557,14 @@
             <input type="file" id="minutesFile" accept=".pdf,.doc,.docx" class="mb-10">
             <button class="btn btn-primary btn-sm" onclick="uploadDocument('minutes')">Upload</button>
           </div>
-          <div class="data-card-white import-data-card">
-            <h3 class="mb-10 font-size-16 import-data-title">📤 Import Data</h3>
-            <p class="color-666 font-size-13 mb-10 import-data-desc">Restore data from a previously exported backup file.</p>
-            <input type="file" id="importFile" accept=".json" class="mb-10 import-file-input">
-            <button class="btn btn-success import-data-btn" onclick="document.getElementById('importFile').files[0] && importData(document.getElementById('importFile').files[0])">Import Data</button>
-          </div>
-            <button class="btn btn-primary export-data-btn" onclick="exportData()">Export Data Backup</button>
-          </div>
+        </div>
+
+        <!-- Document List Table -->
+        <h3>Uploaded Documents</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Document Name</th>
               <th>Category</th>
               <th>Uploaded By</th>
               <th>Upload Date</th>
@@ -573,10 +573,12 @@
           </thead>
           <tbody id="documentsTableBody">
             <tr><td colspan="5" class="text-center color-999">No documents uploaded yet</td></tr>
-        <h2 class="data-management-title">Data Management</h2>
+          </tbody>
         </table>
       </div>
+
       <div id="dataTab" class="hidden min-h-500">
+        <h2 class="data-management-title">Data Management</h2>
           <p class="mb-10 margin-bottom-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
         <div class="d-grid grid-data-management">
           <p class="mb-10 margin-bottom-10"><strong>🔒 Secure Storage:</strong> All data is encrypted and stored locally in your browser.</p>
