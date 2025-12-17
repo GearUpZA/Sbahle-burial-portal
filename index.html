@@ -4814,13 +4814,6 @@
         console.log(`✓ Adding beneficiary: ${name}, Age: ${age}, Gender: ${gender}`);
       }
       
-      // Check for duplicates in temp beneficiaries
-      const tempDuplicate = tempBeneficiaries.find(b => b.idNum === idNum);
-      if (tempDuplicate) {
-        alert(`❌ This beneficiary is already added:\n${tempDuplicate.name} (${tempDuplicate.relationship})`);
-        return;
-      }
-      
       // Validate percentage
       if (perc < 1 || perc > 100) {
         alert('❌ Percentage must be between 1 and 100');
