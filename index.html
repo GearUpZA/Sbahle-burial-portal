@@ -4389,7 +4389,6 @@
         <h2>Add Beneficiary for ${m.name}</h2>
         <div class="form-group"><label>Name</label><input type="text" id="benName"></div>
         <div class="form-group"><label>Relationship</label><select id="benRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option><option>Extended Family</option></select></div>
-        <div class="form-group"><label>ID Number</label><input type="text" id="benId"></div>
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="benPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="saveBen('${memId}')">Save</button>
       `);
@@ -4398,39 +4397,18 @@
     function saveBen(memId) {
       const name = document.getElementById('benName').value.trim();
       const rel = document.getElementById('benRel').value;
-      const idNum = document.getElementById('benId').value.trim();
       const perc = parseInt(document.getElementById('benPerc').value);
       
       // Basic validation
-      if (!name || !rel || !idNum || !perc) {
+      if (!name || !rel || !perc) {
         alert('❌ Please fill all fields');
         return;
-      }
-      
-      // Validate South African ID
-      const idValidation = validateSouthAfricanID(idNum);
-      if (!idValidation.valid) {
-        alert(`❌ Invalid ID Number: ${idValidation.error}`);
-        return;
-      }
-      
-      // Calculate and display age
-      const age = calculateAgeFromID(idNum);
-      if (age !== null) {
-        console.log(`✓ Beneficiary ${name} - Age: ${age}, Gender: ${getGenderFromID(idNum)}`);
       }
       
       // Validate relationship
       const relValidation = validateRelationship(rel);
       if (!relValidation.valid) {
         alert(`❌ ${relValidation.error}`);
-        return;
-      }
-      
-      // Check for duplicates
-      const dupCheck = checkDuplicateBeneficiary(memId, idNum);
-      if (dupCheck.isDuplicate) {
-        alert(`❌ This beneficiary is already added for this member:\n${dupCheck.beneficiary.name} (${dupCheck.beneficiary.relationship})`);
         return;
       }
       
@@ -4452,7 +4430,6 @@
         memberId: memId, 
         name, 
         relationship: rel, 
-        idNum, 
         percentage: perc 
       });
       
@@ -4818,7 +4795,6 @@
         <h2>Add Beneficiary</h2>
         <div class="form-group"><label>Name</label><input type="text" id="memBenName"></div>
         <div class="form-group"><label>Relationship</label><select id="memBenRel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Sibling</option><option>Extended Family</option></select></div>
-        <div class="form-group"><label>ID Number</label><input type="text" id="memBenId"></div>
         <div class="form-group"><label>Percentage (%)</label><input type="number" id="memBenPerc" min="0" max="100"></div>
         <button class="btn btn-success" onclick="addMemBen()">Add</button>
       `);
@@ -4827,25 +4803,13 @@
     function addMemBen() {
       const name = document.getElementById('memBenName').value.trim();
       const rel = document.getElementById('memBenRel').value;
-      const idNum = document.getElementById('memBenId').value.trim();
       const perc = parseInt(document.getElementById('memBenPerc').value);
       
       // Basic validation
-      if (!name || !rel || !idNum || !perc) {
+      if (!name || !rel || !perc) {
         alert('❌ Please fill all fields');
         return;
       }
-      
-      // Validate South African ID
-      const idValidation = validateSouthAfricanID(idNum);
-      if (!idValidation.valid) {
-        alert(`❌ Invalid ID Number: ${idValidation.error}`);
-        return;
-      }
-      
-      // Display age and gender info
-      const age = calculateAgeFromID(idNum);
-      const gender = getGenderFromID(idNum);
       if (age !== null) {
         console.log(`✓ Adding beneficiary: ${name}, Age: ${age}, Gender: ${gender}`);
       }
@@ -4878,7 +4842,6 @@
         memberId: currentUser.id, 
         name, 
         relationship: rel, 
-        idNum, 
         percentage: perc 
       });
       
