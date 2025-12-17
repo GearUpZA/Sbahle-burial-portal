@@ -18,8 +18,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
-      background: #eaeaea url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 20px;
     }
@@ -301,7 +300,7 @@
         </div>
         <button class="btn btn-success" id="addBenBtn" style="display:none;" onclick="addBenModal()">+ Add Beneficiary</button>
         <button class="btn btn-primary" id="payoutBenBtn" style="display:none;" onclick="createPayoutModal()">💰 Create Payout</button>
-        <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>ID</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
+        <table id="benTable"><thead><tr><th>Name</th><th>Relationship</th><th>%</th><th>Actions</th></tr></thead><tbody id="benTableBody"></tbody></table>
       </div>
 
       <div id="paymentsTab" class="hidden">
@@ -815,13 +814,12 @@
             <tr>
               <th>Name</th>
               <th>Relationship</th>
-              <th>ID Number</th>
               <th>Allocation %</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="memBenTableBody">
-            <tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
+            <tr><td colspan="4" style="text-align: center; color: #999;">No beneficiaries added yet</td></tr>
           </tbody>
         </table>
         
@@ -4207,15 +4205,15 @@
       let html = '';
       if (bens.length > 0) {
         bens.forEach(b => {
-          html += `<tr><td>${b.name}</td><td>${b.relationship}</td><td>${b.idNum}</td><td>${b.percentage}%</td><td>
+          html += `<tr><td>${b.name}</td><td>${b.relationship}</td><td>${b.percentage}%</td><td>
             <button class="btn btn-primary btn-sm" onclick="editBen('${b.id}')">Edit</button>
             <button class="btn btn-danger btn-sm" onclick="delBen('${b.id}')">Delete</button>
           </td></tr>`;
         });
       } else if (id) {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">No beneficiaries added for this member</td></tr>';
+        html = '<tr><td colspan="4" style="text-align: center; color: #999;">No beneficiaries added for this member</td></tr>';
       } else {
-        html = '<tr><td colspan="5" style="text-align: center; color: #999;">Please select a member</td></tr>';
+        html = '<tr><td colspan="4" style="text-align: center; color: #999;">Please select a member</td></tr>';
       }
       document.getElementById('benTableBody').innerHTML = html;
     }
