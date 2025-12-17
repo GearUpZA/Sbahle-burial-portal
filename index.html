@@ -5108,10 +5108,29 @@
     }
 
     function showAttendanceList() {
-      // Check if members are loaded
+      // Check if members are loaded - try to reload from storage if empty
       if (!members || members.length === 0) {
-        showAlert('adminAlert', '⚠ No members found. Please add members first.', 'error');
-        return;
+        console.warn('⚠️ Members array is empty, attempting to reload from storage...');
+        const encrypted = localStorage.getItem(STORAGE_KEY);
+        if (encrypted) {
+          try {
+            const data = decryptData(encrypted);
+            if (data && data.members && data.members.length > 0) {
+              members = data.members;
+              console.log('✅ Reloaded', members.length, 'members from storage');
+            } else {
+              showAlert('adminAlert', '⚠ No members found in storage. Please add members first.', 'error');
+              return;
+            }
+          } catch (error) {
+            console.error('❌ Error reloading members:', error);
+            showAlert('adminAlert', '⚠ No members found. Please add members first.', 'error');
+            return;
+          }
+        } else {
+          showAlert('adminAlert', '⚠ No members found. Please add members first.', 'error');
+          return;
+        }
       }
 
       const date = document.getElementById('meetingDate').value;
