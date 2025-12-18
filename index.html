@@ -3008,7 +3008,14 @@
     let paymentProofs = []; // Store payment proof uploads
     let payoutCollectors = []; // Store payout collectors: { memberId, collectors: [{name, phone}, {name, phone}] }
     let constitutionDocument = null; // Store constitution document: { title, uploadDate, fileData, fileSize, fileType, notes }
-    let contributions = []; // Store member contributions: { id, memberId, memberName, amount, date, method, status, proofFile }
+    let contributions = [
+      // Sample contributions for demo
+      { id: 'C001', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 170, date: '2025-12-01', method: 'EFT', status: 'Confirmed' },
+      { id: 'C002', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 170, date: '2025-11-01', method: 'Cash', status: 'Confirmed' },
+      { id: 'C003', memberId: 'MEM001', memberName: 'Thabo Mkhize', amount: 170, date: '2025-10-01', method: 'EFT', status: 'Confirmed' },
+      { id: 'C004', memberId: 'MEM007', memberName: 'Mlungisi Maqashela', amount: 170, date: '2025-12-01', method: 'EFT', status: 'Confirmed' },
+      { id: 'C005', memberId: 'MEM007', memberName: 'Mlungisi Maqashela', amount: 170, date: '2025-11-01', method: 'EFT', status: 'Confirmed' }
+    ]; // Store member contributions: { id, memberId, memberName, amount, date, method, status, proofFile }
     let memberDocuments = []; // Store member documents: { id, memberId, fileName, fileType, fileData, uploadDate, category }
     let currentUser = null;
     
@@ -4044,13 +4051,13 @@
         // Safely toggle visibility with null checks
         const profileTab = document.getElementById('memberProfileTab');
         const signatureTab = document.getElementById('memberSignatureTab');
-        const contributionsTab = document.getElementById('contributionsTab');
+        const contributionsTab = document.getElementById('memberContributionsTab');
         const beneficiariesTab = document.getElementById('memberBeneficiariesTab');
         const payoutsTab = document.getElementById('memberPayoutsTab');
         const minutesTab = document.getElementById('memberMinutesTab');
         const paymentsTab = document.getElementById('memberPaymentsTab');
         const constitutionTab = document.getElementById('memberConstitutionTab');
-        const documentsTab = document.getElementById('documentsTab');
+        const documentsTab = document.getElementById('memberDocumentsTab');
         
         if (profileTab) profileTab.classList.toggle('hidden', t !== 'profile');
         if (signatureTab) signatureTab.classList.toggle('hidden', t !== 'signature');
