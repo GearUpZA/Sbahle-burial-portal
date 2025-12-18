@@ -1134,30 +1134,62 @@
     // Test cloud storage availability with enhanced health check
     async function initCloudStorage() {
       try {
-        console.log('� Initializing Firebase Realtime Database...');
+        console.log('FIREBASE: Initializing Realtime Database...');
+        console.log('FIREBASE: Project:', firebaseConfig.projectId);
+        console.log('FIREBASE: Database URL:', firebaseConfig.databaseURL);
         
-        const snapshot = await dataRef.once('value');
+        // Test connection with 10-second timeout
+        const connectionPromise = dataRef.once('value');
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Firebase connection timeout after 10 seconds')), 10000)
+        );
+        
+        const snapshot = await Promise.race([connectionPromise, timeoutPromise]);
         cloudStorageAvailable = true;
         
-        console.log('✅ Firebase connected - real-time sync active');
+        console.log('SUCCESS: Firebase connected!');
+        console.log('SUCCESS: Has cloud data:', !!snapshot.val());
+        
         SYNC_HEALTH.lastSuccessfulSync = Date.now();
         SYNC_HEALTH.consecutiveFailures = 0;
-        updateSyncStatus('default');
+        lastCloudSync = Date.now();
+        updateSyncStatus('synced');
         startCloudSync();
         
+        // Real-time listener for cloud changes
+        dataRef.on('value', (newSnapshot) => {
+          const serverData = newSnapshot.val();
+          if (serverData && serverData.lastSaved) {
+            const localSave = parseInt(localStorage.getItem('lastLocalSave') || '0');
+            if (serverData.lastSaved > localSave) {
+              console.log('SYNC: Remote change detected');
+              lastCloudSync = Date.now();
+              updateSyncStatus('synced');
+            }
+          }
+        });
+        
+        // Upload local data if cloud is empty
         if (!snapshot.val() && members.length > 0) {
-          console.log('📤 Uploading local data to Firebase...');
+          console.log('UPLOAD: Sending local data to cloud...');
           await saveDataToStorage(true);
         }
       } catch (error) {
-        console.log('⚠ Firebase initialization failed:', error.message);
-        console.log('💡 Using localStorage only - data won\'t sync across browsers');
+        console.error('ERROR: Firebase failed:', error.message);
+        console.error('ERROR: Stack:', error.stack);
+        console.log('FALLBACK: Using localStorage only');
         cloudStorageAvailable = false;
         updateSyncStatus('offline');
+        
+        // Exponential backoff retry: 30s, 60s, 120s, max 5min
+        const retryDelay = Math.min(30000 * Math.pow(2, SYNC_HEALTH.consecutiveFailures), 300000);
+        console.log(`RETRY: Will attempt reconnection in ${retryDelay/1000} seconds (attempt ${SYNC_HEALTH.consecutiveFailures + 1})`);
+        
         setTimeout(() => {
-          console.log('🔄 Retrying Firebase connection...');
+          SYNC_HEALTH.consecutiveFailures++;
+          console.log('RETRY: Attempting Firebase reconnection...');
           initCloudStorage();
-        }, 30000);
+        }, retryDelay);
       }
     }
     
@@ -1518,12 +1550,18 @@
           default:
             ind.textContent = '☁️';
             const timeAgo = getTimeAgo(lastCloudSync);
-            txt.textContent = timeAgo ? `Synced ${timeAgo}` : 'Cloud Connected';
-            cont.style.background = '#e0f2fe';
-            cont.style.color = '#075985';
+            if (cloudStorageAvailable) {
+              txt.textContent = timeAgo ? `Online · Synced ${timeAgo}` : 'Online';
+              cont.style.background = '#d1fae5';
+              cont.style.color = '#065f46';
+            } else {
+              txt.textContent = 'Connecting...';
+              cont.style.background = '#fef3c7';
+              cont.style.color = '#92400e';
+            }
             cont.title = lastCloudSync 
               ? `Last synced: ${new Date(lastCloudSync).toLocaleTimeString()}\nSystem version: ${SYSTEM_VERSION}`
-              : `Cloud storage ready\nSystem version: ${SYSTEM_VERSION}`;
+              : `Cloud storage ${cloudStorageAvailable ? 'ready' : 'initializing'}\nSystem version: ${SYSTEM_VERSION}`;
         }
       };
       
