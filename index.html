@@ -787,6 +787,9 @@
       <div id="memberContributionsTab" class="hidden">
         <h2>My Contributions</h2>
         <p style="color: #666; margin-bottom: 15px;">Monthly Contribution Required: <strong style="color: #667eea;">R 170</strong></p>
+        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <p style="margin: 0;"><strong>Total Contributed:</strong> <span id="memberTotalContrib" style="color: #667eea; font-size: 24px; font-weight: bold;">R 0</span></p>
+        </div>
         <table>
           <thead>
             <tr>
@@ -927,20 +930,41 @@
 
       <div id="memberDocumentsTab" class="hidden">
         <h2>My Documents</h2>
-        <p style="color: #666; margin-bottom: 15px;">Upload and manage your documents</p>
-        <div class="file-input">
-          <label>Proof of Payment (PDF/JPEG)</label>
-          <input type="file" id="payFile" accept=".pdf,.jpg,.jpeg">
+        <p style="color: #666; margin-bottom: 15px;">Upload and manage your documents (PDF, Word, JPEG, PNG)</p>
+        
+        <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0;">Upload Document</h3>
+          <div class="form-group">
+            <label>Document Category</label>
+            <select id="docCategory">
+              <option value="proof-of-payment">Proof of Payment</option>
+              <option value="death-certificate">Death Certificate</option>
+              <option value="id-document">ID Document</option>
+              <option value="bank-statement">Bank Statement</option>
+              <option value="other">Other Supporting Document</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Select File (PDF, DOC, DOCX, JPEG, PNG - Max 5MB)</label>
+            <input type="file" id="memberDocFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+          </div>
+          <button class="btn btn-success" onclick="uploadMemberDocument()">📤 Upload Document</button>
         </div>
-        <div class="file-input">
-          <label>Death Certificate (PDF/JPEG)</label>
-          <input type="file" id="deathFile" accept=".pdf,.jpg,.jpeg">
-        </div>
-        <div class="file-input">
-          <label>Supporting Documents (PDF/JPEG)</label>
-          <input type="file" id="suppFile" accept=".pdf,.jpg,.jpeg">
-        </div>
-        <button class="btn btn-success" onclick="saveDocs()">Save Documents</button>
+        
+        <h3>My Uploaded Documents</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Category</th>
+              <th>Upload Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="memberDocsTable">
+            <tr><td colspan="4" style="text-align: center; color: #999;">No documents uploaded</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -1958,6 +1982,10 @@
             // Constitution document
             constitutionDocument,
             
+            // Contributions and documents
+            contributions,
+            memberDocuments,
+            
             // System data
             memberIdCounter,
             minutesIdCounter,
@@ -1976,6 +2004,8 @@
               totalMeetings: Object.keys(attendanceData).length,
               totalMinutes: meetingMinutes.length,
               totalProofs: paymentProofs.length,
+              totalContributions: contributions.length,
+              totalDocuments: memberDocuments.length,
               lastSaveTime: performance.now() - startTime,
               syncHealth: {
                 consecutiveFailures: SYNC_HEALTH.consecutiveFailures,
@@ -2224,6 +2254,8 @@
             paymentProofs = data.paymentProofs || [];
             payoutCollectors = data.payoutCollectors || [];
             constitutionDocument = data.constitutionDocument || null;
+            contributions = data.contributions || [];
+            memberDocuments = data.memberDocuments || [];
             memberIdCounter = data.memberIdCounter || 7;
             minutesIdCounter = data.minutesIdCounter || 1;
             proofIdCounter = data.proofIdCounter || 1;
@@ -2976,6 +3008,8 @@
     let paymentProofs = []; // Store payment proof uploads
     let payoutCollectors = []; // Store payout collectors: { memberId, collectors: [{name, phone}, {name, phone}] }
     let constitutionDocument = null; // Store constitution document: { title, uploadDate, fileData, fileSize, fileType, notes }
+    let contributions = []; // Store member contributions: { id, memberId, memberName, amount, date, method, status, proofFile }
+    let memberDocuments = []; // Store member documents: { id, memberId, fileName, fileType, fileData, uploadDate, category }
     let currentUser = null;
     
     // Admin users for multi-admin system
@@ -4036,6 +4070,8 @@
         if (t === 'profile') {
           if (currentUser) updateMember();
         }
+        if (t === 'contributions') displayMemberContributions();
+        if (t === 'documents') displayMemberDocuments();
         if (t === 'minutes') displayMemberMinutes();
         if (t === 'payments') displayMemberPaymentProofs();
         if (t === 'constitution') displayConstitutionMember();
@@ -4918,14 +4954,155 @@
     });
 
     function saveDocs() {
-      const payFile = document.getElementById('payFile').files[0];
-      const deathFile = document.getElementById('deathFile').files[0];
-      const suppFile = document.getElementById('suppFile').files[0];
-      if (!payFile && !deathFile && !suppFile) { alert('Select at least one file'); return; }
-      showAlert('memberAlert', '✓ Documents uploaded successfully!', 'success');
-      document.getElementById('payFile').value = '';
-      document.getElementById('deathFile').value = '';
-      document.getElementById('suppFile').value = '';
+      // Legacy function - no longer used, replaced by uploadMemberDocument()
+      showAlert('memberAlert', '✓ Please use the new document upload system above', 'info');
+    }
+    
+    // Display member contributions
+    function displayMemberContributions() {
+      if (!currentUser) return;
+      
+      const memberContribs = contributions.filter(c => c.memberId === currentUser.id);
+      const tbody = document.getElementById('memberContribTable');
+      const totalSpan = document.getElementById('memberTotalContrib');
+      
+      if (memberContribs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">No contributions recorded</td></tr>';
+        totalSpan.textContent = 'R 0';
+        return;
+      }
+      
+      // Calculate total
+      const total = memberContribs.reduce((sum, c) => sum + (c.amount || 0), 0);
+      totalSpan.textContent = `R ${total.toLocaleString()}`;
+      
+      // Display contributions
+      let html = '';
+      memberContribs.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(c => {
+        const statusClass = c.status === 'Confirmed' ? 'badge-active' : 
+                           c.status === 'Pending' ? 'badge-approved' : 'badge-suspended';
+        html += `<tr>
+          <td>${new Date(c.date).toLocaleDateString()}</td>
+          <td><strong>R ${c.amount}</strong></td>
+          <td>${c.method || 'Cash'}</td>
+          <td><span class="badge ${statusClass}">${c.status}</span></td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    }
+    
+    // Upload member document
+    function uploadMemberDocument() {
+      if (!currentUser) return;
+      
+      const fileInput = document.getElementById('memberDocFile');
+      const category = document.getElementById('docCategory').value;
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        alert('❌ Please select a file to upload');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('❌ File size must be less than 5MB');
+        return;
+      }
+      
+      // Validate file type
+      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        alert('❌ Invalid file type. Please upload PDF, DOC, DOCX, JPEG, or PNG');
+        return;
+      }
+      
+      // Read file as base64
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const doc = {
+          id: 'DOC' + Date.now(),
+          memberId: currentUser.id,
+          memberName: currentUser.name,
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+          fileData: e.target.result,
+          category: category,
+          uploadDate: new Date().toISOString()
+        };
+        
+        memberDocuments.push(doc);
+        saveDataToStorage();
+        displayMemberDocuments();
+        
+        // Reset form
+        fileInput.value = '';
+        document.getElementById('docCategory').value = 'proof-of-payment';
+        
+        showAlert('memberAlert', `✅ Document "${file.name}" uploaded successfully!`, 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    // Display member documents
+    function displayMemberDocuments() {
+      if (!currentUser) return;
+      
+      const memberDocs = memberDocuments.filter(d => d.memberId === currentUser.id);
+      const tbody = document.getElementById('memberDocsTable');
+      
+      if (memberDocs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">No documents uploaded</td></tr>';
+        return;
+      }
+      
+      let html = '';
+      memberDocs.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)).forEach(doc => {
+        const categoryName = doc.category.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        const fileIcon = doc.fileType.includes('pdf') ? '📄' : doc.fileType.includes('image') ? '🖼️' : '📝';
+        const fileSize = (doc.fileSize / 1024).toFixed(1) + ' KB';
+        
+        html += `<tr>
+          <td>${fileIcon} ${doc.fileName}</td>
+          <td>${categoryName}</td>
+          <td>${new Date(doc.uploadDate).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" onclick="downloadDocument('${doc.id}')">Download</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteMemberDocument('${doc.id}')">Delete</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    }
+    
+    // Download document
+    function downloadDocument(docId) {
+      const doc = memberDocuments.find(d => d.id === docId);
+      if (!doc) return;
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = doc.fileData;
+      link.download = doc.fileName;
+      link.click();
+      
+      showAlert('memberAlert', '📥 Document downloaded', 'success');
+    }
+    
+    // Delete member document
+    function deleteMemberDocument(docId) {
+      const doc = memberDocuments.find(d => d.id === docId);
+      if (!doc) return;
+      
+      if (!confirm(`Are you sure you want to delete "${doc.fileName}"?`)) return;
+      
+      const index = memberDocuments.findIndex(d => d.id === docId);
+      memberDocuments.splice(index, 1);
+      saveDataToStorage();
+      displayMemberDocuments();
+      
+      showAlert('memberAlert', '✅ Document deleted', 'success');
     }
 
     function reqPayoutModal() {
