@@ -1454,6 +1454,7 @@
         merged.penalties = localData.penalties || cloudData.penalties || [];
         merged.meetingMinutes = localData.meetingMinutes || cloudData.meetingMinutes || [];
         merged.paymentProofs = localData.paymentProofs || cloudData.paymentProofs || [];
+        merged.contributions = localData.contributions || cloudData.contributions || [];
         merged.payoutCollectors = localData.payoutCollectors || cloudData.payoutCollectors || [];
         merged.constitutionDocument = localData.constitutionDocument || cloudData.constitutionDocument || null;
         
@@ -1834,6 +1835,7 @@
         attendance: attendanceData,
         meetingMinutes,
         paymentProofs,
+        contributions,
         payoutCollectors,
         constitutionDocument,
         
@@ -1887,12 +1889,17 @@
       // Count contributions in last 3 months
       const threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-      
-      const recentContributions = (member.contributions || []).filter(c => {
-        const contribDate = new Date(c.date);
-        return contribDate >= threeMonthsAgo;
+
+      const memberScoped = Array.isArray(member.contributions) ? member.contributions : [];
+      const legacyScoped = Array.isArray(contributions)
+        ? contributions.filter((entry) => (entry.memberId || '') === member.id)
+        : [];
+
+      const recentContributions = [...memberScoped, ...legacyScoped].filter(c => {
+        const contribDate = new Date(c.date || c.createdAt || 0);
+        return !Number.isNaN(contribDate.getTime()) && contribDate >= threeMonthsAgo;
       }).length;
-      
+
       // Determine status
       if (recentContributions >= 3) return 'up-to-date'; // Green
       if (recentContributions >= 2) return 'warning'; // Yellow
@@ -2091,6 +2098,7 @@
             attendance: attendanceData,
             meetingMinutes,
             paymentProofs,
+            contributions,
             payoutCollectors,
             
             // Constitution document
@@ -2114,6 +2122,7 @@
               totalMeetings: Object.keys(attendanceData).length,
               totalMinutes: meetingMinutes.length,
               totalProofs: paymentProofs.length,
+              totalContributions: contributions.length,
               lastSaveTime: performance.now() - startTime,
               syncHealth: {
                 consecutiveFailures: SYNC_HEALTH.consecutiveFailures,
@@ -2337,6 +2346,7 @@
               if (!data.penalties || !Array.isArray(data.penalties)) data.penalties = [];
               if (!data.meetingMinutes || !Array.isArray(data.meetingMinutes)) data.meetingMinutes = [];
               if (!data.paymentProofs || !Array.isArray(data.paymentProofs)) data.paymentProofs = [];
+              if (!data.contributions || !Array.isArray(data.contributions)) data.contributions = [];
               if (!data.payoutCollectors || !Array.isArray(data.payoutCollectors)) data.payoutCollectors = [];
               
               // If still critical errors after fixes, use defaults
@@ -2358,6 +2368,7 @@
             penalties = data.penalties || [];
             meetingMinutes = data.meetingMinutes || [];
             paymentProofs = data.paymentProofs || [];
+            contributions = data.contributions || [];
             payoutCollectors = data.payoutCollectors || [];
             constitutionDocument = data.constitutionDocument || null;
             memberIdCounter = data.memberIdCounter || 7;
@@ -2465,6 +2476,7 @@
             penalties = cloudData.penalties || [];
             meetingMinutes = cloudData.meetingMinutes || [];
             paymentProofs = cloudData.paymentProofs || [];
+            contributions = cloudData.contributions || [];
             payoutCollectors = cloudData.payoutCollectors || [];
             memberIdCounter = cloudData.memberIdCounter || 1;
             minutesIdCounter = cloudData.minutesIdCounter || 1;
@@ -2484,6 +2496,7 @@
               penalties,
               meetingMinutes,
               paymentProofs,
+              contributions,
               payoutCollectors,
               memberIdCounter,
               minutesIdCounter,
@@ -2573,6 +2586,7 @@
           penalties,
           meetingMinutes,
           paymentProofs,
+          contributions,
           payoutCollectors,
           
           // Counters
@@ -2596,6 +2610,7 @@
             totalMeetings: Object.keys(attendanceData).length,
             totalMinutes: meetingMinutes.length,
             totalPaymentProofs: paymentProofs.length,
+            totalContributions: contributions.length,
             totalPayoutCollectors: payoutCollectors.length,
             membersWithSignatures: members.filter(m => m.signature).length,
             dataSize: 'Calculating...',
@@ -2660,6 +2675,7 @@
             penalties = data.penalties || [];
             meetingMinutes = data.meetingMinutes || [];
             paymentProofs = data.paymentProofs || [];
+            contributions = data.contributions || [];
             payoutCollectors = data.payoutCollectors || [];
             constitutionDocument = data.constitutionDocument || null;
             
@@ -3110,6 +3126,7 @@
     ];
     let meetingMinutes = []; // Store meeting minutes
     let paymentProofs = []; // Store payment proof uploads
+    let contributions = []; // Legacy/global contribution records for backward compatibility
     let payoutCollectors = []; // Store payout collectors: { memberId, collectors: [{name, phone}, {name, phone}] }
     let constitutionDocument = null; // Store constitution document: { title, uploadDate, fileData, fileSize, fileType, notes }
     let currentUser = null;
@@ -3282,7 +3299,7 @@
               const merged = mergeData(
                 {
                   members, beneficiaries, payouts, penalties, meetingMinutes,
-                  paymentProofs, payoutCollectors, constitutionDocument,
+                  paymentProofs, contributions, payoutCollectors, constitutionDocument,
                   memberIdCounter, minutesIdCounter, proofIdCounter,
                   lastSaved: new Date().toISOString()
                 },
@@ -3686,6 +3703,7 @@
         penalties = backupData.penalties || [];
         meetingMinutes = backupData.meetingMinutes || [];
         paymentProofs = backupData.paymentProofs || [];
+        contributions = backupData.contributions || [];
         payoutCollectors = backupData.payoutCollectors || [];
         constitutionDocument = backupData.constitutionDocument || null;
         memberIdCounter = backupData.memberIdCounter || 7;
@@ -5046,58 +5064,98 @@
       return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     }
 
+    function normalizeContributionEntry(entry, memberRecord) {
+      const entryDate = entry?.date || entry?.createdAt || new Date().toISOString();
+      const paidForMonth = entry?.paidForMonth || new Date(entryDate).toISOString().slice(0, 7);
+      return {
+        id: entry?.id || ('CONT' + Date.now() + Math.floor(Math.random() * 1000)),
+        memberId: entry?.memberId || memberRecord?.id || currentUser?.id || '',
+        memberName: entry?.memberName || memberRecord?.name || currentUser?.name || '',
+        date: entryDate,
+        paidForMonth,
+        amount: parseFloat(entry?.amount || 0) || 0,
+        method: entry?.method || 'N/A',
+        reference: entry?.reference || 'N/A',
+        status: entry?.status || 'Approved',
+        source: entry?.source || 'member-contribution-tab'
+      };
+    }
+
+    function getAllContributionsForMember(memberRecord) {
+      if (!memberRecord) return [];
+
+      const memberList = Array.isArray(memberRecord.contributions)
+        ? memberRecord.contributions.map((entry) => normalizeContributionEntry(entry, memberRecord))
+        : [];
+
+      const legacyList = Array.isArray(contributions)
+        ? contributions
+            .filter((entry) => (entry.memberId || '') === memberRecord.id)
+            .map((entry) => normalizeContributionEntry(entry, memberRecord))
+        : [];
+
+      const mergedByKey = new Map();
+      [...memberList, ...legacyList].forEach((entry) => {
+        const uniqueKey = entry.id || `${entry.memberId}-${entry.paidForMonth}-${entry.amount}-${entry.date}`;
+        if (!mergedByKey.has(uniqueKey)) {
+          mergedByKey.set(uniqueKey, entry);
+        }
+      });
+
+      return Array.from(mergedByKey.values()).sort((a, b) => {
+        return new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0);
+      });
+    }
+
     function hasContributionForMonth(memberRecord, paidForMonth) {
-      if (!memberRecord || !Array.isArray(memberRecord.contributions)) return false;
-      return memberRecord.contributions.some((entry) => (entry.paidForMonth || '') === paidForMonth);
+      return getAllContributionsForMember(memberRecord).some((entry) => (entry.paidForMonth || '') === paidForMonth);
     }
 
     function displayMemberContributions() {
       const table = document.getElementById('memberContribTable');
       const constitutionTable = document.getElementById('constitutionContributionTable');
-
       const memberRecord = getCurrentMemberRecord();
-      const contributions = Array.isArray(memberRecord?.contributions)
-        ? [...memberRecord.contributions].sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0))
-        : [];
 
-      if (contributions.length === 0) {
+      if (!memberRecord) {
+        if (table) table.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">Member record not found</td></tr>';
+        if (constitutionTable) constitutionTable.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">Member record not found</td></tr>';
+        return;
+      }
+
+      const memberContributions = getAllContributionsForMember(memberRecord);
+      if (memberContributions.length === 0) {
         if (table) table.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">No contributions recorded</td></tr>';
         if (constitutionTable) constitutionTable.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No contributions recorded</td></tr>';
         return;
       }
 
       if (table) {
-        table.innerHTML = contributions.map(item => {
+        table.innerHTML = memberContributions.map(item => {
           const entryDate = new Date(item.date || item.createdAt || Date.now());
-          const method = item.method || 'N/A';
-          const status = item.status || 'Approved';
           return `
             <tr>
               <td>${entryDate.toLocaleDateString('en-ZA')}</td>
               <td>R ${(parseFloat(item.amount) || 0).toFixed(2)}</td>
-              <td>${method}</td>
-              <td><span class="badge badge-approved">${status}</span></td>
+              <td>${item.method || 'N/A'}</td>
+              <td><span class="badge badge-approved">${item.status || 'Approved'}</span></td>
             </tr>
           `;
-        }).join('');
+        }).join('') || '<tr><td colspan="4" style="text-align: center; color: #999;">No contributions recorded</td></tr>';
       }
 
       if (constitutionTable) {
-        constitutionTable.innerHTML = contributions.slice(0, 8).map(item => {
+        constitutionTable.innerHTML = memberContributions.slice(0, 8).map(item => {
           const entryDate = new Date(item.date || item.createdAt || Date.now());
-          const paidForMonth = item.paidForMonth || '-';
-          const method = item.method || 'N/A';
-          const status = item.status || 'Approved';
           return `
             <tr>
               <td>${entryDate.toLocaleDateString('en-ZA')}</td>
-              <td>${paidForMonth}</td>
+              <td>${item.paidForMonth || '-'}</td>
               <td>R ${(parseFloat(item.amount) || 0).toFixed(2)}</td>
-              <td>${method}</td>
-              <td><span class="badge badge-approved">${status}</span></td>
+              <td>${item.method || 'N/A'}</td>
+              <td><span class="badge badge-approved">${item.status || 'Approved'}</span></td>
             </tr>
           `;
-        }).join('');
+        }).join('') || '<tr><td colspan="5" style="text-align: center; color: #999;">No contributions recorded</td></tr>';
       }
     }
 
@@ -5120,7 +5178,7 @@
         return;
       }
 
-      memberRecord.contributions.push({
+      const contributionEntry = normalizeContributionEntry({
         id: 'CONT' + Date.now(),
         date: today.toISOString(),
         paidForMonth,
@@ -5129,7 +5187,11 @@
         reference: document.getElementById('contRef').value.trim() || 'N/A',
         status: 'Approved',
         source: 'member-contribution-tab'
-      });
+      }, memberRecord);
+
+      memberRecord.contributions.push(contributionEntry);
+      if (!Array.isArray(contributions)) contributions = [];
+      contributions.push(contributionEntry);
 
       currentUser = memberRecord;
       await saveDataToStorage(true);
@@ -5168,7 +5230,7 @@
         return;
       }
 
-      memberRecord.contributions.push({
+      const contributionEntry = normalizeContributionEntry({
         id: 'CONT' + Date.now(),
         date: new Date().toISOString(),
         paidForMonth,
@@ -5177,7 +5239,11 @@
         reference: referenceInput ? referenceInput.value.trim() || 'N/A' : 'N/A',
         status: 'Approved',
         source: 'constitution-tab'
-      });
+      }, memberRecord);
+
+      memberRecord.contributions.push(contributionEntry);
+      if (!Array.isArray(contributions)) contributions = [];
+      contributions.push(contributionEntry);
 
       currentUser = memberRecord;
       const cloudSaveSuccess = await saveDataToStorage(true);
