@@ -92,18 +92,6 @@
 </head>
 <body>
   <div class="container">
-    /* Overlay and stacking for login page */
-    #loginPage { position: relative; z-index: 1; }
-    #loginPage::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255,255,255,0.65);
-      z-index: 0;
-      pointer-events: none;
-    }
-    #loginPage * { position: relative; z-index: 1; }
-    #adminForm .btn-warning[onclick="resetAdminCredentials()"] { display: none !important; }
     <!-- LOGIN PAGE -->
     <div id="loginPage" class="card">
       <h1 style="text-align: center;">🏛️ Sbahle Burial Society</h1>
