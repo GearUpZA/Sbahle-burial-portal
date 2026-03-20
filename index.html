@@ -593,6 +593,7 @@
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               <button class="btn btn-success" onclick="downloadBackupFile('manual')" style="flex: 1;">💾 Download Backup Now</button>
               <button class="btn btn-secondary" onclick="showBackupSnapshots()" style="flex: 1;">📋 View Snapshots</button>
+              <button class="btn btn-warning" onclick="cleanupStorageNow()" style="flex: 1;">🧹 Cleanup Storage</button>
             </div>
             
             <div id="snapshotsList" style="display: none; margin-top: 15px; max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 6px;">
@@ -3545,6 +3546,56 @@
       
       // Toggle visibility
       snapshotsList.style.display = snapshotsList.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Manual cleanup to free localStorage space quickly
+    function cleanupStorageNow() {
+      try {
+        cleanOldBackupSnapshots();
+
+        const backupKeys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith(STORAGE_KEY + '_backup_')) {
+            backupKeys.push(key);
+          }
+        }
+
+        // Keep only the newest snapshot for quick rollback and remove the rest.
+        backupKeys.sort((a, b) => {
+          const aDate = new Date(a.split('_backup_')[1] || 0).getTime();
+          const bDate = new Date(b.split('_backup_')[1] || 0).getTime();
+          return bDate - aDate;
+        });
+
+        let removedCount = 0;
+        let freedChars = 0;
+        backupKeys.slice(1).forEach((key) => {
+          const value = localStorage.getItem(key);
+          if (value) freedChars += value.length;
+          localStorage.removeItem(key);
+          removedCount++;
+        });
+
+        // Remove pending backup metadata if present.
+        const pending = localStorage.getItem('pending_email_backup');
+        if (pending) {
+          freedChars += pending.length;
+          localStorage.removeItem('pending_email_backup');
+        }
+
+        const freedKB = (freedChars / 1024).toFixed(2);
+        showAlert('adminAlert', `✅ Storage cleanup complete. Removed ${removedCount} snapshots and freed ~${freedKB} KB.`, 'success');
+
+        // Refresh related UI panels.
+        const snapshotsList = document.getElementById('snapshotsList');
+        if (snapshotsList) snapshotsList.style.display = 'none';
+        updateBackupDisplay();
+        updateStorageInfo();
+      } catch (error) {
+        console.error('Storage cleanup failed:', error);
+        showAlert('adminAlert', '⚠ Storage cleanup failed: ' + error.message, 'error');
+      }
     }
     
     // Download specific snapshot
