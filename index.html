@@ -1881,6 +1881,129 @@
         return null;
       }
     }
+
+    function isQuotaExceededError(error) {
+      if (!error) return false;
+      return error.name === 'QuotaExceededError' || error.code === 22 || /quota/i.test(error.message || '');
+    }
+
+    function cleanupLocalStorageForQuota() {
+      try {
+        const backupKeys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith(STORAGE_KEY + '_backup_')) {
+            backupKeys.push(key);
+          }
+        }
+
+        // Remove oldest backup snapshots first; keep at most the latest one.
+        backupKeys.sort((a, b) => {
+          const aDate = new Date(a.split('_backup_')[1] || 0).getTime();
+          const bDate = new Date(b.split('_backup_')[1] || 0).getTime();
+          return aDate - bDate;
+        });
+
+        while (backupKeys.length > 1) {
+          const keyToRemove = backupKeys.shift();
+          localStorage.removeItem(keyToRemove);
+        }
+
+        // Remove non-critical temporary metadata keys.
+        ['pending_email_backup', 'sbahle_cache_prompt', 'sbahle_last_version_check'].forEach((k) => {
+          if (localStorage.getItem(k)) localStorage.removeItem(k);
+        });
+      } catch (cleanupError) {
+        console.warn('Storage cleanup warning:', cleanupError);
+      }
+    }
+
+    function buildCompactLocalData(data, dropSignatures = false) {
+      let compact;
+      try {
+        compact = JSON.parse(JSON.stringify(data));
+      } catch (e) {
+        return data;
+      }
+
+      // Keep metadata for proofs but drop heavy binary payloads.
+      if (Array.isArray(compact.paymentProofs)) {
+        compact.paymentProofs = compact.paymentProofs.map((p) => {
+          const copy = { ...p };
+          delete copy.fileData;
+          delete copy.base64;
+          delete copy.previewData;
+          return copy;
+        });
+      }
+
+      // Keep constitution metadata but drop embedded file content.
+      if (compact.constitutionDocument && typeof compact.constitutionDocument === 'object') {
+        const docCopy = { ...compact.constitutionDocument };
+        delete docCopy.fileData;
+        delete docCopy.base64;
+        compact.constitutionDocument = docCopy;
+      }
+
+      if (dropSignatures && Array.isArray(compact.members)) {
+        compact.members = compact.members.map((m) => {
+          const memberCopy = { ...m };
+          if (memberCopy.signature) {
+            memberCopy.hasSignature = true;
+            delete memberCopy.signature;
+          }
+          return memberCopy;
+        });
+      }
+
+      compact.localStorageMode = dropSignatures ? 'compact-no-signatures' : 'compact';
+      return compact;
+    }
+
+    function persistLocalBackupData(data) {
+      const fullEncrypted = encryptData(data);
+
+      try {
+        localStorage.setItem(STORAGE_KEY, fullEncrypted);
+      } catch (error) {
+        if (!isQuotaExceededError(error)) throw error;
+
+        cleanupLocalStorageForQuota();
+        try {
+          localStorage.setItem(STORAGE_KEY, fullEncrypted);
+        } catch (retryError) {
+          if (!isQuotaExceededError(retryError)) throw retryError;
+
+          // First fallback: keep compact payload (remove heavy file blobs).
+          const compactData = buildCompactLocalData(data, false);
+          try {
+            localStorage.setItem(STORAGE_KEY, encryptData(compactData));
+            return { mode: 'compact' };
+          } catch (compactError) {
+            if (!isQuotaExceededError(compactError)) throw compactError;
+
+            // Final fallback: remove signatures from local backup too.
+            const minimalData = buildCompactLocalData(data, true);
+            localStorage.setItem(STORAGE_KEY, encryptData(minimalData));
+            return { mode: 'compact-no-signatures' };
+          }
+        }
+      }
+
+      // Snapshot backup is optional; skip it if quota is tight.
+      try {
+        const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
+        localStorage.setItem(backupKey, fullEncrypted);
+      } catch (backupError) {
+        if (isQuotaExceededError(backupError)) {
+          console.warn('⚠️ Storage near quota: skipped local snapshot backup.');
+        } else {
+          throw backupError;
+        }
+      }
+
+      return { mode: 'full' };
+    }
     
     // Optimized save function with enhanced cloud storage reliability
     async function saveDataToStorage(forceImmediate = false) {
@@ -2059,13 +2182,11 @@
             cloudSaveSuccess = false;
           }
           
-          // Always save to localStorage as backup
-          const encrypted = encryptData(data);
-          localStorage.setItem(STORAGE_KEY, encrypted);
-          
-          // Also save a backup with timestamp
-          const backupKey = `${STORAGE_KEY}_backup_${new Date().toISOString().split('T')[0]}`;
-          localStorage.setItem(backupKey, encrypted);
+          // Always save to localStorage as backup, with quota-safe fallbacks.
+          const localSave = persistLocalBackupData(data);
+          if (localSave.mode !== 'full') {
+            showAlert('adminAlert', '⚠ Storage is almost full. Saved a compact local backup; cloud sync remains active.', 'warning');
+          }
           
           // Track save performance
           const saveTime = performance.now() - startTime;
