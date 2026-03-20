@@ -231,6 +231,7 @@
           </select>
           <button class="btn btn-primary btn-sm" onclick="exportFinancialReport()">📥 Export PDF Report</button>
           <button class="btn btn-success btn-sm" onclick="refreshFinancialDashboard()">🔄 Refresh</button>
+          <button class="btn btn-warning btn-sm" onclick="autoCalculateIncome()">🤖 Auto Calculate Income</button>
         </div>
 
         <!-- Charts Section -->
@@ -928,6 +929,52 @@
             <p style="margin: 0; color: #e65100; font-size: 16px;"><strong>No Constitution Available</strong></p>
             <p style="margin-top: 10px; color: #666;">The admin has not uploaded the constitution yet. Please check back later.</p>
           </div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-top: 20px;">
+          <h3 style="margin-bottom: 15px; color: #2d3748;">💰 Add Monthly Contribution</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px;">
+            <div class="form-group" style="margin: 0;">
+              <label>Contribution Month</label>
+              <input type="month" id="constitutionContributionMonth">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label>Amount (R)</label>
+              <input type="number" id="constitutionContributionAmount" min="170" step="0.01" value="170">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label>Method</label>
+              <select id="constitutionContributionMethod">
+                <option>Bank Transfer</option>
+                <option>EFT</option>
+                <option>Cash</option>
+                <option>Debit Order</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label>Reference</label>
+              <input type="text" id="constitutionContributionReference" placeholder="Optional reference">
+            </div>
+          </div>
+          <button class="btn btn-success" onclick="submitConstitutionContribution()">+ Add Monthly Contribution</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h3 style="margin-bottom: 10px; color: #2d3748;">Recent Contributions</h3>
+          <table style="font-size: 12px;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Month</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="constitutionContributionTable">
+              <tr><td colspan="5" style="text-align: center; color: #999;">No contributions recorded</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -4149,13 +4196,13 @@
         // Safely toggle visibility with null checks
         const profileTab = document.getElementById('memberProfileTab');
         const signatureTab = document.getElementById('memberSignatureTab');
-        const contributionsTab = document.getElementById('contributionsTab');
+        const contributionsTab = document.getElementById('memberContributionsTab');
         const beneficiariesTab = document.getElementById('memberBeneficiariesTab');
         const payoutsTab = document.getElementById('memberPayoutsTab');
         const minutesTab = document.getElementById('memberMinutesTab');
         const paymentsTab = document.getElementById('memberPaymentsTab');
         const constitutionTab = document.getElementById('memberConstitutionTab');
-        const documentsTab = document.getElementById('documentsTab');
+        const documentsTab = document.getElementById('memberDocumentsTab');
         
         if (profileTab) profileTab.classList.toggle('hidden', t !== 'profile');
         if (signatureTab) signatureTab.classList.toggle('hidden', t !== 'signature');
@@ -4177,7 +4224,15 @@
         }
         if (t === 'minutes') displayMemberMinutes();
         if (t === 'payments') displayMemberPaymentProofs();
-        if (t === 'constitution') displayConstitutionMember();
+        if (t === 'constitution') {
+          displayConstitutionMember();
+          displayMemberContributions();
+          const monthInput = document.getElementById('constitutionContributionMonth');
+          if (monthInput && !monthInput.value) {
+            monthInput.value = getCurrentContributionMonth();
+          }
+        }
+        if (t === 'contributions') displayMemberContributions();
         if (t === 'beneficiaries') {
           // Refresh tempBeneficiaries from the main beneficiaries array - using fast clone
           tempBeneficiaries = beneficiaries.filter(b => b.memberId === currentUser.id).map(b => fastClone(b));
@@ -4981,11 +5036,162 @@
       `);
     }
 
-    function submitContrib() {
+    function getCurrentMemberRecord() {
+      if (!currentUser || !currentUser.id) return null;
+      return members.find(m => m.id === currentUser.id) || null;
+    }
+
+    function getCurrentContributionMonth() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function hasContributionForMonth(memberRecord, paidForMonth) {
+      if (!memberRecord || !Array.isArray(memberRecord.contributions)) return false;
+      return memberRecord.contributions.some((entry) => (entry.paidForMonth || '') === paidForMonth);
+    }
+
+    function displayMemberContributions() {
+      const table = document.getElementById('memberContribTable');
+      const constitutionTable = document.getElementById('constitutionContributionTable');
+
+      const memberRecord = getCurrentMemberRecord();
+      const contributions = Array.isArray(memberRecord?.contributions)
+        ? [...memberRecord.contributions].sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0))
+        : [];
+
+      if (contributions.length === 0) {
+        if (table) table.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">No contributions recorded</td></tr>';
+        if (constitutionTable) constitutionTable.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No contributions recorded</td></tr>';
+        return;
+      }
+
+      if (table) {
+        table.innerHTML = contributions.map(item => {
+          const entryDate = new Date(item.date || item.createdAt || Date.now());
+          const method = item.method || 'N/A';
+          const status = item.status || 'Approved';
+          return `
+            <tr>
+              <td>${entryDate.toLocaleDateString('en-ZA')}</td>
+              <td>R ${(parseFloat(item.amount) || 0).toFixed(2)}</td>
+              <td>${method}</td>
+              <td><span class="badge badge-approved">${status}</span></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      if (constitutionTable) {
+        constitutionTable.innerHTML = contributions.slice(0, 8).map(item => {
+          const entryDate = new Date(item.date || item.createdAt || Date.now());
+          const paidForMonth = item.paidForMonth || '-';
+          const method = item.method || 'N/A';
+          const status = item.status || 'Approved';
+          return `
+            <tr>
+              <td>${entryDate.toLocaleDateString('en-ZA')}</td>
+              <td>${paidForMonth}</td>
+              <td>R ${(parseFloat(item.amount) || 0).toFixed(2)}</td>
+              <td>${method}</td>
+              <td><span class="badge badge-approved">${status}</span></td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    async function submitContrib() {
       const amt = parseFloat(document.getElementById('contAmt').value);
       if (amt < 170) { alert('Minimum R 170'); return; }
+
+      const memberRecord = getCurrentMemberRecord();
+      if (!memberRecord) {
+        showAlert('memberAlert', '⚠ Member record not found', 'error');
+        return;
+      }
+
+      if (!Array.isArray(memberRecord.contributions)) memberRecord.contributions = [];
+      const today = new Date();
+      const paidForMonth = getCurrentContributionMonth();
+
+      if (hasContributionForMonth(memberRecord, paidForMonth)) {
+        showAlert('memberAlert', `⚠ Contribution for ${paidForMonth} already exists`, 'warning');
+        return;
+      }
+
+      memberRecord.contributions.push({
+        id: 'CONT' + Date.now(),
+        date: today.toISOString(),
+        paidForMonth,
+        amount: amt,
+        method: document.getElementById('contMeth').value,
+        reference: document.getElementById('contRef').value.trim() || 'N/A',
+        status: 'Approved',
+        source: 'member-contribution-tab'
+      });
+
+      currentUser = memberRecord;
+      await saveDataToStorage(true);
       closeModal();
-      showAlert('memberAlert', '✓ Contribution submitted! Pending verification', 'success');
+      displayMemberContributions();
+      triggerAutoFinancialRecalculation();
+      showAlert('memberAlert', '✓ Contribution saved successfully', 'success');
+    }
+
+    async function submitConstitutionContribution() {
+      const amountInput = document.getElementById('constitutionContributionAmount');
+      const monthInput = document.getElementById('constitutionContributionMonth');
+      const methodInput = document.getElementById('constitutionContributionMethod');
+      const referenceInput = document.getElementById('constitutionContributionReference');
+
+      const amount = parseFloat(amountInput?.value || '0');
+      if (amount < 170) {
+        showAlert('memberAlert', '⚠ Minimum monthly contribution is R 170', 'warning');
+        return;
+      }
+
+      const memberRecord = getCurrentMemberRecord();
+      if (!memberRecord) {
+        showAlert('memberAlert', '⚠ Member record not found', 'error');
+        return;
+      }
+
+      if (!Array.isArray(memberRecord.contributions)) memberRecord.contributions = [];
+
+      const paidForMonth = monthInput && monthInput.value
+        ? monthInput.value
+        : getCurrentContributionMonth();
+
+      if (hasContributionForMonth(memberRecord, paidForMonth)) {
+        showAlert('memberAlert', `⚠ Contribution for ${paidForMonth} already exists`, 'warning');
+        return;
+      }
+
+      memberRecord.contributions.push({
+        id: 'CONT' + Date.now(),
+        date: new Date().toISOString(),
+        paidForMonth,
+        amount,
+        method: methodInput ? methodInput.value : 'Bank Transfer',
+        reference: referenceInput ? referenceInput.value.trim() || 'N/A' : 'N/A',
+        status: 'Approved',
+        source: 'constitution-tab'
+      });
+
+      currentUser = memberRecord;
+      const cloudSaveSuccess = await saveDataToStorage(true);
+      displayMemberContributions();
+      triggerAutoFinancialRecalculation();
+
+      if (referenceInput) referenceInput.value = '';
+      if (amountInput) amountInput.value = '170';
+
+      if (cloudSaveSuccess === true) {
+        showAlert('memberAlert', '✅ Monthly contribution added and synced', 'success');
+      } else {
+        showAlert('memberAlert', '⚠ Contribution saved locally but cloud sync failed', 'warning');
+      }
     }
 
     function addBenMemModal() {
@@ -6102,6 +6308,7 @@
         }
         
         displayMemberPaymentProofs();
+        triggerAutoFinancialRecalculation();
         console.log('Payment proof saved successfully');
       } catch (error) {
         console.error('Error saving payment proof:', error);
@@ -6218,6 +6425,7 @@
         await saveDataToStorage(true);
         showAlert('memberAlert', '✓ Payment proof deleted successfully', 'success');
         displayMemberPaymentProofs();
+        triggerAutoFinancialRecalculation();
         console.log('Payment proof deleted:', proofId);
       } catch (error) {
         console.error('Error deleting payment proof:', error);
@@ -6364,6 +6572,7 @@
       }
       
       displayAdminPaymentProofs();
+      triggerAutoFinancialRecalculation();
     }
 
     async function rejectPaymentProof(proofId) {
@@ -6385,6 +6594,7 @@
       }
       
       displayAdminPaymentProofs();
+      triggerAutoFinancialRecalculation();
     }
 
     // Update updateMember function to show payment proofs
@@ -6570,6 +6780,24 @@
       showAlert('adminAlert', '✓ Financial dashboard refreshed!', 'success');
     }
 
+    // Force a fresh income calculation from approved payment records.
+    function autoCalculateIncome() {
+      const period = document.getElementById('financialPeriod').value;
+      const financialData = calculateFinancialData(period);
+      updateFinancialDashboard();
+      showAlert(
+        'adminAlert',
+        `✅ Auto income calculated from ${financialData.approvedIncomeRecords} approved payment record(s): R ${financialData.totalIncome.toFixed(2)}`,
+        'success'
+      );
+    }
+
+    function triggerAutoFinancialRecalculation() {
+      const periodControl = document.getElementById('financialPeriod');
+      if (!periodControl) return;
+      updateFinancialDashboard();
+    }
+
     // Main function to update all financial data and charts
     function updateFinancialDashboard() {
       const period = document.getElementById('financialPeriod').value;
@@ -6611,26 +6839,72 @@
           break;
       }
 
-      // Calculate income from approved payment proofs
+      const periodStartTime = startDate.getTime();
+
+      function getAmountValue(value) {
+        const amount = parseFloat(value);
+        return Number.isFinite(amount) ? amount : 0;
+      }
+
+      function getRecordDate(record) {
+        const rawDate = record.uploadDate || record.date || record.createdAt || record.timestamp;
+        if (!rawDate) return null;
+        const parsedDate = new Date(rawDate);
+        return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+      }
+
+      function isApprovedIncomeRecord(record) {
+        if (record.approved === true) return true;
+        const status = (record.status || '').toString().trim().toLowerCase();
+        return status === 'approved';
+      }
+
+      const memberNameById = new Map(members.map(member => [member.id, member.name]));
+
+      // Calculate income from approved payment proofs (global source of truth)
       let totalIncome = 0;
       let monthlyIncome = {};
+      let approvedIncomeRecords = 0;
+      let memberContributions = {};
       
+      (paymentProofs || []).forEach(proof => {
+        if (!isApprovedIncomeRecord(proof)) return;
+
+        const proofDate = getRecordDate(proof);
+        if (!proofDate || proofDate.getTime() < periodStartTime) return;
+
+        const amount = getAmountValue(proof.amount);
+        if (amount <= 0) return;
+
+        totalIncome += amount;
+        approvedIncomeRecords += 1;
+
+        const monthKey = `${proofDate.getFullYear()}-${String(proofDate.getMonth() + 1).padStart(2, '0')}`;
+        monthlyIncome[monthKey] = (monthlyIncome[monthKey] || 0) + amount;
+
+        const memberName = proof.memberName || memberNameById.get(proof.memberId) || 'Unknown Member';
+        memberContributions[memberName] = (memberContributions[memberName] || 0) + amount;
+      });
+
+      // Backward compatibility for older backups that saved contributions on member records.
       members.forEach(member => {
-        if (member.paymentProofs && Array.isArray(member.paymentProofs)) {
-          member.paymentProofs.forEach(proof => {
-            if (proof.status === 'approved') {
-              const proofDate = new Date(proof.uploadDate);
-              if (proofDate >= startDate) {
-                const amount = parseFloat(proof.amount) || 0;
-                totalIncome += amount;
-                
-                // Track monthly income
-                const monthKey = `${proofDate.getFullYear()}-${String(proofDate.getMonth() + 1).padStart(2, '0')}`;
-                monthlyIncome[monthKey] = (monthlyIncome[monthKey] || 0) + amount;
-              }
-            }
-          });
-        }
+        if (!Array.isArray(member.contributions)) return;
+
+        member.contributions.forEach(contribution => {
+          const contributionDate = getRecordDate(contribution);
+          if (!contributionDate || contributionDate.getTime() < periodStartTime) return;
+
+          const amount = getAmountValue(contribution.amount);
+          if (amount <= 0) return;
+
+          const status = (contribution.status || 'approved').toString().trim().toLowerCase();
+          if (!['approved', 'paid', 'completed'].includes(status)) return;
+
+          totalIncome += amount;
+          const monthKey = `${contributionDate.getFullYear()}-${String(contributionDate.getMonth() + 1).padStart(2, '0')}`;
+          monthlyIncome[monthKey] = (monthlyIncome[monthKey] || 0) + amount;
+          memberContributions[member.name] = (memberContributions[member.name] || 0) + amount;
+        });
       });
 
       // Calculate payouts
@@ -6638,9 +6912,9 @@
       let recentPayoutsData = [];
       
       payouts.forEach(payout => {
-        const payoutDate = new Date(payout.date);
-        if (payoutDate >= startDate) {
-          const amount = parseFloat(payout.amount) || 0;
+        const payoutDate = getRecordDate(payout);
+        if (payoutDate && payoutDate.getTime() >= periodStartTime) {
+          const amount = getAmountValue(payout.amount);
           totalPayouts += amount;
           recentPayoutsData.push({
             member: payout.member,
@@ -6655,30 +6929,12 @@
       members.forEach(member => {
         if (member.penalties && Array.isArray(member.penalties)) {
           member.penalties.forEach(penalty => {
-            const penaltyDate = new Date(penalty.date);
-            if (penaltyDate >= startDate && penalty.status === 'paid') {
-              totalPenalties += parseFloat(penalty.amount) || 0;
+            const penaltyDate = getRecordDate(penalty);
+            const status = (penalty.status || '').toString().trim().toLowerCase();
+            if (penaltyDate && penaltyDate.getTime() >= periodStartTime && status === 'paid') {
+              totalPenalties += getAmountValue(penalty.amount);
             }
           });
-        }
-      });
-
-      // Calculate member contributions
-      let memberContributions = {};
-      members.forEach(member => {
-        let memberTotal = 0;
-        if (member.paymentProofs && Array.isArray(member.paymentProofs)) {
-          member.paymentProofs.forEach(proof => {
-            if (proof.status === 'approved') {
-              const proofDate = new Date(proof.uploadDate);
-              if (proofDate >= startDate) {
-                memberTotal += parseFloat(proof.amount) || 0;
-              }
-            }
-          });
-        }
-        if (memberTotal > 0) {
-          memberContributions[member.name] = memberTotal;
         }
       });
 
@@ -6690,6 +6946,7 @@
         monthlyIncome,
         recentPayouts: recentPayoutsData.slice(-5).reverse(),
         memberContributions,
+        approvedIncomeRecords,
         period
       };
     }
